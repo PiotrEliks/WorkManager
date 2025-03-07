@@ -1,7 +1,6 @@
 import Sequelize from "sequelize";
 
 const database_uri = "postgresql://neondb_owner:npg_bEFGUpDfI7Z6@ep-yellow-star-a5ix845j-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require";
-console.log(database_uri)
 
 const sequelize = new Sequelize(database_uri, {
     dialect: "postgres",
