@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, LoaderCircle  } from 'lucide-react'
 import { useAuthStore } from '../store/useAuthStore';
 
 const LoginPage = () => {
@@ -35,7 +35,7 @@ const LoginPage = () => {
                   </div>
                   <input
                     type="text"
-                    className="w-full pl-10 py-6 bg-white rounded-2xl border-1"
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź e-mail"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -54,7 +54,7 @@ const LoginPage = () => {
                   </div>
                   <input
                     type={showPassword ? "text" : "password"}
-                    className="w-full pl-10 py-6 bg-white rounded-2xl border-1"
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -81,8 +81,8 @@ const LoginPage = () => {
               >
                 {isLoggingIn ? (
                   <>
-                    <Loader2 className="size-5 animate-spin" />
-                    Ładowanie...
+                    <LoaderCircle  className="size-5 animate-spin" />
+                    Logowanie...
                   </>
                 ) : (
                   "Zaloguj"

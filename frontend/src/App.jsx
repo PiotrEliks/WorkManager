@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/useAuthStore.js'
-import { Loader } from 'lucide-react'
+import { LoaderCircle } from 'lucide-react'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import Navbar from './components/Navbar.jsx'
@@ -18,13 +18,13 @@ function App() {
 
   if (isCheckingAuth && !authUser)
     return (
-      <div className="">
-        <Loader className="" />
+      <div className="w-full flex items-center justify-center h-screen bg-gradient-to-r from-violet-600 to-indigo-600">
+        <LoaderCircle className="size-6 animate-spin text-white" />
       </div>
     );
 
   return (
-    <div>
+    <div >
       <Navbar />
       <Routes>
         <Route path="/" element={ authUser ? <HomePage /> : <Navigate to="/login" /> }/>

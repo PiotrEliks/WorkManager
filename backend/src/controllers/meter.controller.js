@@ -3,12 +3,14 @@ import Meter from "../models/meter.model.js";
 export const getMeters = async (req, res) => {
     try {
 
-        const meters = await Meter.findAll();
+        const meters = await Meter.findAll({
+            order: [['updatedAt', 'DESC']]
+        });
 
-        res.status(200).json(meters);
+        return res.status(200).json(meters);
     } catch (error) {
         console.error("Error in getMeters: ", error);
-        res.status(500).json({ message: "Internal Server Error"});
+        return res.status(500).json({ message: "Internal Server Error"});
     }
 };
 
@@ -33,10 +35,14 @@ export const addMeter = async (req, res) => {
             nextInspectionDate
         });
 
-        res.status(200).json(newMeter);
+        const meters = await Meter.findAll({
+            order: [['updatedAt', 'DESC']]
+        });
+
+        return res.status(200).json(meters);
     } catch (error) {
         console.error("Error in addMeter: ", error);
-        res.status(500).json({ message: "Internal Server Error"});
+        return res.status(500).json({ message: "Internal Server Error"});
     }
 };
 
@@ -50,10 +56,14 @@ export const deleteMeter = async (req, res) => {
             }
         });
 
-        res.status(200).json({ message: "Meter has been deleted"});
+        const meters = await Meter.findAll({
+            order: [['updatedAt', 'DESC']]
+        });
+
+        return res.status(200).json(meters);
     } catch (error) {
         console.error("Error in deleteMeter: ", error);
-        res.status(500).json({ message: "Internal Server Error"});
+        return res.status(500).json({ message: "Internal Server Error"});
     }
 }
 
@@ -74,9 +84,13 @@ export const updateMeter = async (req, res) => {
             }
         });
 
-        res.status(200).json({ message: "Meter's informations have been updated"});
+        const meters = await Meter.findAll({
+            order: [['updatedAt', 'DESC']]
+        });
+
+        return res.status(200).json(meters);
     } catch (error) {
         console.error("Error in updateMeter: ", error);
-        res.status(500).json({ message: "Internal Server Error"});
+        return res.status(500).json({ message: "Internal Server Error"});
     }
 };
