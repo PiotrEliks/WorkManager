@@ -6,10 +6,19 @@ const Navbar = () => {
   const { logout, authUser } = useAuthStore();
 
   return (
-    <div>
+    <div className="w-full flex items-center justify-between fixed p-5">
       {
         authUser &&
-          <button className="block px-4 py-2 text-sm hover:bg-base-100 w-full cursor-pointer" onClick={() => {logout()}}>
+          <div className="bg-white rounded-2xl px-4 py-2">
+            {authUser.fullName}
+          </div>
+      }
+      {
+        authUser &&
+          <button
+            className="px-4 py-2 text-sm cursor-pointer bg-white rounded-2xl hover:bg-white/80"
+            onClick={() => {logout()}}
+          >
             <div className="flex flex-row gap-1 items-center">
               <LogOut className="size-5" />
               <span className="">Wyloguj</span>
