@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import MetersManager from '../components/MetersManager.jsx'
+import UsersManager from '../components/UsersManager.jsx'
 
 const HomePage = () => {
   const [showMeterManager, setShowMeterManager] = useState(false);
@@ -32,6 +33,9 @@ const HomePage = () => {
 
         {
           showMeterManager && <MetersManager onClose={setShowMeterManager}/>
+        }
+        {
+          showUserManager && <UsersManager onClose={setShowUserManager}/>
         }
       </div>
     </div>

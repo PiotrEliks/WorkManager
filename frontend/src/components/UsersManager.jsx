@@ -1,57 +1,60 @@
 import React, { useEffect, useState } from 'react'
-import { useMeterStore } from '../store/useMeterStore.js'
-import { useAuthStore } from '../store/useAuthStore.js'
-import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus } from 'lucide-react'
+import { ArrowLeft, UserPlus, LoaderCircle, UserPen, Trash2, X, Mail } from 'lucide-react'
+import { useUserstore } from '../store/useUserStore'
+import { useAuthStore } from '../store/useAuthStore'
 
-const MetersManager = ({ onClose }) => {
-  const { meters, getMeters, deleteMeter, updateMeter, addMeter, isAdding, isUpdating, areMetersLoading } = useMeterStore();
-  const { authUser } = useAuthStore();
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [meterToDelete, setMeterToDelete] = useState({});
-  const [meterToEdit, setMeterToEdit] = useState({});
-  const [showEditWindow, setShowEditWindow] = useState(false);
-  const [showAddNewWindow, setShowAddNewWindow] = useState(false);
-  const [formData, setFormData] = useState({ editedBy: authUser.fullName });
+const UsersManager = ({ onClose }) => {
+    const { users, getUsers, addUser, deleteUser, updateUser, areUsersLoading, isAdding, isUpdating } = useUserstore();
+    const { authUser } = useAuthStore();
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [userToDelete, setUserToDelete] = useState({});
+    const [userToEdit, setUserToEdit] = useState({});
+    const [showEditWindow, setShowEditWindow] = useState(false);
+    const [showAddNewWindow, setShowAddNewWindow] = useState(false);
+    const [formData, setFormData] = useState({});
 
-  useEffect(() => {
-    getMeters();
-  }, [getMeters]);
+    useEffect(() => {
+        getUsers();
+    }, [getUsers]);
 
-  const handleEdit = (e) => {
-    e.preventDefault();
-    updateMeter(meterToEdit.id, formData);
-    setShowEditWindow(false);
-    setFormData({ editedBy: authUser.fullName });
-  };
+    const handleEdit = (e) => {
+        e.preventDefault();
+        updateUser(userToEdit.id, formData);
+        setShowEditWindow(false);
+        setFormData({});
+      };
+    
+      const handleShowDeleteConfirmationWindow = (id, name) => {
+        setShowDeleteConfirmation(true);
+        setUserToDelete({
+          id: id,
+          fullName: name,
+        });
+      };
+    
+      const handleDeleteUser = (id) => {
+        deleteUser(id);
+        setShowDeleteConfirmation(false);
+        setUserToDelete({});
+      };
+    
+      const handleCancelDeleteUser = () => {
+        setShowDeleteConfirmation(false);
+        setUserToDelete({});
+      };
+    
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        addUser(formData);
+        setShowAddNewWindow(false);
+        setFormData({});
+      };
 
-  const handleShowDeleteConfirmationWindow = (id, name) => {
-    setShowDeleteConfirmation(true);
-    setMeterToDelete({
-      id: id,
-      name: name,
-    });
-  };
+      console.log(users)
+      console.log(userToEdit)
 
-  const handleDeleteMeter = (id) => {
-    deleteMeter(id);
-    setShowDeleteConfirmation(false);
-    setMeterToDelete({});
-  };
-
-  const handleCancelDeleteMeter = () => {
-    setShowDeleteConfirmation(false);
-    setMeterToDelete({});
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    addMeter(formData);
-    setShowAddNewWindow(false);
-    setFormData({ editedBy: authUser.fullName });
-  };
-
-  return (
-    <>
+    return (
+<>
       {
         showAddNewWindow &&
         <div className="w-full relative h-full flex flex-col justify-center">
@@ -59,7 +62,7 @@ const MetersManager = ({ onClose }) => {
             className="absolute top-0 right-0 cursor-pointer"
             onClick={() => {
               setShowAddNewWindow(false);
-              setFormData({ editedBy: authUser.fullName });
+              setFormData({});
             }}
           >
             <X className="size-6" />
@@ -68,7 +71,7 @@ const MetersManager = ({ onClose }) => {
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Nazwa
+                    Imię i Nazwisko
                   </span>
                 </label>
                 <div className="w-full relative">
@@ -79,36 +82,48 @@ const MetersManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź nazwę"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   />
                 </div>
               </div>
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Data wygaśnięcia przeglądu
+                    E-mail
                   </span>
                 </label>
-                <input
-                  type="date"
-                  className="w-full py-4 px-3 border rounded-2xl"
-                  value={formData.inspectionDate}
-                  onChange={(e) => setFormData({ ...formData, inspectionExpiryDate: e.target.value })}
-                />
+                <div className="w-full relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <Mail className="size-5 text-black/70 z-10" />
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
+                    placeholder="Wprowadź email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
               </div>
               <div className="w-full relative gap-3">
-              <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
+                <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Data następnego przeglądu
+                    Rola
                   </span>
                 </label>
-                <input
-                  type="date"
-                  className="w-full py-4 px-3 border rounded-2xl"
-                  value={formData.inspectionDate}
-                  onChange={(e) => setFormData({ ...formData, nextInspectionDate: e.target.value })}
-                />
+                <div className="w-full relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <Mail className="size-5 text-black/70 z-10" />
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
+                    placeholder="Wprowadź rolę"
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  />
+                </div>
               </div>
               <button
                 type="submit"
@@ -135,7 +150,7 @@ const MetersManager = ({ onClose }) => {
             className="absolute top-0 right-0 cursor-pointer"
             onClick={() => {
               setShowEditWindow(false);
-              setFormData({ editedBy: authUser.fullName });
+              setFormData({});
             }}
           >
             <X className="size-6" />
@@ -144,7 +159,7 @@ const MetersManager = ({ onClose }) => {
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Nazwa
+                    Imię i Nazwisko
                   </span>
                 </label>
                 <div className="w-full relative">
@@ -155,36 +170,48 @@ const MetersManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź nazwę"
-                    value={formData.name || meterToEdit.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    value={formData.fullName || userToEdit.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   />
                 </div>
               </div>
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Data wygaśnięcia przeglądu
+                    E-mail
                   </span>
                 </label>
-                <input
-                  type="date"
-                  className="w-full py-4 px-3 border rounded-2xl"
-                  value={formData.inspectionExpiryDate || meterToEdit.inspectionExpiryDate}
-                  onChange={(e) => setFormData({ ...formData, inspectionExpiryDate: e.target.value })}
-                />
+                <div className="w-full relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <Mail className="size-5 text-black/70 z-10" />
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
+                    placeholder="Wprowadź email"
+                    value={formData.email || userToEdit.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
               </div>
               <div className="w-full relative gap-3">
-              <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
+                <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Data następnego przeglądu
+                    Rola
                   </span>
                 </label>
-                <input
-                  type="date"
-                  className="w-full py-4 px-3 border rounded-2xl"
-                  value={formData.nextInspectionDate || meterToEdit.nextInspectionDate}
-                  onChange={(e) => setFormData({ ...formData, nextInspectionDate: e.target.value })}
-                />
+                <div className="w-full relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <Mail className="size-5 text-black/70 z-10" />
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
+                    placeholder="Wprowadź rolę"
+                    value={formData.role || userToEdit.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  />
+                </div>
               </div>
               <button
                 type="submit"
@@ -218,45 +245,43 @@ const MetersManager = ({ onClose }) => {
                 className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                 onClick={() => {setShowAddNewWindow(true)}}
               >
-                <FilePlus className="size-5"/>
-                Dodaj nowy
+                <UserPlus className="size-5"/>
+                Dodaj nowego
               </button>
             </div>
           <div className="grid grid-cols-5 gap-2 font-bold border-b pb-2 text-center items-center">
-            <div>Nazwa</div>
-            <div>Wygaśnięcie przeglądu</div>
-            <div>Następny przegląd</div>
-            <div>Edytowane przez</div>
+            <div>Imię i Nazwisko</div>
+            <div>Email</div>
+            <div>Rola</div>
           </div>
           <div className="w-full overflow-auto h-full flex flex-col">
             {
-              !meters || areMetersLoading &&
+              !users || areUsersLoading &&
                 <div className="w-full fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <LoaderCircle  className="animate-spin duration-150 size-10" />
                 </div>
             }
 
             {
-              meters && !areMetersLoading && meters.map((meter) => (
-                <div key={meter.id} className="grid grid-cols-5 gap-2 border-b py-2 text-center items-center">
-                  <div>{meter.name}</div>
-                  <div>{meter.inspectionExpiryDate}</div>
-                  <div>{meter.nextInspectionDate}</div>
-                  <div>{meter.editedBy}</div>
+              users && !areUsersLoading && users.map((user) => (
+                <div key={user.id} className="grid grid-cols-5 gap-2 border-b py-2 text-center items-center">
+                  <div>{user.fullName}</div>
+                  <div>{user.email}</div>
+                  <div>{user.role}</div>
                   <div className="flex flex-col items-center justify-center gap-1">
                     <button
                       onClick={() => {
                         setShowEditWindow(true);
-                        setMeterToEdit(meter);
+                        setUserToEdit(user);
                       }}
                       className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer
                       flex flex-row items-center gap-1"
                     >
-                      <FilePenLine className="size-5" />
+                      <UserPen className="size-5" />
                       Edytuj
                     </button>
                     <button
-                      onClick={() => handleShowDeleteConfirmationWindow(meter.id, meter.name)}
+                      onClick={() => handleShowDeleteConfirmationWindow(user.id, user.fullName)}
                       className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
                     >
                       <Trash2 className="size-5" />
@@ -269,16 +294,16 @@ const MetersManager = ({ onClose }) => {
             {
               showDeleteConfirmation && (
                 <div className="fixed bg-gray-900 text-white p-10 rounded-xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  Na pewno chcesz usunąć {meterToDelete.name}?
+                  Na pewno chcesz usunąć {userToDelete.fullName}?
                   <div className="mt-4 flex justify-center gap-4">
                     <button
-                      onClick={() => handleDeleteMeter(meterToDelete.id)}
+                      onClick={() => handleDeleteUser(userToDelete.id)}
                       className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded-xl cursor-pointer"
                     >
                       Potwierdź
                     </button>
                     <button
-                      onClick={() => handleCancelDeleteMeter()}
+                      onClick={() => handleCancelDeleteUser()}
                       className="bg-red-500 hover:bg-red-700 text-white py-1 px-4 rounded-xl cursor-pointer"
                     >
                       Anuluj
@@ -287,11 +312,11 @@ const MetersManager = ({ onClose }) => {
                 </div>
               )
             }
-          </div>
+            </div>
         </>
       }
     </>
   )
 }
 
-export default MetersManager
+export default UsersManager
