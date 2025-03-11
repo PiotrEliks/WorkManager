@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useMeterStore } from '../store/useMeterStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
 import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus } from 'lucide-react'
+import { isToday, isThisWeek } from 'date-fns'
 
 const MetersManager = ({ onClose }) => {
   const { meters, getMeters, deleteMeter, updateMeter, addMeter, isAdding, isUpdating, areMetersLoading } = useMeterStore();
@@ -50,6 +51,11 @@ const MetersManager = ({ onClose }) => {
     setFormData({ editedBy: authUser.fullName });
   };
 
+  const isDeadline = (dateString) => {
+    const date = new Date(dateString);
+    return isToday(date) || isThisWeek(date) ? true : false;
+  };
+
   return (
     <>
       {
@@ -61,6 +67,7 @@ const MetersManager = ({ onClose }) => {
               setShowAddNewWindow(false);
               setFormData({ editedBy: authUser.fullName });
             }}
+            title="Anuluj i zamnknik dodawanie"
           >
             <X className="size-6" />
           </div>
@@ -137,6 +144,7 @@ const MetersManager = ({ onClose }) => {
               setShowEditWindow(false);
               setFormData({ editedBy: authUser.fullName });
             }}
+            title="Anuluj i zamknij edycję"
           >
             <X className="size-6" />
           </div>
@@ -190,7 +198,7 @@ const MetersManager = ({ onClose }) => {
                 type="submit"
                 className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
                 disabled={isUpdating}
-                title="Dodaj nowy miernik"
+                title="Zapisz informacje o mierniku"
               >
                 {isUpdating ? (
                   <>
@@ -211,83 +219,93 @@ const MetersManager = ({ onClose }) => {
               <button
                 className="cursor-pointer"
                 onClick={() => {onClose(false)}}
+                title="Powrót do menu"
               >
                 <ArrowLeft className="size-6"/>
               </button>
               <button
                 className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                 onClick={() => {setShowAddNewWindow(true)}}
+                title="Dodaj nowy miernik"
               >
                 <FilePlus className="size-5"/>
                 Dodaj nowy
               </button>
             </div>
-          <div className="grid grid-cols-5 gap-2 font-bold border-b pb-2 text-center items-center">
-            <div>Nazwa</div>
-            <div>Wygaśnięcie przeglądu</div>
-            <div>Następny przegląd</div>
-            <div>Edytowane przez</div>
+          
+  <div className="hidden sm:grid-cols-7 gap-2 font-bold border-b pb-2 text-center items-center sm:grid">
+    <div>Producent</div>
+    <div>Model</div>
+    <div>Uwagi</div>
+    <div>Wygaśnięcie przeglądu</div>
+    <div>Następny przegląd</div>
+    <div>Edytowane przez</div>
+  </div>
+  <div className="w-full overflow-x-auto h-full flex flex-col">
+    {
+      !meters || areMetersLoading &&
+        <div className="w-full fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <LoaderCircle className="animate-spin duration-150 size-10" />
+        </div>
+    }
+    {
+      meters && !areMetersLoading && meters.map((meter) => (
+        <div key={meter.id} className="grid grid-cols-1 sm:grid-cols-7 gap-2 border-b py-2 text-center items-center">
+          <div>{meter.name}</div>
+          <div>{meter.name}</div>
+          <div>{meter.name}</div>
+          <div><span className={isDeadline(meter.inspectionExpiryDate) ? 'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}>{meter.inspectionExpiryDate}</span></div>
+          <div><span className={isDeadline(meter.nextInspectionDate) ? 'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}>{meter.nextInspectionDate}</span></div>
+          <div>{meter.editedBy}</div>
+          <div className="flex flex-col items-center justify-center gap-1">
+            <button
+              onClick={() => {
+                setShowEditWindow(true);
+                setMeterToEdit(meter);
+              }}
+              className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+              title="Edytuj informacje o mierniku"
+            >
+              <FilePenLine className="size-5" />
+              Edytuj
+            </button>
+            <button
+              onClick={() => handleShowDeleteConfirmationWindow(meter.id, meter.name)}
+              className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+              title="Usuń miernik"
+            >
+              <Trash2 className="size-5" />
+              Usuń
+            </button>
           </div>
-          <div className="w-full overflow-auto h-full flex flex-col">
-            {
-              !meters || areMetersLoading &&
-                <div className="w-full fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <LoaderCircle  className="animate-spin duration-150 size-10" />
-                </div>
-            }
+        </div>
+      ))
+    }
+    {
+      showDeleteConfirmation && (
+        <div className="fixed bg-gray-900 text-white p-10 rounded-xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          Na pewno chcesz usunąć {meterToDelete.name}?
+          <div className="mt-4 flex justify-center gap-4">
+            <button
+              onClick={() => handleDeleteMeter(meterToDelete.id)}
+              className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded-xl cursor-pointer"
+            >
+              Potwierdź
+            </button>
+            <button
+              onClick={() => handleCancelDeleteMeter()}
+              className="bg-red-500 hover:bg-red-700 text-white py-1 px-4 rounded-xl cursor-pointer"
+            >
+              Anuluj
+            </button>
+          </div>
+        </div>
+      )
+    }
+  </div>
 
-            {
-              meters && !areMetersLoading && meters.map((meter) => (
-                <div key={meter.id} className="grid grid-cols-5 gap-2 border-b py-2 text-center items-center">
-                  <div>{meter.name}</div>
-                  <div>{meter.inspectionExpiryDate}</div>
-                  <div>{meter.nextInspectionDate}</div>
-                  <div>{meter.editedBy}</div>
-                  <div className="flex flex-col items-center justify-center gap-1">
-                    <button
-                      onClick={() => {
-                        setShowEditWindow(true);
-                        setMeterToEdit(meter);
-                      }}
-                      className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer
-                      flex flex-row items-center gap-1"
-                    >
-                      <FilePenLine className="size-5" />
-                      Edytuj
-                    </button>
-                    <button
-                      onClick={() => handleShowDeleteConfirmationWindow(meter.id, meter.name)}
-                      className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
-                    >
-                      <Trash2 className="size-5" />
-                      Usuń
-                    </button>
-                  </div>
-                </div>
-              ))
-            }
-            {
-              showDeleteConfirmation && (
-                <div className="fixed bg-gray-900 text-white p-10 rounded-xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  Na pewno chcesz usunąć {meterToDelete.name}?
-                  <div className="mt-4 flex justify-center gap-4">
-                    <button
-                      onClick={() => handleDeleteMeter(meterToDelete.id)}
-                      className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded-xl cursor-pointer"
-                    >
-                      Potwierdź
-                    </button>
-                    <button
-                      onClick={() => handleCancelDeleteMeter()}
-                      className="bg-red-500 hover:bg-red-700 text-white py-1 px-4 rounded-xl cursor-pointer"
-                    >
-                      Anuluj
-                    </button>
-                  </div>
-                </div>
-              )
-            }
-          </div>
+
+          
         </>
       }
     </>

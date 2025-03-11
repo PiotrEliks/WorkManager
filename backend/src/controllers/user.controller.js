@@ -17,7 +17,10 @@ export const getUsers = async (req, res) => {
 
 export const addUser = async (req, res) => {
     try {
-        const { fullName, email, password, role } = req.body;
+        const { fullName, email, role } = req.body;
+
+        const password = "123456";
+        console.log(fullName, email, role, password)
 
         const existingUser = await User.findOne({
             where: {
@@ -39,7 +42,11 @@ export const addUser = async (req, res) => {
             role
         });
 
-        return res.status(200).json(newUser);
+        const users = await User.findAll({
+            order: [['updatedAt', 'DESC']]
+        });
+
+        return res.status(200).json(users);
     } catch (error) {
         console.error("Error in addUser: ", error);
         return res.status(500).json({ message: "Internal Server Error"});

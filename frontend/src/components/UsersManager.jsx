@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, UserPlus, LoaderCircle, UserPen, Trash2, X, Mail } from 'lucide-react'
+import { ArrowLeft, UserPlus, LoaderCircle, UserPen, UserRoundX, X, Mail, UserRound, ShieldUser } from 'lucide-react'
 import { useUserstore } from '../store/useUserStore'
 import { useAuthStore } from '../store/useAuthStore'
 
@@ -50,8 +50,7 @@ const UsersManager = ({ onClose }) => {
         setFormData({});
       };
 
-      console.log(users)
-      console.log(userToEdit)
+      console.log(formData)
 
     return (
 <>
@@ -64,6 +63,7 @@ const UsersManager = ({ onClose }) => {
               setShowAddNewWindow(false);
               setFormData({});
             }}
+            title="Anuluj i zamnknik dodawanie"
           >
             <X className="size-6" />
           </div>
@@ -76,7 +76,7 @@ const UsersManager = ({ onClose }) => {
                 </label>
                 <div className="w-full relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Mail className="size-5 text-black/70 z-10" />
+                    <UserRound  className="size-5 text-black/70 z-10" />
                   </div>
                   <input
                     type="text"
@@ -114,22 +114,28 @@ const UsersManager = ({ onClose }) => {
                 </label>
                 <div className="w-full relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Mail className="size-5 text-black/70 z-10" />
+                    <ShieldUser  className="size-5 text-black/70 z-10" />
                   </div>
-                  <input
-                    type="text"
+                  <select
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
-                    placeholder="Wprowadź rolę"
                     value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  />
+                    onChange={(e) => {
+                      setFormData({ ...formData, role: e.target.value });
+                    }}
+                  >
+                    <option value="">
+                      {formData.role ||  "Wybierz rolę"}
+                    </option>
+                    <option value="pracownik">Pracownik</option>
+                    <option value="administrator">Administrator</option>
+                  </select>
                 </div>
               </div>
               <button
                 type="submit"
                 className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
-                disabled={isAdding}
-                title="Dodaj nowy miernik"
+                disabled={isAdding || Object.keys(formData).length !== 3}
+                title="Dodaj nowego pracownika"
               >
                 {isAdding ? (
                   <>
@@ -152,6 +158,7 @@ const UsersManager = ({ onClose }) => {
               setShowEditWindow(false);
               setFormData({});
             }}
+            title="Anuluj i zamnknik edycję"
           >
             <X className="size-6" />
           </div>
@@ -164,7 +171,7 @@ const UsersManager = ({ onClose }) => {
                 </label>
                 <div className="w-full relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Mail className="size-5 text-black/70 z-10" />
+                    <UserRound  className="size-5 text-black/70 z-10" />
                   </div>
                   <input
                     type="text"
@@ -202,22 +209,28 @@ const UsersManager = ({ onClose }) => {
                 </label>
                 <div className="w-full relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Mail className="size-5 text-black/70 z-10" />
+                    <ShieldUser  className="size-5 text-black/70 z-10" />
                   </div>
-                  <input
-                    type="text"
+                  <select
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
-                    placeholder="Wprowadź rolę"
-                    value={formData.role || userToEdit.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  />
+                    value={formData.role ?? userToEdit.role ?? ""}
+                    onChange={(e) => {
+                      setFormData({ ...formData, role: e.target.value });
+                    }}
+                  >
+                    <option value="" disabled>
+                      {userToEdit.role ? userToEdit.role : "Wybierz rolę"}
+                    </option>
+                    <option value="pracownik">Pracownik</option>
+                    <option value="administrator">Administrator</option>
+                  </select>
                 </div>
               </div>
               <button
                 type="submit"
                 className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
-                disabled={isUpdating}
-                title="Dodaj nowy miernik"
+                disabled={isUpdating || Object.keys(formData).length === 0}
+                title="Zapisz informacje o pracowniku"
               >
                 {isUpdating ? (
                   <>
@@ -238,23 +251,25 @@ const UsersManager = ({ onClose }) => {
               <button
                 className="cursor-pointer"
                 onClick={() => {onClose(false)}}
+                title="Powrót do menu"
               >
                 <ArrowLeft className="size-6"/>
               </button>
               <button
                 className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                 onClick={() => {setShowAddNewWindow(true)}}
+                title="Dodaj nowego pracownika"
               >
                 <UserPlus className="size-5"/>
                 Dodaj nowego
               </button>
             </div>
-          <div className="grid grid-cols-5 gap-2 font-bold border-b pb-2 text-center items-center">
+            <div className="hidden sm:grid-cols-7 gap-2 font-bold border-b pb-2 text-center items-center sm:grid">
             <div>Imię i Nazwisko</div>
             <div>Email</div>
             <div>Rola</div>
           </div>
-          <div className="w-full overflow-auto h-full flex flex-col">
+          <div className="w-full overflow-x-auto h-full flex flex-col">
             {
               !users || areUsersLoading &&
                 <div className="w-full fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -264,7 +279,7 @@ const UsersManager = ({ onClose }) => {
 
             {
               users && !areUsersLoading && users.map((user) => (
-                <div key={user.id} className="grid grid-cols-5 gap-2 border-b py-2 text-center items-center">
+                <div key={user.id} className="grid grid-cols-1 sm:grid-cols-7 gap-2 border-b py-2 text-center items-center">
                   <div>{user.fullName}</div>
                   <div>{user.email}</div>
                   <div>{user.role}</div>
@@ -276,6 +291,7 @@ const UsersManager = ({ onClose }) => {
                       }}
                       className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer
                       flex flex-row items-center gap-1"
+                      title="Edytuj infomracje o pracowniku"
                     >
                       <UserPen className="size-5" />
                       Edytuj
@@ -283,8 +299,9 @@ const UsersManager = ({ onClose }) => {
                     <button
                       onClick={() => handleShowDeleteConfirmationWindow(user.id, user.fullName)}
                       className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                      title="Usuń pracownika"
                     >
-                      <Trash2 className="size-5" />
+                      <UserRoundX className="size-5" />
                       Usuń
                     </button>
                   </div>
@@ -315,6 +332,7 @@ const UsersManager = ({ onClose }) => {
             </div>
         </>
       }
+      
     </>
   )
 }
