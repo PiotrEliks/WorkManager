@@ -1,10 +1,8 @@
 import nodemailer from "nodemailer";
-import cron from "node-cron";
-import Meter from "../models/meter.model.js";
-import { Sequelize, Op } from "sequelize";
+import dotenv from "dotenv";
 
+dotenv.config();
 
-console.log(process.env.NODEMAILER_EMAIL)
 const transporter = nodemailer.createTransport({
   host: process.env.NODEMAILER_HOST,
   port: process.env.NODEMAILER_PORT,
@@ -15,38 +13,17 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendNotificationEmail(meterName, email) {
+async function sendEmail(to, subject, text) {
     try {
-        await transporter.sendMail({
-            from: process.env.NODEMAILER_EMAIL,
-            to: email,
-            subject: `${meterName} - Zbliża się termin przeglądu`,
-            text: "This is a notification from your device",
-        });
-        console.log("Message sent")
+      await transporter.sendMail({
+        from: `"WorkManager" <${process.env.NODEMAILER_EMAIL}>`,
+        to,
+        subject,
+        text,
+      });
     } catch (error) {
-        console.error("Error in sendNotification: ", error);
+      console.error("Error sending email:", error);
     }
 };
 
-cron.schedule("* * * * *", async () => {
-    try {
-        const meters = await Meter.findAll({
-            where: {
-                [Op.or]: [
-                    { inspectionExpiryDate: { [Op.eq]: Sequelize.fn(`CURRENT_DATE + INTERVAL '1 day'`) }},
-                    { nextInspectionDate: { [Op.eq]: Sequelize.fn(`CURRENT_DATE + INTERVAL '1 day'`) }}
-                ]
-            }
-        });
-
-        meters.forEach(device => {
-            sendNotificationEmail(device.name, 'piotr.eliks@wp.pl');
-          });
-        console.log("Wykonano")
-    } catch (error) {
-        console.error("Error in cron.schedule: ", error);
-    }
-}, {
-    timezone: "Europe/Warsaw"
-});
+export { sendEmail };

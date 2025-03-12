@@ -255,7 +255,7 @@ const MetersManager = ({ onClose }) => {
           <div>{meter.name}</div>
           <div>{meter.name}</div>
           <div><span className={isDeadline(meter.inspectionExpiryDate) ? 'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}>{meter.inspectionExpiryDate}</span></div>
-          <div><span className={isDeadline(meter.nextInspectionDate) ? 'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}>{meter.nextInspectionDate}</span></div>
+          <div><span className={isDeadline(meter.nextInspectionDate) ? 'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5' : ''}>{meter.nextInspectionDate}</span></div>
           <div>{meter.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
             <button

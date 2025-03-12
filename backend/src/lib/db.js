@@ -1,8 +1,9 @@
 import Sequelize from "sequelize";
+import dotenv from "dotenv";
 
-const database_uri = "postgresql://neondb_owner:npg_bEFGUpDfI7Z6@ep-yellow-star-a5ix845j-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require";
+dotenv.config();
 
-const sequelize = new Sequelize(database_uri, {
+const sequelize = new Sequelize(process.env.POSTGRESQL_URI, {
     dialect: "postgres",
     dialectOprions: {
         ssl: true
