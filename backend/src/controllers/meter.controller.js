@@ -16,11 +16,11 @@ export const getMeters = async (req, res) => {
 
 export const addMeter = async (req, res) => {
     try {
-        const { name, editedBy, inspectionExpiryDate, nextInspectionDate } = req.body;
+        const { type, number, producer, comments, checkdate, nextcheckin, condition, editedBy } = req.body;
 
         const existingMeter = await Meter.findOne({
             where: {
-                name: name
+                number: number
             }
         });
 
@@ -29,10 +29,14 @@ export const addMeter = async (req, res) => {
         }
 
         const newMeter = await Meter.create({
-            name,
+            type,
+            number,
+            producer,
+            comments,
+            checkdate,
+            nextcheckin,
+            condition,
             editedBy,
-            inspectionExpiryDate,
-            nextInspectionDate
         });
 
         const meters = await Meter.findAll({
@@ -70,13 +74,17 @@ export const deleteMeter = async (req, res) => {
 export const updateMeter = async (req, res) => {
     try {
         const { meterId } = req.params;
-        const { name, editedBy, inspectionExpiryDate, nextInspectionDate } = req.body;
+        const { type, number, producer, comments, checkdate, nextcheckin, condition, editedBy } = req.body;
 
         const updatedData = {};
-        if (name) updatedData.name = name;
+        if (type) updatedData.type = type;
+        if (number) updatedData.number = number;
+        if (producer) updatedData.producer = producer;
+        if (comments) updatedData.comments = comments;
+        if (checkdate) updatedData.checkdate = checkdate;
+        if (nextcheckin) updatedData.nextcheckin = nextcheckin;
+        if (condition) updatedData.condition = condition;
         if (editedBy) updatedData.editedBy = editedBy;
-        if (inspectionExpiryDate) updatedData.inspectionExpiryDate = inspectionExpiryDate;
-        if (nextInspectionDate) updatedData.nextInspectionDate = nextInspectionDate;
 
         const meter = await Meter.update(updatedData, {
             where: {

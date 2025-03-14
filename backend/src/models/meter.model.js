@@ -8,22 +8,42 @@ const Meter = sequelize.define('Meter', {
         primaryKey: true,
         allowNull: false
     },
-    name: {
+    type: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    number: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    producer: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    comments: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    checkdate: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    nextcheckdate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    nextcheckin: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    condition: {
+      type: DataTypes.STRING,
+      allowNull: true
     },
     editedBy: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    inspectionExpiryDate: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    nextInspectionDate: {
-      type: DataTypes.DATE,
-      allowNull: true
-    }
 }, {
     tableName: 'Meters',
     timestamps: true
