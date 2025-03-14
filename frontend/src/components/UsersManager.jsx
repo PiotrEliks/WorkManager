@@ -23,7 +23,7 @@ const UsersManager = ({ onClose }) => {
         setShowEditWindow(false);
         setFormData({});
       };
-    
+
       const handleShowDeleteConfirmationWindow = (id, name) => {
         setShowDeleteConfirmation(true);
         setUserToDelete({
@@ -31,18 +31,18 @@ const UsersManager = ({ onClose }) => {
           fullName: name,
         });
       };
-    
+
       const handleDeleteUser = (id) => {
         deleteUser(id);
         setShowDeleteConfirmation(false);
         setUserToDelete({});
       };
-    
+
       const handleCancelDeleteUser = () => {
         setShowDeleteConfirmation(false);
         setUserToDelete({});
       };
-    
+
       const handleSubmit = async (e) => {
         e.preventDefault();
         addUser(formData);
@@ -58,7 +58,7 @@ const UsersManager = ({ onClose }) => {
         showAddNewWindow &&
         <div className="w-full relative h-full flex flex-col justify-center">
           <div
-            className="absolute top-0 right-0 cursor-pointer"
+            className="absolute top-0 right-0 cursor-pointer z-10"
             onClick={() => {
               setShowAddNewWindow(false);
               setFormData({});
@@ -67,7 +67,7 @@ const UsersManager = ({ onClose }) => {
           >
             <X className="size-6" />
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6 flex flex-col gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-10">
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
@@ -153,7 +153,7 @@ const UsersManager = ({ onClose }) => {
         showEditWindow &&
         <div className="w-full relative h-full flex flex-col justify-center">
           <div
-            className="absolute top-0 right-0 cursor-pointer"
+            className="absolute top-0 right-0 cursor-pointer z-10"
             onClick={() => {
               setShowEditWindow(false);
               setFormData({});
@@ -162,7 +162,7 @@ const UsersManager = ({ onClose }) => {
           >
             <X className="size-6" />
           </div>
-          <form onSubmit={handleEdit} className="space-y-6 flex flex-col gap-3">
+          <form onSubmit={handleEdit} className="flex flex-col gap-5 mt-10">
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
@@ -264,7 +264,7 @@ const UsersManager = ({ onClose }) => {
                 Dodaj nowego
               </button>
             </div>
-            <div className="hidden sm:grid-cols-7 gap-2 font-bold border-b pb-2 text-center items-center sm:grid">
+            <div className="hidden sm:grid-cols-7 gap-2 font-bold border-b pb-2 text-center items-center sm:grid mt-3">
             <div>Imię i Nazwisko</div>
             <div>Email</div>
             <div>Rola</div>
@@ -311,7 +311,7 @@ const UsersManager = ({ onClose }) => {
             {
               showDeleteConfirmation && (
                 <div className="fixed bg-gray-900 text-white p-10 rounded-xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  Na pewno chcesz usunąć {userToDelete.fullName}?
+                  Na pewno chcesz usunąć <span className="font-bold">{userToDelete.fullName}</span>?
                   <div className="mt-4 flex justify-center gap-4">
                     <button
                       onClick={() => handleDeleteUser(userToDelete.id)}
@@ -332,7 +332,7 @@ const UsersManager = ({ onClose }) => {
             </div>
         </>
       }
-      
+
     </>
   )
 }

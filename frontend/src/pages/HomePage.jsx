@@ -9,7 +9,7 @@ const HomePage = () => {
 
   return (
     <div className="h-screen bg-gradient-to-r from-violet-600 to-indigo-600 w-full flex items-center justify-center sm:p-5 md:p-15">
-      <div className="bg-white w-full p-5 rounded-2xl h-[70vh] flex flex-col shadow-2xl">
+      <div className="bg-white w-full p-5 rounded-2xl min-h-[70vh] max-h-[80vh] flex flex-col shadow-2xl">
         <div className="w-full flex flex-col gap-3 justify-center items-center">
           {
             !showMeterManager && !showUserManager &&
@@ -17,7 +17,7 @@ const HomePage = () => {
                 WYBIERZ AKCJĘ
               </div>
           }
-          
+
           {
             !showMeterManager && !showUserManager &&
               <button
