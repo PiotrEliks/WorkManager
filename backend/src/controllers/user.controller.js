@@ -1,10 +1,13 @@
+import Permission from "../models/permission.model.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import UserPermissions from '../models/userPermissions.model.js';
 
 export const getUsers = async (req, res) => {
     try {
 
         const users = await User.findAll({
+            include: Permission,
             order: [['updatedAt', 'DESC']]
         });
 
@@ -17,10 +20,10 @@ export const getUsers = async (req, res) => {
 
 export const addUser = async (req, res) => {
     try {
-        const { fullName, email, role } = req.body;
+        const { fullName, email, role, permissions } = req.body;
 
         const password = "123456";
-        console.log(fullName, email, role, password)
+        console.log(fullName, email, role, password, permissions)
 
         const existingUser = await User.findOne({
             where: {
@@ -42,7 +45,17 @@ export const addUser = async (req, res) => {
             role
         });
 
+        if (permissions && permissions.length > 0) {
+            const userPermissions = await Permission.findAll({
+                where: {
+                    id: permissions,
+                }
+            });
+            await newUser.setPermissions(userPermissions);
+        }
+
         const users = await User.findAll({
+            include: Permission,
             order: [['updatedAt', 'DESC']]
         });
 
@@ -56,7 +69,12 @@ export const addUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
     try {
         const { userId } = req.params;
-        console.log(userId)
+
+        await UserPermissions.destroy({
+            where: {
+                user_id: userId
+            }
+        });
 
         await User.destroy({
             where: {
@@ -65,6 +83,7 @@ export const deleteUser = async (req, res) => {
         });
 
         const users = await User.findAll({
+            include: Permission,
             order: [['updatedAt', 'DESC']]
         });
 
@@ -78,26 +97,41 @@ export const deleteUser = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const { userId } = req.params;
-        const { fullName, email, role } = req.body;
+        const { fullName, email, role, permissions } = req.body;
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         const updatedData = {};
         if (fullName) updatedData.fullName = fullName;
         if (email) updatedData.email = email;
         if (role) updatedData.role = role;
 
-        const user = await User.update(updatedData, {
-            where: {
-                id: userId,
+        await user.update(updatedData);
+
+        if (permissions && permissions.length > 0) {
+            const userPermissions = await Permission.findAll({
+                where: {
+                    id: permissions,
+                }
+            });
+
+            if (userPermissions.length === 0) {
+                return res.status(400).json({ message: 'Invalid permissions provided' });
             }
-        });
+            await user.setPermissions(userPermissions);
+        }
 
         const users = await User.findAll({
+            include: Permission,
             order: [['updatedAt', 'DESC']]
         });
 
         return res.status(200).json(users);
     } catch (error) {
         console.error("Error in updateUser: ", error);
-        return res.status(500).json({ message: "Internal Server Error"});
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };

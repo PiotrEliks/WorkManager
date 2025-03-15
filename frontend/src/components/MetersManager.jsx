@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useMeterStore } from '../store/useMeterStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
 import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag } from 'lucide-react'
-import { isToday, isThisWeek } from 'date-fns'
+import { isToday, isThisWeek, isWithinInterval, startOfWeek, addDays } from 'date-fns'
 
 const MetersManager = ({ onClose }) => {
   const { meters, getMeters, deleteMeter, updateMeter, addMeter, isAdding, isUpdating, areMetersLoading } = useMeterStore();
@@ -54,8 +54,12 @@ const MetersManager = ({ onClose }) => {
   };
 
   const isDeadline = (dateString) => {
+    const today = new Date();
+    const endOfThisWeek = addDays(today, 7);
+
     const date = new Date(dateString);
-    return isToday(date) || isThisWeek(date) ? true : false;
+
+    return isWithinInterval(date, { start: today, end: endOfThisWeek });
   };
 
   return (
@@ -259,7 +263,7 @@ const MetersManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź typ"
-                    value={meterToEdit.type || formData.type}
+                    value={formData.type || meterToEdit.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                   />
                 </div>
@@ -278,7 +282,7 @@ const MetersManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź numer"
-                    value={meterToEdit.number || formData.number}
+                    value={formData.number || meterToEdit.number}
                     onChange={(e) => setFormData({ ...formData, number: e.target.value })}
                   />
                 </div>
@@ -297,7 +301,7 @@ const MetersManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź producenta"
-                    value={meterToEdit.producer || formData.producer}
+                    value={formData.producer || meterToEdit.producer}
                     onChange={(e) => setFormData({ ...formData, producer: e.target.value })}
                   />
                 </div>
@@ -315,7 +319,7 @@ const MetersManager = ({ onClose }) => {
                   <input
                     type="date"
                     className="w-full py-4 pl-10 pr-3 border rounded-2xl"
-                    value={meterToEdit.checkdate || formData.checkdate}
+                    value={formData.checkdate || meterToEdit.checkdate}
                     onChange={(e) => setFormData({ ...formData, checkdate: e.target.value })}
                   />
                 </div>
@@ -332,7 +336,7 @@ const MetersManager = ({ onClose }) => {
                   </div>
                   <select
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
-                    value={meterToEdit.nextcheckin || formData.nextcheckin}
+                    value={formData.nextcheckin || meterToEdit.nextcheckin}
                     onChange={(e) => {
                       setFormData({ ...formData, nextcheckin: e.target.value });
                     }}
@@ -360,7 +364,7 @@ const MetersManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź stan"
-                    value={meterToEdit.condition || formData.condition}
+                    value={formData.condition || meterToEdit.condition}
                     onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
                   />
                 </div>
@@ -413,14 +417,17 @@ const MetersManager = ({ onClose }) => {
               >
                 <ArrowLeft className="size-6"/>
               </button>
-              <button
-                className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-                onClick={() => {setShowAddNewWindow(true)}}
-                title="Dodaj nowy miernik"
-              >
-                <FilePlus className="size-5"/>
-                Dodaj nowy
-              </button>
+              {
+                authUser.Permissions[0].add_permission &&
+                  <button
+                    className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                    onClick={() => {setShowAddNewWindow(true)}}
+                    title="Dodaj nowy miernik"
+                  >
+                    <FilePlus className="size-5"/>
+                    Dodaj nowy
+                  </button>
+              }
             </div>
 
   <div className="hidden sm:grid-cols-10 gap-2 font-bold border-b pb-2 text-center items-center sm:grid">
@@ -448,31 +455,38 @@ const MetersManager = ({ onClose }) => {
           <div className="break-words">{meter.number}</div>
           <div>{meter.producer}</div>
           <div className="break-words">{meter.comments || 'Brak'}</div>
-          <div><span className={isDeadline(meter.checkdate) ? 'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}>{meter.checkdate}</span></div>
-          <div>{meter.nextcheckdate}</div>
+          <div>{meter.checkdate}</div>
+          <div><span className={isDeadline(meter.nextcheckdate) ? 'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5' : ''} title="Zbliżający się termin">{meter.nextcheckdate}</span></div>
           <div>{meter.nextcheckin} msc</div>
           <div className="break-words">{meter.condition || 'Brak'}</div>
           <div>{meter.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
-            <button
-              onClick={() => {
-                setShowEditWindow(true);
-                setMeterToEdit(meter);
-              }}
-              className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
-              title="Edytuj informacje o mierniku"
-            >
-              <FilePenLine className="size-5" />
-              Edytuj
-            </button>
-            <button
-              onClick={() => handleShowDeleteConfirmationWindow(meter.id, meter.type, meter.number, meter.producer)}
-              className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
-              title="Usuń miernik"
-            >
-              <Trash2 className="size-5" />
-              Usuń
-            </button>
+            {
+              authUser.Permissions[0].edit_permission &&
+                <button
+                onClick={() => {
+                  setShowEditWindow(true);
+                  setMeterToEdit(meter);
+                }}
+                className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                title="Edytuj informacje o mierniku"
+              >
+                <FilePenLine className="size-5" />
+                Edytuj
+              </button>
+            }
+            {
+
+              authUser.Permissions[0].delete_permission &&
+                <button
+                onClick={() => handleShowDeleteConfirmationWindow(meter.id, meter.type, meter.number, meter.producer)}
+                className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                title="Usuń miernik"
+              >
+                <Trash2 className="size-5" />
+                Usuń
+              </button>
+            }
           </div>
         </div>
       ))

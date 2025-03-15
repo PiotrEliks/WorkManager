@@ -232,7 +232,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź nazwę"
-                    value={eqToEdit.name || formData.name}
+                    value={formData.name || eqToEdit.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
                 </div>
@@ -251,7 +251,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź numer fabryczny"
-                    value={eqToEdit.factoryNumber || formData.factoryNumber}
+                    value={formData.factoryNumber || eqToEdit.factoryNumber}
                     onChange={(e) => setFormData({ ...formData, factoryNumber: e.target.value })}
                   />
                 </div>
@@ -270,7 +270,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     type="text"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź numer protokołu"
-                    value={eqToEdit.protocolNumber || formData.protocolNumber}
+                    value={formData.protocolNumber || eqToEdit.protocolNumber}
                     onChange={(e) => setFormData({ ...formData, protocolNumber: e.target.value })}
                   />
                 </div>
@@ -288,7 +288,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                   <input
                     type="date"
                     className="w-full py-4 pl-10 pr-3 border rounded-2xl"
-                    value={eqToEdit.checkDate || formData.checkDate}
+                    value={formData.checkDate || eqToEdit.checkDate}
                     onChange={(e) => setFormData({ ...formData, checkDate: e.target.value })}
                   />
                 </div>
@@ -306,7 +306,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                   <input
                     type="date"
                     className="w-full py-4 pl-10 pr-3 border rounded-2xl"
-                    value={eqToEdit.nextCheckDate || formData.nextCheckDate}
+                    value={formData.nextCheckDate || eqToEdit.nextCheckDate}
                     onChange={(e) => setFormData({ ...formData, nextCheckDate: e.target.value })}
                   />
                 </div>
@@ -359,14 +359,17 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
               >
                 <ArrowLeft className="size-6"/>
               </button>
-              <button
-                className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-                onClick={() => {setShowAddNewWindow(true)}}
-                title="Dodaj nowy sprzęt"
-              >
-                <FilePlus className="size-5"/>
-                Dodaj nowy
-              </button>
+              {
+                authUser.Permissions[0].add_permission &&
+                  <button
+                    className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                    onClick={() => {setShowAddNewWindow(true)}}
+                    title="Dodaj nowy sprzęt"
+                  >
+                    <FilePlus className="size-5"/>
+                    Dodaj nowy
+                  </button>
+              }
             </div>
 
   <div className="hidden sm:grid-cols-8 gap-2 font-bold border-b pb-2 text-center items-center sm:grid">
@@ -396,25 +399,31 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
           <div className="break-words">{eq.comments || 'Brak'}</div>
           <div>{eq.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
-            <button
-              onClick={() => {
-                setShowEditWindow(true);
-                setEqToEdit(meter);
-              }}
-              className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
-              title="Edytuj informacje o sprzęcie"
-            >
-              <FilePenLine className="size-5" />
-              Edytuj
-            </button>
-            <button
-              onClick={() => handleShowDeleteConfirmationWindow(eq.id, eq.type, eq.number, eq.producer)}
-              className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
-              title="Usuń sprzęt"
-            >
-              <Trash2 className="size-5" />
-              Usuń
-            </button>
+            {
+              authUser.Permissions[0].edit_permission &&
+                <button
+                  onClick={() => {
+                    setShowEditWindow(true);
+                    setEqToEdit(meter);
+                  }}
+                  className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                  title="Edytuj informacje o sprzęcie"
+                >
+                  <FilePenLine className="size-5" />
+                  Edytuj
+                </button>
+            }
+            {
+              authUser.Permissions[0].delete_permission &&
+                <button
+                  onClick={() => handleShowDeleteConfirmationWindow(eq.id, eq.type, eq.number, eq.producer)}
+                  className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                  title="Usuń sprzęt"
+                >
+                  <Trash2 className="size-5" />
+                  Usuń
+                </button>
+            }
           </div>
         </div>
       ))

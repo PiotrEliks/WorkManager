@@ -1,5 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../lib/db.js';
+import UserPermissions from './userPermissions.model.js';
+import Permission from './permission.model.js';
 
 const User = sequelize.define('User', {
     id: {
@@ -33,5 +35,19 @@ const User = sequelize.define('User', {
     tableName: 'Users',
     timestamps: true
 });
+
+User.belongsToMany(Permission, {
+    through: UserPermissions,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE'
+});
+
+Permission.belongsToMany(User, {
+    through: UserPermissions,
+    foreignKey: 'permission_id',
+    onDelete: 'CASCADE'
+});
+
+UserPermissions.associate({ User, Permission });
 
 export default User;

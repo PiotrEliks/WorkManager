@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/utils.js";
+import Permission from "../models/permission.model.js";
 
 export const login = async (req, res) => {
     try {
@@ -9,7 +10,8 @@ export const login = async (req, res) => {
         const user = await User.findOne({
             where: {
                 email: email,
-            }
+            },
+            include: Permission,
         });
 
         if (!user) {

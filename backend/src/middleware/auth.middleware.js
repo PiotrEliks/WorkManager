@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
-
+import Permission from "../models/permission.model.js";
 
 export const protectRoute = async (req, res, next) => {
   try {
@@ -19,7 +19,8 @@ export const protectRoute = async (req, res, next) => {
     const user = await User.findOne({
       where: {
         id: decoded.userId
-      }
+      },
+      include: Permission,
     });
 
     if (!user) {

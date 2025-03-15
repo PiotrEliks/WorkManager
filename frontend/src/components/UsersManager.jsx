@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, UserPlus, LoaderCircle, UserPen, UserRoundX, X, Mail, UserRound, ShieldUser } from 'lucide-react'
+import { ArrowLeft, UserPlus, LoaderCircle, UserPen, UserRoundX, X, Mail, UserRound, ShieldUser, ShieldQuestion } from 'lucide-react'
 import { useUserstore } from '../store/useUserStore'
 import { useAuthStore } from '../store/useAuthStore'
 
@@ -50,7 +50,7 @@ const UsersManager = ({ onClose }) => {
         setFormData({});
       };
 
-      console.log(formData)
+      console.log(userToEdit)
 
     return (
 <>
@@ -226,6 +226,33 @@ const UsersManager = ({ onClose }) => {
                   </select>
                 </div>
               </div>
+              <div className="w-full relative gap-3">
+                <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
+                  <span className="font-medium">
+                    Uprawnienia
+                  </span>
+                </label>
+                <div className="w-full relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <ShieldQuestion   className="size-5 text-black/70 z-10" />
+                  </div>
+                  <select
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
+                    value={formData.permission || userToEdit.Permissions[0].id}
+                    onChange={(e) => {
+                      setFormData({ ...formData, permissions: e.target.value });
+                    }}
+                  >
+                    <option value="" disabled>
+                      {userToEdit.Permissions[0]?.id === 1 ? 'Wyświetlanie, edytownaie, dodawanie, usuwanie' : userToEdit.Permissions[0]?.id === 2 ? 'Wyświetlanie' : userToEdit.Permissions[0]?.id === 3 ? 'Wyświetlanie, edytowanie' : userToEdit.Permissions[0]?.id === 4 ? 'Wyświetlanie, edytowanie, dodawanie' : 'Wybierz uprawnienia'}
+                    </option>
+                    <option value={1}>Wyświetlanie, edytownaie, dodawanie, usuwanie</option>
+                    <option value={2}>Wyświetlanie</option>
+                    <option value={3}>Wyświetlanie, edytowanie</option>
+                    <option value={4}>Wyświetlanie, edytowanie, dodawanie</option>
+                  </select>
+                </div>
+              </div>
               <button
                 type="submit"
                 className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
@@ -264,10 +291,11 @@ const UsersManager = ({ onClose }) => {
                 Dodaj nowego
               </button>
             </div>
-            <div className="hidden sm:grid-cols-4 gap-2 font-bold border-b pb-2 text-center items-center sm:grid mt-3">
+            <div className="hidden sm:grid-cols-5 gap-2 font-bold border-b pb-2 text-center items-center sm:grid mt-3">
               <div>Imię i Nazwisko</div>
               <div>Email</div>
               <div>Rola</div>
+              <div>Uprawnienia</div>
             </div>
           <div className="w-full overflow-x-auto h-full flex flex-col">
             {
@@ -279,10 +307,16 @@ const UsersManager = ({ onClose }) => {
 
             {
               users && !areUsersLoading && users.map((user) => (
-                <div key={user.id} className="grid grid-cols-1 sm:grid-cols-4 gap-2 border-b py-2 text-center items-center">
+                <div key={user.id} className="grid grid-cols-1 sm:grid-cols-5 gap-2 border-b py-2 text-center items-center">
                   <div>{user.fullName}</div>
                   <div>{user.email}</div>
                   <div>{user.role}</div>
+                  <div>
+                    <p>{user.Permissions[0]?.view_permission && 'wyświetlanie'}</p>
+                    <p>{user.Permissions[0]?.add_permission && 'dodawanie'}</p>
+                    <p>{user.Permissions[0]?.edit_permission && 'edytowanie'}</p>
+                    <p>{user.Permissions[0]?.delete_permission && 'usuwanie'}</p>
+                  </div>
                   <div className="flex flex-col items-center justify-center gap-1">
                     <button
                       onClick={() => {
@@ -296,14 +330,17 @@ const UsersManager = ({ onClose }) => {
                       <UserPen className="size-5" />
                       Edytuj
                     </button>
-                    <button
-                      onClick={() => handleShowDeleteConfirmationWindow(user.id, user.fullName)}
-                      className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
-                      title="Usuń pracownika"
-                    >
-                      <UserRoundX className="size-5" />
-                      Usuń
-                    </button>
+                    {
+                      authUser.id !== user.id &&
+                        <button
+                          onClick={() => handleShowDeleteConfirmationWindow(user.id, user.fullName)}
+                          className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                          title="Usuń pracownika"
+                        >
+                          <UserRoundX className="size-5" />
+                          Usuń
+                        </button>
+                    }
                   </div>
                 </div>
               ))
