@@ -5,6 +5,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import meterRoutes from "./routes/meter.route.js";
+import ProtectiveEquipmentRoutes from "./routes/protectiveEquipment.route.js"
 import { connectDB } from "./lib/db.js";
 import "./lib/cronTasks.js"
 
@@ -27,6 +28,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/meters", meterRoutes);
+app.use("/api/protectiveEquipment", ProtectiveEquipmentRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);

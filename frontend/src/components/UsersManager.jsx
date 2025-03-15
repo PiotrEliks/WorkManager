@@ -264,11 +264,11 @@ const UsersManager = ({ onClose }) => {
                 Dodaj nowego
               </button>
             </div>
-            <div className="hidden sm:grid-cols-7 gap-2 font-bold border-b pb-2 text-center items-center sm:grid mt-3">
-            <div>Imię i Nazwisko</div>
-            <div>Email</div>
-            <div>Rola</div>
-          </div>
+            <div className="hidden sm:grid-cols-4 gap-2 font-bold border-b pb-2 text-center items-center sm:grid mt-3">
+              <div>Imię i Nazwisko</div>
+              <div>Email</div>
+              <div>Rola</div>
+            </div>
           <div className="w-full overflow-x-auto h-full flex flex-col">
             {
               !users || areUsersLoading &&
@@ -279,7 +279,7 @@ const UsersManager = ({ onClose }) => {
 
             {
               users && !areUsersLoading && users.map((user) => (
-                <div key={user.id} className="grid grid-cols-1 sm:grid-cols-7 gap-2 border-b py-2 text-center items-center">
+                <div key={user.id} className="grid grid-cols-1 sm:grid-cols-4 gap-2 border-b py-2 text-center items-center">
                   <div>{user.fullName}</div>
                   <div>{user.email}</div>
                   <div>{user.role}</div>

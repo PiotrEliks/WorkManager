@@ -9,12 +9,12 @@ const Navbar = () => {
     <div className="w-full flex items-center justify-between fixed p-5">
       {
         authUser &&
-          <div 
+          <div
             className="bg-white rounded-2xl px-4 py-2 inline-flex gap-1 items-center"
             title={`Zalogowano jako ${authUser.fullName}`}
           >
             <User className="size-5" />
-            {authUser.fullName}
+            {authUser.fullName} - {authUser.role}
           </div>
       }
       {
