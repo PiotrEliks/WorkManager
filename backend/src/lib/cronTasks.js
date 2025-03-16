@@ -3,7 +3,7 @@ import Meter from "../models/meter.model.js";
 import ProtectiveEquipment from "../models/protectiveEquipment.model.js";
 import { Sequelize, Op } from "sequelize";
 import { sendEmail } from "./mailer.js";
-import User from "../models/users.model.js";
+import User from "../models/user.model.js";
 
 cron.schedule("0 7 * * *", async () => {
   try {
