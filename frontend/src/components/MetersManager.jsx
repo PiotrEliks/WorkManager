@@ -62,6 +62,13 @@ const MetersManager = ({ onClose }) => {
     return isWithinInterval(date, { start: today, end: endOfThisWeek });
   };
 
+  const isAfterDeadline = (dateString) => {
+    const today = new Date();
+    const date = new Date(dateString);
+
+    return today > date;
+  };
+
   return (
     <>
       {
@@ -451,12 +458,22 @@ const MetersManager = ({ onClose }) => {
     {
       meters && !areMetersLoading && meters.map((meter) => (
         <div key={meter.id} className="grid grid-cols-1 sm:grid-cols-10 gap-2 border-b py-2 text-center items-center">
+          {console.log(isAfterDeadline(meter.nextcheckdate))}
           <div className="break-words">{meter.type}</div>
           <div className="break-words">{meter.number}</div>
           <div>{meter.producer}</div>
           <div className="break-words">{meter.comments || 'Brak'}</div>
           <div>{meter.checkdate}</div>
-          <div><span className={isDeadline(meter.nextcheckdate) ? 'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5' : ''} title="Zbliżający się termin">{meter.nextcheckdate}</span></div>
+          <div>
+            <span
+            className={isDeadline(meter.nextcheckdate) ?
+            'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5'
+            : isAfterDeadline(meter.nextcheckdate) ?
+            'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}
+            title={isDeadline(meter.nextcheckdate) ? 'Zbliżający się termin' : isAfterDeadline(meter.nextcheckdate) ? 'Termin upłynął' : ''}>
+              {meter.nextcheckdate}
+            </span>
+          </div>
           <div>{meter.nextcheckin} msc</div>
           <div className="break-words">{meter.condition || 'Brak'}</div>
           <div>{meter.editedBy}</div>

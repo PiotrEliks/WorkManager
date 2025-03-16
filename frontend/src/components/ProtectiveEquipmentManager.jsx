@@ -38,12 +38,12 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
   const handleDeleteEq = (id) => {
     deleteMeter(id);
     setShowDeleteConfirmation(false);
-    setMeterToDelete({});
+    setEqToDelete({});
   };
 
   const handleCancelDeleteEq = () => {
     setShowDeleteConfirmation(false);
-    setEqrToDelete({});
+    setEqToDelete({});
   };
 
   const handleSubmit = async (e) => {
@@ -53,14 +53,21 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     setFormData({ editedBy: authUser.fullName });
   };
 
-   const isDeadline = (dateString) => {
-      const today = new Date();
-      const endOfThisWeek = addDays(today, 7);
+  const isDeadline = (dateString) => {
+    const today = new Date();
+    const endOfThisWeek = addDays(today, 7);
 
-      const date = new Date(dateString);
+    const date = new Date(dateString);
 
-      return isWithinInterval(date, { start: today, end: endOfThisWeek });
-   };
+    return isWithinInterval(date, { start: today, end: endOfThisWeek });
+  };
+
+  const isAfterDeadline = (dateString) => {
+    const today = new Date();
+    const date = new Date(dateString);
+
+    return today > date;
+  };
 
   return (
     <>
@@ -399,7 +406,16 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
           <div className="break-words">{eq.factoryNumber}</div>
           <div className="break-words">{eq.protocolNumber}</div>
           <div>{eq.checkDate}</div>
-          <div><span className={isDeadline(eq.nextCheckDate) ? 'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5' : ''} title="Zbliżający się termin">{eq.nextCheckDate}</span></div>
+          <div>
+            <span
+            className={isDeadline(eq.nextCheckDate) ?
+            'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5'
+            : isAfterDeadline(eq.nextCheckDate) ?
+            'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}
+            title={isDeadline(eq.nextCheckDate) ? 'Zbliżający się termin' : isAfterDeadline(eq.nextCheckDate) ? 'Termin upłynął' : ''}>
+              {eq.nextCheckDate}
+            </span>
+          </div>
           <div className="break-words">{eq.comments || 'Brak'}</div>
           <div>{eq.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">

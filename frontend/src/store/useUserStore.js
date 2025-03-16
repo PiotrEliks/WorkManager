@@ -24,7 +24,7 @@ export const useUserstore = create((set, get) => ({
     set({ isAdding: true });
     try {
       console.log(formData)
-      const res = await axiosInstance.post("/users/user/add", formData);
+      const res = await axiosInstance.post("/users/add", formData);
       set({ users: res.data });
       toast.success("Pracownik został dodany");
     } catch (error) {
@@ -38,7 +38,7 @@ export const useUserstore = create((set, get) => ({
   deleteUser: async (userId) => {
     set({ areUsersLoading: true });
     try {
-      const res = await axiosInstance.delete(`/users/user/delete/${userId}`);
+      const res = await axiosInstance.delete(`/users/${userId}/delete`);
       set({ users: res.data });
       toast.success("Pracownik został usunięty");
     } catch (error) {
@@ -52,7 +52,7 @@ export const useUserstore = create((set, get) => ({
   updateUser: async (userId, formData) => {
     set({ isUpdating: true });
     try {
-      const res = await axiosInstance.put(`/users/user/update/${userId}`, formData);
+      const res = await axiosInstance.put(`/users/${userId}/update`, formData);
       set({ users: res.data });
       toast.success("Pracownik został zaktualizowany");
     } catch (error) {

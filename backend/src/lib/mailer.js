@@ -26,7 +26,7 @@ async function sendEmail(to, subject, data) {
 
     template = template.replace("{{name1}}", data.name1);
     template = template.replace("{{name2}}", data.name2);
-    template = template.replace("{{name3}}", data.name2);
+    template = template.replace("{{name3}}", data.name3);
     template = template.replace("{{checkDate}}", data.checkDate);
     template = template.replace("{{nextCheckDate}}", data.nextCheckDate);
 

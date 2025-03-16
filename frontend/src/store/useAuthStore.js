@@ -6,6 +6,7 @@ export const useAuthStore = create((set, get) => ({
   authUser: null,
   isLoggingIn: false,
   isCheckingAuth: true,
+  isUpdating: false,
 
   checkAuth: async () => {
     try {
@@ -39,6 +40,22 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Wylogowano");
     } catch (error) {
       toast.error(error.response.data.message);
+    }
+  },
+
+  changePassword: async (userId, password) => {
+    set({ isUpdating: true });
+    try {
+      const res = await axiosInstance.put(`/auth/${userId}/changePassword`, {
+        password
+      });
+      set({ authUser: res.data });
+      toast.success("Hasło zostało zmienione");
+    } catch (error) {
+      console.log("Error in updateUser: ", error);
+      toast.error("Błąd podczas zmiany hasła");
+    } finally {
+      set({ isUpdating: false });
     }
   },
 

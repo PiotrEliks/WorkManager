@@ -3,12 +3,15 @@ import { useAuthStore } from '../store/useAuthStore.js'
 import MetersManager from '../components/MetersManager.jsx'
 import UsersManager from '../components/UsersManager.jsx'
 import ProtectiveEquipmentManager from '../components/ProtectiveEquipmentManager.jsx'
+import ChangePassword from '../components/ChangePassword.jsx'
 
 const HomePage = () => {
   const [showMeterManager, setShowMeterManager] = useState(false);
   const [showUserManager, setShowUserManager] = useState(false);
   const [showProtectiveEquipmentManager, setShowProtectiveEquipmentManager] = useState(false);
   const { authUser } = useAuthStore();
+
+  if (!authUser.passwordChanged) return <ChangePassword />
 
   return (
     <div className="h-screen bg-gradient-to-r from-violet-600 to-indigo-600 w-full flex items-center justify-center sm:p-5 md:p-15">

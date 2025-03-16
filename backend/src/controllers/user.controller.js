@@ -23,7 +23,6 @@ export const addUser = async (req, res) => {
         const { fullName, email, role, permissions } = req.body;
 
         const password = "123456";
-        console.log(fullName, email, role, password, permissions)
 
         const existingUser = await User.findOne({
             where: {

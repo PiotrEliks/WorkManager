@@ -129,10 +129,37 @@ const UsersManager = ({ onClose }) => {
                   </select>
                 </div>
               </div>
+              <div className="w-full relative gap-3">
+                <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
+                  <span className="font-medium">
+                    Uprawnienia
+                  </span>
+                </label>
+                <div className="w-full relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <ShieldQuestion   className="size-5 text-black/70 z-10" />
+                  </div>
+                  <select
+                    className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
+                    value={formData.permission}
+                    onChange={(e) => {
+                      setFormData({ ...formData, permissions: e.target.value });
+                    }}
+                  >
+                    <option value="" disabled selected>
+                      Wybierz uprawnienia
+                    </option>
+                    <option value={1}>Wyświetlanie, edytownaie, dodawanie, usuwanie</option>
+                    <option value={2}>Wyświetlanie</option>
+                    <option value={3}>Wyświetlanie, edytowanie</option>
+                    <option value={4}>Wyświetlanie, edytowanie, dodawanie</option>
+                  </select>
+                </div>
+              </div>
               <button
                 type="submit"
                 className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
-                disabled={isAdding || Object.keys(formData).length !== 3}
+                disabled={isAdding || Object.keys(formData).length !== 4}
                 title="Dodaj nowego pracownika"
               >
                 {isAdding ? (

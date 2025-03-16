@@ -30,6 +30,11 @@ const User = sequelize.define('User', {
         type: DataTypes.ENUM('administrator', 'pracownik'),
         allowNull: false,
         defaultValue: 'pracownik'
+    },
+    passwordChanged: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
     }
 }, {
     tableName: 'Users',

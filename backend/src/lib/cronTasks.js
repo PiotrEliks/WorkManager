@@ -3,6 +3,7 @@ import Meter from "../models/meter.model.js";
 import ProtectiveEquipment from "../models/protectiveEquipment.model.js";
 import { Sequelize, Op } from "sequelize";
 import { sendEmail } from "./mailer.js";
+import User from "../models/user.model.js";
 
 cron.schedule("0 7 * * *", async () => {
   try {
@@ -24,6 +25,14 @@ cron.schedule("0 7 * * *", async () => {
       }
     });
 
+    const users = await User.findAll({
+      where: {
+        role: 'administrator'
+      },
+      attributes: ['email']
+    });
+
+    const emails = users.map(row => row.email);
 
     meters.forEach(meter => {
       const emailData = {
@@ -34,7 +43,7 @@ cron.schedule("0 7 * * *", async () => {
         nextCheckDate: meter.nextcheckdate
       };
       sendEmail(
-        'piotr.eliks@wp.pl',
+        emails,
         `Zbliża się termin przeglądu miernika`,
         emailData
       );
@@ -49,7 +58,7 @@ cron.schedule("0 7 * * *", async () => {
         nextCheckDate: eq.nextCheckDate
       };
       sendEmail(
-        'piotr.eliks@wp.pl',
+        emails,
         `Zbliża się termin przeglądu sprzętu ochronnego`,
         emailData
       );
