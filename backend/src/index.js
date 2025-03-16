@@ -8,6 +8,9 @@ import meterRoutes from "./routes/meter.route.js";
 import ProtectiveEquipmentRoutes from "./routes/protectiveEquipment.route.js"
 import { connectDB } from "./lib/db.js";
 import "./lib/cronTasks.js"
+import User from './models/user.model.js';
+import UserPermissions from './models/userPermissions.model.js';
+import Permission from './models/permission.model.js';
 import path from 'path';
 
 const app = express();
@@ -42,4 +45,5 @@ if (process.env.NODE_ENV === "production") {
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
     connectDB();
+    UserPermissions.associate({ User, Permission });
 });
