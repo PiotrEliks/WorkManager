@@ -19,7 +19,7 @@ const HomePage = () => {
         <div className="w-full flex flex-col gap-3 justify-center items-center">
           {
              !showProtectiveEquipmentManager && !showMeterManager && !showUserManager &&
-                <div className="w-1/4 mb-10">
+                <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 mb-10">
                   <img src="/logo.png" alt="logo"/>
                 </div>
           }
@@ -27,7 +27,7 @@ const HomePage = () => {
           {
              !showProtectiveEquipmentManager && !showMeterManager && !showUserManager &&
               <button
-                className="cursor-pointer bg-blue-500 p-2 rounded-xl text-white hover:bg-blue-700 min-w-1/2"
+                className="cursor-pointer bg-blue-500 p-2 rounded-xl text-white hover:bg-blue-700 min-w-full sm:w-1/2"
                 onClick={() => {setShowMeterManager(true)}}
               >
                 Zarządzaj miernikami
@@ -36,7 +36,7 @@ const HomePage = () => {
           {
             !showProtectiveEquipmentManager && !showMeterManager && !showUserManager &&
               <button
-                className="cursor-pointer bg-blue-500 p-2 rounded-xl text-white hover:bg-blue-700 min-w-1/2"
+                className="cursor-pointer bg-blue-500 p-2 rounded-xl text-white hover:bg-blue-700 min-w-full sm:w-1/2"
                 onClick={() => {setShowProtectiveEquipmentManager(true)}}
               >
                 Zarządzaj sprzętem ochronnym
@@ -45,7 +45,7 @@ const HomePage = () => {
           {
             !showProtectiveEquipmentManager && !showUserManager && !showMeterManager && authUser.role === 'administrator' &&
               <button
-                className="cursor-pointer bg-blue-500 p-2 rounded-xl text-white hover:bg-blue-700 min-w-1/2"
+                className="cursor-pointer bg-blue-500 p-2 rounded-xl text-white hover:bg-blue-700 min-w-full sm:w-1/2"
                 onClick={() => {setShowUserManager(true)}}
               >
                 Zarządzaj pracownikami

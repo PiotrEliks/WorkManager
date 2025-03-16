@@ -81,7 +81,7 @@ export const updateEq = async (req, res) => {
         if (protocolNumber) updatedData.protocolNumber = protocolNumber;
         if (checkDate) updatedData.checkDate = checkDate;
         if (nextCheckDate) updatedData.nextCheckDate = nextCheckDate;
-        if (comments) updatedData.comments = comments;
+        if (comments || comments === null) updatedData.comments = comments;
         if (editedBy) updatedData.editedBy = editedBy;
 
         const eq = await ProtectiveEquipment.update(updatedData, {

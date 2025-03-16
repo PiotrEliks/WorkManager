@@ -80,10 +80,10 @@ export const updateMeter = async (req, res) => {
         if (type) updatedData.type = type;
         if (number) updatedData.number = number;
         if (producer) updatedData.producer = producer;
-        if (comments) updatedData.comments = comments;
+        if (comments || comments === null) updatedData.comments = comments;
         if (checkdate) updatedData.checkdate = checkdate;
         if (nextcheckin) updatedData.nextcheckin = nextcheckin;
-        if (condition) updatedData.condition = condition;
+        if (condition || condition === null) updatedData.condition = condition;
         if (editedBy) updatedData.editedBy = editedBy;
 
         const meter = await Meter.update(updatedData, {

@@ -203,7 +203,7 @@ const UsersManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź nazwę"
                     value={formData.fullName || userToEdit.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, fullName: e.target.value });setUserToEdit({ ...userToEdit, fullName: ''})}}
                   />
                 </div>
               </div>
@@ -222,7 +222,7 @@ const UsersManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź email"
                     value={formData.email || userToEdit.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, email: e.target.value });setUserToEdit({ ...userToEdit, email: ''})}}
                   />
                 </div>
               </div>

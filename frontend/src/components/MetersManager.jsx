@@ -20,7 +20,17 @@ const MetersManager = ({ onClose }) => {
 
   const handleEdit = (e) => {
     e.preventDefault();
-    updateMeter(meterToEdit.id, formData);
+    const dataToSend = {
+      ...formData,
+      type: formData.type,
+      number: formData.number,
+      producer: formData.producer,
+      checkdate: formData.checkdate,
+      nextcheckin: formData.nextcheckin,
+      condition: formData.condition === "" ? null : formData.condition,
+      comments: formData.comments === "" ? null : formData.comments
+    };
+    updateMeter(meterToEdit.id, dataToSend);
     setShowEditWindow(false);
     setFormData({ editedBy: authUser.fullName });
   };
@@ -271,7 +281,7 @@ const MetersManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź typ"
                     value={formData.type || meterToEdit.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, type: e.target.value }); setMeterToEdit({ ...meterToEdit, type: ''})}}
                   />
                 </div>
               </div>
@@ -290,7 +300,7 @@ const MetersManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź numer"
                     value={formData.number || meterToEdit.number}
-                    onChange={(e) => setFormData({ ...formData, number: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, number: e.target.value }); setMeterToEdit({ ...meterToEdit, number: ''})}}
                   />
                 </div>
               </div>
@@ -309,7 +319,7 @@ const MetersManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź producenta"
                     value={formData.producer || meterToEdit.producer}
-                    onChange={(e) => setFormData({ ...formData, producer: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, producer: e.target.value }); setMeterToEdit({ ...meterToEdit, producer: ''})}}
                   />
                 </div>
               </div>
@@ -327,7 +337,7 @@ const MetersManager = ({ onClose }) => {
                     type="date"
                     className="w-full py-4 pl-10 pr-3 border rounded-2xl"
                     value={formData.checkdate || meterToEdit.checkdate}
-                    onChange={(e) => setFormData({ ...formData, checkdate: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, checkdate: e.target.value }); setMeterToEdit({ ...meterToEdit, checkdate: ''})}}
                   />
                 </div>
               </div>
@@ -346,6 +356,7 @@ const MetersManager = ({ onClose }) => {
                     value={formData.nextcheckin || meterToEdit.nextcheckin}
                     onChange={(e) => {
                       setFormData({ ...formData, nextcheckin: e.target.value });
+                      setMeterToEdit({ ...meterToEdit, nextcheckin: ''})
                     }}
                   >
                     <option value="">
@@ -372,7 +383,7 @@ const MetersManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź stan"
                     value={formData.condition || meterToEdit.condition}
-                    onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, condition: e.target.value }); setMeterToEdit({ ...meterToEdit, condition: ''})}}
                   />
                 </div>
               </div>
@@ -391,7 +402,7 @@ const MetersManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź uwagi"
                     value={formData.comments || meterToEdit.comments}
-                    onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, comments: e.target.value }); setMeterToEdit({ ...meterToEdit, comments: ''})}}
                   />
                 </div>
               </div>
@@ -458,7 +469,7 @@ const MetersManager = ({ onClose }) => {
     {
       meters && !areMetersLoading && meters.map((meter) => (
         <div key={meter.id} className="grid grid-cols-1 sm:grid-cols-10 gap-2 border-b py-2 text-center items-center">
-          {console.log(isAfterDeadline(meter.nextcheckdate))}
+          {console.log(meter)}
           <div className="break-words">{meter.type}</div>
           <div className="break-words">{meter.number}</div>
           <div>{meter.producer}</div>

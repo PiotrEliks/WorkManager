@@ -20,18 +20,27 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
 
   const handleEdit = (e) => {
     e.preventDefault();
-    updateEq(eqToEdit.id, formData);
+    const dataToSend = {
+      ...formData,
+      name: formData.name,
+      factoryNumber: formData.factoryNumber,
+      protocolNumber: formData.protocolNumber,
+      checkDate: formData.checkcheckDatedate,
+      nextCheckDate: formData.nextCheckDate,
+      comments: formData.comments === "" ? null : formData.comments
+    };
+    updateEq(eqToEdit.id, dataToSend);
     setShowEditWindow(false);
     setFormData({ editedBy: authUser.fullName });
   };
 
-  const handleShowDeleteConfirmationWindow = (id, type, number, producer) => {
+  const handleShowDeleteConfirmationWindow = (id, name, factoryNumber, protocolNumber) => {
     setShowDeleteConfirmation(true);
     setEqToDelete({
       id: id,
-      type: type,
-      number: number,
-      producer: producer
+      name: name,
+      factoryNumber: factoryNumber,
+      protocolNumber: protocolNumber
     });
   };
 
@@ -244,7 +253,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź nazwę"
                     value={formData.name || eqToEdit.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, name: e.target.value });setEqToEdit({ ...eqToEdit, name: ''})}}
                   />
                 </div>
               </div>
@@ -263,7 +272,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź numer fabryczny"
                     value={formData.factoryNumber || eqToEdit.factoryNumber}
-                    onChange={(e) => setFormData({ ...formData, factoryNumber: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, factoryNumber: e.target.value }); setEqToEdit({ ...eqToEdit, factoryNumber: ''})}}
                   />
                 </div>
               </div>
@@ -282,7 +291,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź numer protokołu"
                     value={formData.protocolNumber || eqToEdit.protocolNumber}
-                    onChange={(e) => setFormData({ ...formData, protocolNumber: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, protocolNumber: e.target.value }); setEqToEdit({ ...eqToEdit, protocolNumber: ''})}}
                   />
                 </div>
               </div>
@@ -300,7 +309,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     type="date"
                     className="w-full py-4 pl-10 pr-3 border rounded-2xl"
                     value={formData.checkDate || eqToEdit.checkDate}
-                    onChange={(e) => setFormData({ ...formData, checkDate: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, checkDate: e.target.value });setEqToEdit({ ...eqToEdit, checkDate: ''})}}
                   />
                 </div>
               </div>
@@ -318,7 +327,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     type="date"
                     className="w-full py-4 pl-10 pr-3 border rounded-2xl"
                     value={formData.nextCheckDate || eqToEdit.nextCheckDate}
-                    onChange={(e) => setFormData({ ...formData, nextCheckDate: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, nextCheckDate: e.target.value });setEqToEdit({ ...eqToEdit, nextCheckDate: ''})}}
                   />
                 </div>
               </div>
@@ -337,7 +346,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź uwagi"
                     value={formData.comments || eqToEdit.comments}
-                    onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+                    onChange={(e) => {setFormData({ ...formData, comments: e.target.value });setEqToEdit({ ...eqToEdit, comments: ''})}}
                   />
                 </div>
               </div>
@@ -436,7 +445,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
             {
               authUser.Permissions[0].delete_permission &&
                 <button
-                  onClick={() => handleShowDeleteConfirmationWindow(eq.id, eq.type, eq.number, eq.producer)}
+                  onClick={() => handleShowDeleteConfirmationWindow(eq.id, eq.name, eq.factoryNumber, eq.protocolNumber)}
                   className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
                   title="Usuń sprzęt"
                 >
@@ -451,7 +460,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     {
       showDeleteConfirmation && (
         <div className="fixed bg-gray-900 text-white p-10 rounded-xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          Na pewno chcesz usunąć <span className="font-bold">{eqToDelete.type} {eqToDelete.number} {eqToDelete.producer}</span>?
+          Na pewno chcesz usunąć <span className="font-bold">{eqToDelete.name} {eqToDelete.factoryNumber} {eqToDelete.protocolNumber}</span>?
           <div className="mt-4 flex justify-center gap-4">
             <button
               onClick={() => handleDeleteEq(eqToDelete.id)}
