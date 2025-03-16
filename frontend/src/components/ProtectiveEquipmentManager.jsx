@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useProtectiveEquipmentStore } from '../store/useProtectiveEquipmentStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
 import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag } from 'lucide-react'
-import { isToday, isThisWeek } from 'date-fns'
+import { isWithinInterval, addDays } from 'date-fns'
 
 const ProtectiveEquipmentManager = ({ onClose }) => {
   const { equipment, getEq, deleteEq, updateEq, addEq, isAdding, isUpdating, isEquipmentLoading } = useProtectiveEquipmentStore();
@@ -53,10 +53,14 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     setFormData({ editedBy: authUser.fullName });
   };
 
-  const isDeadline = (dateString) => {
-    const date = new Date(dateString);
-    return isToday(date) || isThisWeek(date) ? true : false;
-  };
+   const isDeadline = (dateString) => {
+      const today = new Date();
+      const endOfThisWeek = addDays(today, 7);
+
+      const date = new Date(dateString);
+
+      return isWithinInterval(date, { start: today, end: endOfThisWeek });
+   };
 
   return (
     <>
@@ -394,8 +398,8 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
           <div className="break-words">{eq.name}</div>
           <div className="break-words">{eq.factoryNumber}</div>
           <div className="break-words">{eq.protocolNumber}</div>
-          <div><span className={isDeadline(eq.checkDate) ? 'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}>{eq.checkDate}</span></div>
-          <div>{eq.nextCheckDate}</div>
+          <div>{eq.checkDate}</div>
+          <div><span className={isDeadline(eq.nextCheckDate) ? 'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5' : ''} title="Zbliżający się termin">{eq.nextCheckDate}</span></div>
           <div className="break-words">{eq.comments || 'Brak'}</div>
           <div>{eq.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
@@ -404,7 +408,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                 <button
                   onClick={() => {
                     setShowEditWindow(true);
-                    setEqToEdit(meter);
+                    setEqToEdit(eq);
                   }}
                   className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
                   title="Edytuj informacje o sprzęcie"

@@ -73,7 +73,7 @@ const MetersManager = ({ onClose }) => {
               setShowAddNewWindow(false);
               setFormData({ editedBy: authUser.fullName });
             }}
-            title="Anuluj i zamnknik dodawanie"
+            title="Anuluj i zamnknij dodawanie"
           >
             <X className="size-6" />
           </div>

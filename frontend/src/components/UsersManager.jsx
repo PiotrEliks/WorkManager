@@ -50,8 +50,6 @@ const UsersManager = ({ onClose }) => {
         setFormData({});
       };
 
-      console.log(userToEdit)
-
     return (
 <>
       {
@@ -63,7 +61,7 @@ const UsersManager = ({ onClose }) => {
               setShowAddNewWindow(false);
               setFormData({});
             }}
-            title="Anuluj i zamnknik dodawanie"
+            title="Anuluj i zamnknij dodawanie"
           >
             <X className="size-6" />
           </div>
