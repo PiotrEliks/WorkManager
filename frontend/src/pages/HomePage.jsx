@@ -19,9 +19,9 @@ const HomePage = () => {
         <div className="w-full flex flex-col gap-3 justify-center items-center">
           {
              !showProtectiveEquipmentManager && !showMeterManager && !showUserManager &&
-              <div className="bg-white p-3 rounded-md text-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text font-bold">
-                WYBIERZ AKCJĘ
-              </div>
+                <div className="w-1/4 mb-10">
+                  <img src="/logo.png" alt="logo"/>
+                </div>
           }
 
           {

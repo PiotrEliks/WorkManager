@@ -11,11 +11,13 @@ import "./lib/cronTasks.js"
 import User from './models/user.model.js';
 import UserPermissions from './models/userPermissions.model.js';
 import Permission from './models/permission.model.js';
+import path from 'path';
 
 const app = express();
 
 dotenv.config();
 const PORT = process.env.PORT;
+const __dirname = path.resolve();
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -32,6 +34,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/meters", meterRoutes);
 app.use("/api/protectiveEquipment", ProtectiveEquipmentRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
