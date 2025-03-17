@@ -8,12 +8,7 @@ A powerful web application designed to simplify the management of company resour
 
 - [Features](#features)
 - [Technology Stack](#technology-stack)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [Key User Workflows](#key-user-workflows)
 
 ---
 
