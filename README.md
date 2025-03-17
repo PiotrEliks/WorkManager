@@ -41,11 +41,14 @@ A powerful web application designed to simplify the management of company resour
 ---
 
 ## Key User Workflows
+
 **Admin Panel:**
 - Log in with administrative credentials.
 - Create and manage employee accounts.
 - Assign and modify user permissions for resource management.
+  
 **User Interface:**
 - Depending on granted permissions, users can view, edit, add, or remove company resources.
+  
 **Automated Reminders:**
 - The system monitors resource deadlines and sends email alerts for upcoming or expired validity and inspection dates.
