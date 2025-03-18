@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useProtectiveEquipmentStore } from '../store/useProtectiveEquipmentStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
-import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag } from 'lucide-react'
+import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet } from 'lucide-react'
 import { isWithinInterval, addDays } from 'date-fns'
+import * as XLSX from 'xlsx';
+import { jsPDF } from 'jspdf';
+import { autoTable } from 'jspdf-autotable';
 
 const ProtectiveEquipmentManager = ({ onClose }) => {
   const { equipment, getEq, deleteEq, updateEq, addEq, isAdding, isUpdating, isEquipmentLoading } = useProtectiveEquipmentStore();
@@ -17,6 +20,61 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
   useEffect(() => {
     getEq();
   }, [getEq]);
+
+  const exportToExcel = () => {
+      const tableColumns = ["Nazwa", "Nr fabr", "Nr protokołu", "Data sprawdzenia", "Data następnego sprawdzenia", "Uwagi", "Edytowane przez"];
+    
+      const tableData = equipment.map(eq => ({
+        "Nazwa": eq.name,
+        "Nr fabr": eq.factoryNumber,
+        "Nr protokołu": eq.protocolNumber,
+        "Data sprawdzenia": eq.checkDate,
+        "Data następnego sprawdzenia": eq.nextCheckDate,
+        "Uwagi": eq.comments || '',  
+        "Edytowane przez": eq.editedBy
+      }));
+    
+      const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
+  
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Sprzęt ochronny');
+  
+      XLSX.writeFile(wb, 'sprzet_ochronny.xlsx');
+    };
+  
+    const exportToPDF = () => {
+      const doc = new jsPDF();
+  
+      doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
+      doc.setFont('Roboto', 'normal');
+    
+      doc.setFontSize(12);
+    
+      const tableColumns = ["Nazwa", "Nr fabr", "Nr protokołu", "Data sprawdzenia", "Data następnego sprawdzenia", "Uwagi", "Edytowane przez"];
+      
+      const tableData = equipment.map(eq => [
+        eq.name,
+        eq.factoryNumber,
+        eq.protocolNumber,
+        eq.checkDate,
+        eq.nextCheckDate,
+        eq.comments || '',
+        eq.editedBy
+      ]);
+   
+      autoTable(doc, {
+        head: [tableColumns],
+        body: tableData,
+        startY: 20,
+      });
+    
+      const pdfOutput = doc.output('bloburl');
+  
+      const link = document.createElement('a');
+      link.href = pdfOutput;
+      link.target = '_blank';
+      link.click();
+    };
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -82,7 +140,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     <>
       {
         showAddNewWindow &&
-        <div className="w-full relative h-full flex flex-col justify-center">
+        <div className="w-full relative h-full flex flex-col overflow-auto">
           <div
             className="absolute top-0 right-0 cursor-pointer z-10"
             onClick={() => {
@@ -208,7 +266,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
               </div>
               <button
                 type="submit"
-                className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
+                className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
                 disabled={isAdding}
                 title="Dodaj nowy sprzęt"
               >
@@ -226,7 +284,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
       }
       {
         showEditWindow &&
-        <div className="w-full relative h-full flex flex-col justify-center">
+        <div className="w-full relative h-full flex flex-col overflow-auto">
           <div
             className="absolute top-0 right-0 cursor-pointer z-10"
             onClick={() => {
@@ -352,7 +410,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
               </div>
               <button
                 type="submit"
-                className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
+                className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
                 disabled={isUpdating}
                 title="Zapisz informacje o sprzęcie"
               >
@@ -379,20 +437,38 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
               >
                 <ArrowLeft className="size-6"/>
               </button>
-              {
-                authUser.Permissions[0].add_permission &&
-                  <button
-                    className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-                    onClick={() => {setShowAddNewWindow(true)}}
-                    title="Dodaj nowy sprzęt"
-                  >
-                    <FilePlus className="size-5"/>
-                    Dodaj nowy
-                  </button>
-              }
+              <div className="flex flex-row gap-1">
+                <button
+                  onClick={exportToExcel}
+                  className="cursor-pointer bg-green-800 hover:bg-green-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                  title="Pobierz w formacie .xlsx"
+                >
+                  <FileSpreadsheet className="size-5" />
+                  Excel
+                </button>
+                <button
+                  onClick={exportToPDF}
+                  className="cursor-pointer bg-red-800 hover:bg-red-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                  title="Pobierz w formacie PDF"
+                >
+                  <FileText className="size-5" />
+                  PDF
+                </button>
+                {
+                  authUser.Permissions[0].add_permission &&
+                    <button
+                      className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                      onClick={() => {setShowAddNewWindow(true)}}
+                      title="Dodaj nowy sprzęt"
+                    >
+                      <FilePlus className="size-5"/>
+                      Dodaj nowy
+                    </button>
+                }
+              </div>
             </div>
 
-  <div className="hidden sm:grid-cols-8 gap-2 font-bold border-b pb-2 text-center items-center sm:grid">
+  <div className="hidden sm:grid-cols-8 gap-2 font-bold border-b pb-2 text-center items-center sm:grid text-sm">
     <div>Nazwa</div>
     <div>Nr fabr</div>
     <div>Nr protokołu</div>
@@ -401,7 +477,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     <div>Uwagi</div>
     <div>Edytowane przez</div>
   </div>
-  <div className="w-full overflow-x-auto h-full flex flex-col">
+  <div className="w-full overflow-x-auto h-full flex flex-col mt-3 sm:mt-0">
     {
       !equipment || isEquipmentLoading &&
         <div className="w-full fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -410,12 +486,12 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     }
     {
       equipment && !isEquipmentLoading && equipment.map((eq) => (
-        <div key={eq.id} className="grid grid-cols-1 sm:grid-cols-8 gap-2 border-b py-2 text-center items-center">
-          <div className="break-words">{eq.name}</div>
-          <div className="break-words">{eq.factoryNumber}</div>
-          <div className="break-words">{eq.protocolNumber}</div>
-          <div>{eq.checkDate}</div>
-          <div>
+        <div key={eq.id} className="grid grid-cols-1 sm:grid-cols-8 gap-2 border-b py-2 text-center items-center text-sm">
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.name}</div>
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.factoryNumber}</div>
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.protocolNumber}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.checkDate}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">
             <span
             className={isDeadline(eq.nextCheckDate) ?
             'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5'
@@ -425,8 +501,8 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
               {eq.nextCheckDate}
             </span>
           </div>
-          <div className="break-words">{eq.comments || 'Brak'}</div>
-          <div>{eq.editedBy}</div>
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.comments || 'Brak'}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
             {
               authUser.Permissions[0].edit_permission &&
@@ -435,7 +511,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                     setShowEditWindow(true);
                     setEqToEdit(eq);
                   }}
-                  className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                  className="bg-blue-800 hover:bg-blue-800/80 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
                   title="Edytuj informacje o sprzęcie"
                 >
                   <FilePenLine className="size-5" />
@@ -446,7 +522,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
               authUser.Permissions[0].delete_permission &&
                 <button
                   onClick={() => handleShowDeleteConfirmationWindow(eq.id, eq.name, eq.factoryNumber, eq.protocolNumber)}
-                  className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                  className="bg-red-500 hover:bg-red-500/70 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
                   title="Usuń sprzęt"
                 >
                   <Trash2 className="size-5" />

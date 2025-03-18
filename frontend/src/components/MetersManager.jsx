@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useMeterStore } from '../store/useMeterStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
-import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag } from 'lucide-react'
+import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet  } from 'lucide-react'
 import { isToday, isThisWeek, isWithinInterval, startOfWeek, addDays } from 'date-fns'
+import * as XLSX from 'xlsx';
+import { jsPDF } from 'jspdf';
+import { autoTable } from 'jspdf-autotable';
 
 const MetersManager = ({ onClose }) => {
   const { meters, getMeters, deleteMeter, updateMeter, addMeter, isAdding, isUpdating, areMetersLoading } = useMeterStore();
@@ -17,6 +20,63 @@ const MetersManager = ({ onClose }) => {
   useEffect(() => {
     getMeters();
   }, [getMeters]);
+
+  const exportToExcel = () => {
+    const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Następny termin sprawdzenia", "Stan", "Edytowane przez"];
+  
+    const tableData = meters.map(meter => ({
+      "Typ": meter.type,
+      "Numer": meter.number,
+      "Producent": meter.producer,
+      "Uwagi": meter.comments || '',  
+      "Termin sprawdzenia": meter.checkdate,
+      "Następny termin sprawdzenia": meter.nextcheckdate,
+      "Stan": meter.condition || '',
+      "Edytowane przez": meter.editedBy
+    }));
+  
+    const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Mierniki');
+
+    XLSX.writeFile(wb, 'mierniki.xlsx');
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
+    doc.setFont('Roboto', 'normal');
+  
+    doc.setFontSize(12);
+  
+    const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Nastepny termin sprawdzenia", "Stan", "Edytowane przez"];
+    
+    const tableData = meters.map(meter => [
+      meter.type,
+      meter.number,
+      meter.producer,
+      meter.comments || '',
+      meter.checkdate,
+      meter.nextcheckdate,
+      meter.condition || '',
+      meter.editedBy
+    ]);
+ 
+    autoTable(doc, {
+      head: [tableColumns],
+      body: tableData,
+      startY: 20,
+    });
+  
+    const pdfOutput = doc.output('bloburl');
+
+    const link = document.createElement('a');
+    link.href = pdfOutput;
+    link.target = '_blank';
+    link.click();
+  };
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -79,11 +139,13 @@ const MetersManager = ({ onClose }) => {
     return today > date;
   };
 
+  console.log(meters)
+
   return (
     <>
       {
         showAddNewWindow &&
-        <div className="w-full relative h-full flex flex-col justify-center">
+        <div className="w-full relative h-full flex flex-col overflow-auto text-sm">
           <div
             className="absolute top-0 right-0 cursor-pointer z-10"
             onClick={() => {
@@ -155,7 +217,7 @@ const MetersManager = ({ onClose }) => {
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Termin sprawdzenia (deklaracja producenta)
+                    Termin sprawdzenia
                   </span>
                 </label>
                 <div className="w-full relative">
@@ -236,7 +298,7 @@ const MetersManager = ({ onClose }) => {
               </div>
               <button
                 type="submit"
-                className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
+                className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
                 disabled={isAdding}
                 title="Dodaj nowy miernik"
               >
@@ -254,7 +316,7 @@ const MetersManager = ({ onClose }) => {
       }
       {
         showEditWindow &&
-        <div className="w-full relative h-full flex flex-col justify-center">
+        <div className="w-full relative h-full flex flex-col overflow-auto text-sm">
           <div
             className="absolute top-0 right-0 cursor-pointer z-10"
             onClick={() => {
@@ -326,7 +388,7 @@ const MetersManager = ({ onClose }) => {
               <div className="w-full relative gap-3">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
                   <span className="font-medium">
-                    Termin sprawdzenia (deklaracja producenta)
+                    Termin sprawdzenia
                   </span>
                 </label>
                 <div className="w-full relative">
@@ -408,7 +470,7 @@ const MetersManager = ({ onClose }) => {
               </div>
               <button
                 type="submit"
-                className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
+                className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
                 disabled={isUpdating}
                 title="Zapisz informacje o mierniku"
               >
@@ -435,20 +497,38 @@ const MetersManager = ({ onClose }) => {
               >
                 <ArrowLeft className="size-6"/>
               </button>
-              {
-                authUser.Permissions[0].add_permission &&
-                  <button
-                    className="cursor-pointer bg-blue-500 hover:bg-blue-700 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-                    onClick={() => {setShowAddNewWindow(true)}}
-                    title="Dodaj nowy miernik"
-                  >
-                    <FilePlus className="size-5"/>
-                    Dodaj nowy
-                  </button>
-              }
+              <div className="flex flex-row gap-1">
+                <button
+                  onClick={exportToExcel}
+                  className="cursor-pointer bg-green-800 hover:bg-green-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                  title="Pobierz w formacie .xlsx"
+                >
+                  <FileSpreadsheet className="size-5" />
+                  Excel
+                </button>
+                <button
+                  onClick={exportToPDF}
+                  className="cursor-pointer bg-red-800 hover:bg-red-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                  title="Pobierz w formacie PDF"
+                >
+                  <FileText className="size-5" />
+                  PDF
+                </button>
+                {
+                  authUser.Permissions[0].add_permission &&
+                    <button
+                      className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
+                      onClick={() => {setShowAddNewWindow(true)}}
+                      title="Dodaj nowy miernik"
+                    >
+                      <FilePlus className="size-5"/>
+                      Dodaj nowy
+                    </button>
+                }
+              </div>
             </div>
 
-  <div className="hidden sm:grid-cols-10 gap-2 font-bold border-b pb-2 text-center items-center sm:grid">
+  <div className="hidden sm:grid-cols-10 gap-2 font-bold text-sm border-b pb-2 text-center items-center sm:grid">
     <div>Typ</div>
     <div>Numer</div>
     <div>Producent</div>
@@ -459,7 +539,7 @@ const MetersManager = ({ onClose }) => {
     <div>Stan</div>
     <div>Edytowane przez</div>
   </div>
-  <div className="w-full overflow-x-auto h-full flex flex-col">
+  <div className="w-full overflow-x-auto h-full flex flex-col mt-3 sm:mt-0">
     {
       !meters || areMetersLoading &&
         <div className="w-full fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -468,14 +548,14 @@ const MetersManager = ({ onClose }) => {
     }
     {
       meters && !areMetersLoading && meters.map((meter) => (
-        <div key={meter.id} className="grid grid-cols-1 sm:grid-cols-10 gap-2 border-b py-2 text-center items-center">
+        <div key={meter.id} className="grid grid-cols-1 sm:grid-cols-10 gap-2 border-b py-2 text-center items-center text-sm">
           {console.log(meter)}
-          <div className="break-words">{meter.type}</div>
-          <div className="break-words">{meter.number}</div>
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.type}</div>
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.number}</div>
           <div>{meter.producer}</div>
-          <div className="break-words">{meter.comments || 'Brak'}</div>
-          <div>{meter.checkdate}</div>
-          <div>
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.comments || 'Brak'}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.checkdate}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">
             <span
             className={isDeadline(meter.nextcheckdate) ?
             'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5'
@@ -485,9 +565,9 @@ const MetersManager = ({ onClose }) => {
               {meter.nextcheckdate}
             </span>
           </div>
-          <div>{meter.nextcheckin} msc</div>
-          <div className="break-words">{meter.condition || 'Brak'}</div>
-          <div>{meter.editedBy}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.nextcheckin} msc</div>
+          <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.condition || 'Brak'}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
             {
               authUser.Permissions[0].edit_permission &&
@@ -496,7 +576,7 @@ const MetersManager = ({ onClose }) => {
                   setShowEditWindow(true);
                   setMeterToEdit(meter);
                 }}
-                className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                className="bg-blue-800 hover:bg-blue-800/80 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
                 title="Edytuj informacje o mierniku"
               >
                 <FilePenLine className="size-5" />
@@ -508,7 +588,7 @@ const MetersManager = ({ onClose }) => {
               authUser.Permissions[0].delete_permission &&
                 <button
                 onClick={() => handleShowDeleteConfirmationWindow(meter.id, meter.type, meter.number, meter.producer)}
-                className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
+                className="bg-red-500 hover:bg-red-500/70 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
                 title="Usuń miernik"
               >
                 <Trash2 className="size-5" />

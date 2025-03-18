@@ -14,12 +14,22 @@ const ChangePassword = () => {
   });
   const [error, setError] = useState("");
 
+  const validatePassword = (password) => {
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    return hasLowerCase && hasUpperCase && hasSpecialChar;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!password.password1 || !password.password2) {
       setError("Oba pola muszą być wypełnione");
     } else if (password.password1 !== password.password2) {
       setError("Oba pola muszą zawierać to samo hasło");
+    } else if (!validatePassword(password.password1)) {
+      setError("Hasło musi zawierać przynajmniej jedną małą literę, jedną wielką literę i jeden znak specjalny.");
     } else {
       setError("");
       changePassword(authUser.id, password.password1);
@@ -27,10 +37,10 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-r from-violet-600 to-indigo-600 w-full flex items-center justify-center sm:p-5 md:p-15">
-      <div className="bg-white w-full p-5 rounded-2xl min-h-[70vh] max-h-[80vh] flex flex-col shadow-2xl">
+    <div className="h-screen bg-gradient-to-r from-violet-700 to-blue-800 w-full flex items-center justify-center sm:p-5 md:p-15">
+      <div className="bg-white w-full p-5 rounded-2xl flex flex-col shadow-2xl m-1">
         <div className="w-full flex flex-col gap-3 justify-center items-center">
-          <p className="font-bold text-xl">Ustaw hasło</p>
+          <p className="font-bold text-xl">Ustaw nowe hasło</p>
           {error && <p className="text-red-600">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-6 w-full">
             <div className="w-full relative">
@@ -93,7 +103,7 @@ const ChangePassword = () => {
             </div>
             <button
               type="submit"
-              className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
+              className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
               disabled={isUpdating}
               title="Zapisz"
             >

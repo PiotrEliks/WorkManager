@@ -55,11 +55,29 @@ export const checkAuth = (req, res) => {
     try {
         const { userId } = req.params;
         const { password } = req.body;
-        console.log(userId, password)
 
         const user = await User.findByPk(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+
+        const hasLowerCase = /[a-z]/.test(password);
+        if (!hasLowerCase) {
+            return res.status(400).json({ message: 'Password must have at least one small letter' });
+        }
+
+        const hasUpperCase = /[A-Z]/.test(password);
+        if (!hasUpperCase) {
+            return res.status(400).json({ message: 'Password must have at least one capital letter' });
+        }
+
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        if (!hasSpecialChar) {
+            return res.status(400).json({ message: 'Password must have at least one special character' });
         }
 
         const salt = await bcrypt.genSalt(10);

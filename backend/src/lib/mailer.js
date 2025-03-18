@@ -41,4 +41,23 @@ async function sendEmail(to, subject, data) {
   }
 }
 
-export { sendEmail };
+async function sendWelcomeEmail(to, subject, fullName) {
+  try {
+    const templatePath = path.join(__dirname, "emailWelcomeTemplate.html");
+    let template = fs.readFileSync(templatePath, "utf-8");
+
+    template = template.replace(/{{fullName}}/g, fullName);
+    template = template.replace(/{{email}}/g, to);
+    template = template.replace(/{{subject}}/g, subject);
+    await transporter.sendMail({
+      from: `"Panel elektropomiar.net.pl" <${process.env.NODEMAILER_EMAIL}>`,
+      to,
+      subject,
+      html: template,
+    });
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+}
+
+export { sendEmail, sendWelcomeEmail };

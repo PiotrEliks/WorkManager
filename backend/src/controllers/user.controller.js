@@ -2,6 +2,7 @@ import Permission from "../models/permission.model.js";
 import User from "../models/users.model.js";
 import bcrypt from "bcryptjs";
 import UserPermissions from '../models/userPermissions.model.js';
+import { sendWelcomeEmail } from "../lib/mailer.js";
 
 export const getUsers = async (req, res) => {
     try {
@@ -57,6 +58,12 @@ export const addUser = async (req, res) => {
             include: Permission,
             order: [['updatedAt', 'DESC']]
         });
+
+        sendWelcomeEmail(
+            email, 
+            "Witaj w panelu elektropomiar.net.pl", 
+            fullName
+        );
 
         return res.status(200).json(users);
     } catch (error) {

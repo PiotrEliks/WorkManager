@@ -8,20 +8,30 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState('');
 
   const { login, isLoggingIn } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    login(formData);
+
+    if (formData.email === "" || formData.password === "") {
+      setError("Wszystkie pola są wymagane!");
+    } else {
+      setError("");
+      login(formData);
+    }
   };
 
   return (
-    <div className="h-screen bg-gradient-to-r from-violet-600 to-indigo-600 w-full flex items-center justify-center">
-      <div className="w-full bg-white m-5 rounded-3xl sm:w-xl shadow-2xl">
-        <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-5 sm:p-10">
-          <p className="font-bold text-xl">Logowanie</p>
+    <div className="h-screen bg-gradient-to-r from-violet-700 to-blue-800 w-full flex items-center justify-center">
+      <div className="w-full bg-white m-1 sm:m-5 rounded-3xl sm:w-xl shadow-2xl">
+        <div className="w-full h-full flex flex-col items-center justify-center gap-1 py-5 sm:p-10">
           <div className="w-full p-5">
+            <img src="/logo.png" alt="logo" />
+          </div>
+          {error && <p className="text-red-600">{error}</p>}
+          <div className="w-full p-3 sm:p-5">
             <form onSubmit={handleSubmit}  className="space-y-6">
               <div className="w-full relative">
                 <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
@@ -34,7 +44,7 @@ const LoginPage = () => {
                     <Mail className="size-5 text-black/70 z-10" />
                   </div>
                   <input
-                    type="text"
+                    type="email"
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
                     placeholder="Wprowadź e-mail"
                     value={formData.email}
@@ -75,7 +85,7 @@ const LoginPage = () => {
               </div>
               <button
                 type="submit"
-                className="cursor-pointer bg-violet-600 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
+                className="cursor-pointer bg-blue-800 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
                 disabled={isLoggingIn}
                 title="Zaloguj"
               >
