@@ -3,6 +3,7 @@ import User from "../models/users.model.js";
 import bcrypt from "bcryptjs";
 import UserPermissions from '../models/userPermissions.model.js';
 import { sendWelcomeEmail } from "../lib/mailer.js";
+import { randomBytes } from 'crypto';
 
 export const getUsers = async (req, res) => {
     try {
@@ -23,7 +24,12 @@ export const addUser = async (req, res) => {
     try {
         const { fullName, email, role, permissions } = req.body;
 
-        const password = "123456";
+
+        function generateRandomPassword(length = 12) {
+            return randomBytes(length).toString('hex').slice(0, length);
+        }
+
+        const password = generateRandomPassword(12);
 
         const existingUser = await User.findOne({
             where: {
@@ -60,9 +66,10 @@ export const addUser = async (req, res) => {
         });
 
         sendWelcomeEmail(
-            email, 
-            "Witaj w panelu elektropomiar.net.pl", 
-            fullName
+            email,
+            "Witaj w panelu elektropomiar.net.pl",
+            fullName,
+            password
         );
 
         return res.status(200).json(users);

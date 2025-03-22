@@ -14,7 +14,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
-    "jspdf": "^2.5.1",
+    "jspdf": "^2.5.2",
     "jspdf-autotable": "^5.0.2",
     "jspdf-fonts": "^0.0.2",
     "lucide-react": "^0.479.0",

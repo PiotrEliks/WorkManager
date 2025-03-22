@@ -41,7 +41,7 @@ async function sendEmail(to, subject, data) {
   }
 }
 
-async function sendWelcomeEmail(to, subject, fullName) {
+async function sendWelcomeEmail(to, subject, fullName, password) {
   try {
     const templatePath = path.join(__dirname, "emailWelcomeTemplate.html");
     let template = fs.readFileSync(templatePath, "utf-8");
@@ -49,6 +49,7 @@ async function sendWelcomeEmail(to, subject, fullName) {
     template = template.replace(/{{fullName}}/g, fullName);
     template = template.replace(/{{email}}/g, to);
     template = template.replace(/{{subject}}/g, subject);
+    template = template.replace(/{{password}}/g, password);
     await transporter.sendMail({
       from: `"Panel elektropomiar.net.pl" <${process.env.NODEMAILER_EMAIL}>`,
       to,
