@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useProtectiveEquipmentStore } from '../store/useProtectiveEquipmentStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
 import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet } from 'lucide-react'
-import { isWithinInterval, addDays } from 'date-fns'
+import { isWithinInterval, addDays, format } from 'date-fns'
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
@@ -23,35 +23,35 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
 
   const exportToExcel = () => {
       const tableColumns = ["Nazwa", "Nr fabr", "Nr protokołu", "Data sprawdzenia", "Data następnego sprawdzenia", "Uwagi", "Edytowane przez"];
-    
+
       const tableData = equipment.map(eq => ({
         "Nazwa": eq.name,
         "Nr fabr": eq.factoryNumber,
         "Nr protokołu": eq.protocolNumber,
         "Data sprawdzenia": eq.checkDate,
         "Data następnego sprawdzenia": eq.nextCheckDate,
-        "Uwagi": eq.comments || '',  
+        "Uwagi": eq.comments || '',
         "Edytowane przez": eq.editedBy
       }));
-    
+
       const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
-  
+
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Sprzęt ochronny');
-  
-      XLSX.writeFile(wb, 'sprzet_ochronny.xlsx');
+
+      XLSX.writeFile(wb, `sprzet_ochronny${format(new Date(), 'dd/MM/yyyy-h:m')}.xlsx`);
     };
-  
+
     const exportToPDF = () => {
       const doc = new jsPDF();
-  
+
       doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
       doc.setFont('Roboto', 'normal');
-    
+
       doc.setFontSize(12);
-    
+
       const tableColumns = ["Nazwa", "Nr fabr", "Nr protokołu", "Data sprawdzenia", "Data następnego sprawdzenia", "Uwagi", "Edytowane przez"];
-      
+
       const tableData = equipment.map(eq => [
         eq.name,
         eq.factoryNumber,
@@ -61,15 +61,15 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
         eq.comments || '',
         eq.editedBy
       ]);
-   
+
       autoTable(doc, {
         head: [tableColumns],
         body: tableData,
         startY: 20,
       });
-    
+
       const pdfOutput = doc.output('bloburl');
-  
+
       const link = document.createElement('a');
       link.href = pdfOutput;
       link.target = '_blank';
@@ -103,7 +103,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
   };
 
   const handleDeleteEq = (id) => {
-    deleteMeter(id);
+    deleteEq(id);
     setShowDeleteConfirmation(false);
     setEqToDelete({});
   };
@@ -132,8 +132,18 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
   const isAfterDeadline = (dateString) => {
     const today = new Date();
     const date = new Date(dateString);
+    if (!dateString) return;
 
     return today > date;
+  };
+
+  const isTwoMonthsToDeadline = (dateString) => {
+    const today = new Date();
+    const plusTwoMonths = addDays(today, 62);
+
+    const date = new Date(dateString);
+
+    return isWithinInterval(date, { start: today, end: plusTwoMonths });
   };
 
   return (
@@ -473,7 +483,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     <div>Nr fabr</div>
     <div>Nr protokołu</div>
     <div>Data sprawdzenia</div>
-    <div>Data następnego sprawdzeia</div>
+    <div>Data następnego sprawdzenia</div>
     <div>Uwagi</div>
     <div>Edytowane przez</div>
   </div>
@@ -490,7 +500,14 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
           <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.name}</div>
           <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.factoryNumber}</div>
           <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.protocolNumber}</div>
-          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.checkDate}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">
+            <span
+              className={isTwoMonthsToDeadline(eq.nextCheckDate) ?
+              'bg-yellow-600 rounded-md font-bold text-white px-2 py-0.5' : !isAfterDeadline(eq.nextCheckDate) ? 'bg-green-600 rounded-md font-bold text-white px-2 py-0.5' : ''}
+              title={isTwoMonthsToDeadline(eq.nextCheckDate) ? 'Badanie aktualne jeszcze przez 2 miesiące' : !isAfterDeadline(eq.nextCheckDate) ? 'Badanie aktualne' : ''}>
+                {eq.checkDate}
+            </span>
+          </div>
           <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">
             <span
             className={isDeadline(eq.nextCheckDate) ?

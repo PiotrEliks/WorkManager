@@ -38,7 +38,7 @@ const ChangePassword = () => {
 
   return (
     <div className="h-screen bg-gradient-to-r from-violet-700 to-blue-800 w-full flex items-center justify-center sm:p-5 md:p-15">
-      <div className="bg-white w-full p-5 rounded-2xl flex flex-col shadow-2xl m-1">
+      <div className="bg-white w-full p-5 rounded-2xl flex flex-col shadow-2xl m-1 sm:w-2xl">
         <div className="w-full flex flex-col gap-3 justify-center items-center">
           <p className="font-bold text-xl">Ustaw nowe hasło</p>
           {error && <p className="text-red-600">{error}</p>}

@@ -23,7 +23,6 @@ export const useUserstore = create((set, get) => ({
   addUser: async (formData) => {
     set({ isAdding: true });
     try {
-      console.log(formData)
       const res = await axiosInstance.post("/users/add", formData);
       set({ users: res.data });
       toast.success("Pracownik został dodany");

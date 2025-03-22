@@ -27,7 +27,7 @@ export const login = async (req, res) => {
 
         res.status(200).json(user);
     } catch (error) {
-        console.log("Error in login: ", error);
+        console.error("Error in login: ", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -37,7 +37,7 @@ export const logout = async (req, res) => {
         res.cookie("token", "", { maxAge: 0 });
         res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
-        console.log("Error in logout: ", error);
+        console.error("Error in logout: ", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -46,7 +46,7 @@ export const checkAuth = (req, res) => {
     try {
       res.status(200).json(req.user);
     } catch (error) {
-      console.log("Error in checkAuth controller", error.message);
+      console.error("Error in checkAuth controller", error.message);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   };

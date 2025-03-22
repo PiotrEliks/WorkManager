@@ -20,7 +20,8 @@ export const addMeter = async (req, res) => {
 
         const existingMeter = await Meter.findOne({
             where: {
-                number: number
+                number: number,
+                type: type
             }
         });
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useMeterStore } from '../store/useMeterStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
 import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet  } from 'lucide-react'
-import { isToday, isThisWeek, isWithinInterval, startOfWeek, addDays } from 'date-fns'
+import { isToday, isThisWeek, isWithinInterval, startOfWeek, addDays, format } from 'date-fns'
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
@@ -23,24 +23,24 @@ const MetersManager = ({ onClose }) => {
 
   const exportToExcel = () => {
     const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Następny termin sprawdzenia", "Stan", "Edytowane przez"];
-  
+
     const tableData = meters.map(meter => ({
       "Typ": meter.type,
       "Numer": meter.number,
       "Producent": meter.producer,
-      "Uwagi": meter.comments || '',  
+      "Uwagi": meter.comments || '',
       "Termin sprawdzenia": meter.checkdate,
       "Następny termin sprawdzenia": meter.nextcheckdate,
       "Stan": meter.condition || '',
       "Edytowane przez": meter.editedBy
     }));
-  
+
     const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Mierniki');
 
-    XLSX.writeFile(wb, 'mierniki.xlsx');
+    XLSX.writeFile(wb, `mierniki_${format(new Date(), 'dd/MM/yyyy-h:m')}.xlsx`);
   };
 
   const exportToPDF = () => {
@@ -48,11 +48,11 @@ const MetersManager = ({ onClose }) => {
 
     doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
     doc.setFont('Roboto', 'normal');
-  
+
     doc.setFontSize(12);
-  
+
     const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Nastepny termin sprawdzenia", "Stan", "Edytowane przez"];
-    
+
     const tableData = meters.map(meter => [
       meter.type,
       meter.number,
@@ -63,13 +63,13 @@ const MetersManager = ({ onClose }) => {
       meter.condition || '',
       meter.editedBy
     ]);
- 
+
     autoTable(doc, {
       head: [tableColumns],
       body: tableData,
       startY: 20,
     });
-  
+
     const pdfOutput = doc.output('bloburl');
 
     const link = document.createElement('a');
@@ -135,11 +135,19 @@ const MetersManager = ({ onClose }) => {
   const isAfterDeadline = (dateString) => {
     const today = new Date();
     const date = new Date(dateString);
+    if (!dateString) return;
 
     return today > date;
   };
 
-  console.log(meters)
+  const isTwoMonthsToDeadline = (dateString) => {
+    const today = new Date();
+    const plusTwoMonths = addDays(today, 62);
+
+    const date = new Date(dateString);
+
+    return isWithinInterval(date, { start: today, end: plusTwoMonths });
+  };
 
   return (
     <>
@@ -548,24 +556,37 @@ const MetersManager = ({ onClose }) => {
     }
     {
       meters && !areMetersLoading && meters.map((meter) => (
-        <div key={meter.id} className="grid grid-cols-1 sm:grid-cols-10 gap-2 border-b py-2 text-center items-center text-sm">
-          {console.log(meter)}
+        <div key={meter.id} className={`grid grid-cols-1 sm:grid-cols-10 gap-2 border-b py-2 text-center items-center text-sm ${meter.condition === "Wyłączony z użytkowania" ? 'bg-zinc-200' : ''}`}>
           <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.type}</div>
           <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.number}</div>
           <div>{meter.producer}</div>
           <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.comments || 'Brak'}</div>
-          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.checkdate}</div>
+          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">
+            <span
+              className={isTwoMonthsToDeadline(meter.nextcheckdate) ?
+              'bg-yellow-600 rounded-md font-bold text-white px-2 py-0.5' : !isAfterDeadline(meter.nextcheckdate) ? 'bg-green-600 rounded-md font-bold text-white px-2 py-0.5' : ''}
+              title={isTwoMonthsToDeadline(meter.nextcheckdate) ? 'Badanie aktualne jeszcze przez 2 miesiące' : !isAfterDeadline(meter.nextcheckdate) ? 'Badanie aktualne' : ''}>
+                {meter.checkdate}
+            </span>
+          </div>
           <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">
             <span
             className={isDeadline(meter.nextcheckdate) ?
             'bg-orange-400 rounded-md font-bold text-white px-2 py-0.5'
             : isAfterDeadline(meter.nextcheckdate) ?
             'bg-red-600 rounded-md font-bold text-white px-2 py-0.5' : ''}
-            title={isDeadline(meter.nextcheckdate) ? 'Zbliżający się termin' : isAfterDeadline(meter.nextcheckdate) ? 'Termin upłynął' : ''}>
+            title={isDeadline(meter.nextcheckdate) ? 'Zbliża się termin następnego badania' : isAfterDeadline(meter.nextcheckdate) ? 'Badanie nieaktualne' : ''}>
               {meter.nextcheckdate}
             </span>
           </div>
-          <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.nextcheckin} msc</div>
+          {
+            meter.nextcheckin &&
+              <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.nextcheckin} msc</div>
+          }
+          {
+            !meter.nextcheckin &&
+              <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0"></div>
+          }
           <div className="break-words border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.condition || 'Brak'}</div>
           <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">

@@ -343,7 +343,6 @@ const UsersManager = ({ onClose }) => {
                     <p>{user.Permissions[0]?.edit_permission && 'edytowanie'}</p>
                     <p>{user.Permissions[0]?.delete_permission && 'usuwanie'}</p>
                   </div>
-                  {console.log(user)}
                   <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{user.passwordChanged ? 'Tak' : 'Nie'}</div>
                   <div className="flex flex-col items-center justify-center gap-1">
                     <button
