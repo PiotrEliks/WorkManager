@@ -21,18 +21,26 @@ const MetersManager = ({ onClose }) => {
     getMeters();
   }, [getMeters]);
 
+  const replacePolishChars = (str) =>
+    str?.replace(/[ąćęłńóśźż]/gi, (c) =>
+     ({
+      ą: 'a', ć: 'c', ę: 'e', ł: 'l', ń: 'n', ó: 'o', ś: 's', ź: 'z', ż: 'z',
+      Ą: 'A', Ć: 'C', Ę: 'E', Ł: 'L', Ń: 'N', Ó: 'O', Ś: 'S', Ź: 'Z', Ż: 'Z'
+    }[c]) || c
+  );
+
   const exportToExcel = () => {
     const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Następny termin sprawdzenia", "Stan", "Edytowane przez"];
 
     const tableData = meters.map(meter => ({
-      "Typ": meter.type,
-      "Numer": meter.number,
-      "Producent": meter.producer,
-      "Uwagi": meter.comments || '',
-      "Termin sprawdzenia": meter.checkdate,
-      "Następny termin sprawdzenia": meter.nextcheckdate,
-      "Stan": meter.condition || '',
-      "Edytowane przez": meter.editedBy
+      "Typ": replacePolishChars(meter.type),
+      "Numer": replacePolishChars(meter.number),
+      "Producent": replacePolishChars(meter.producer),
+      "Uwagi": replacePolishChars(meter.comments || ''),
+      "Termin sprawdzenia": replacePolishChars(meter.checkdate),
+      "Następny termin sprawdzenia": replacePolishChars(meter.nextcheckdate),
+      "Stan": replacePolishChars(meter.condition || ''),
+      "Edytowane przez": replacePolishChars(meter.editedBy)
     }));
 
     const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
@@ -44,7 +52,7 @@ const MetersManager = ({ onClose }) => {
   };
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
     doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
     doc.setFont('Roboto', 'normal');
@@ -54,14 +62,14 @@ const MetersManager = ({ onClose }) => {
     const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Nastepny termin sprawdzenia", "Stan", "Edytowane przez"];
 
     const tableData = meters.map(meter => [
-      meter.type,
-      meter.number,
-      meter.producer,
-      meter.comments || '',
-      meter.checkdate,
-      meter.nextcheckdate,
-      meter.condition || '',
-      meter.editedBy
+      replacePolishChars(meter.type),
+      replacePolishChars(meter.number),
+      replacePolishChars(meter.producer),
+      replacePolishChars(meter.comments || ''),
+      replacePolishChars(meter.checkdate),
+      replacePolishChars(meter.nextcheckdate),
+      replacePolishChars(meter.condition || ''),
+      replacePolishChars(meter.editedBy)
     ]);
 
     autoTable(doc, {

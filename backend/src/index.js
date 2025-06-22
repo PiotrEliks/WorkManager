@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ["https://workmanager-xlsf.onrender.com", "http://test.elektropomiar.net.pl"],
+    origin: ["https://workmanager-xlsf.onrender.com", "http://test.elektropomiar.net.pl", "http://localhost:5173"],
     default: "https://workmanager-xlsf.onrender.com",
     //origin: "http://localhost:5173",
     credentials: true,

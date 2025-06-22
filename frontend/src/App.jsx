@@ -6,6 +6,11 @@ import { LoaderCircle } from 'lucide-react'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import Navbar from './components/Navbar.jsx'
+import DashboardLayout from './layouts/DashboardLayout.jsx'
+import NoMatchPage from './pages/NoMatchPage.jsx'
+import ProtectiveEquipmentPage from './pages/ProtectiveEquipmentPage.jsx'
+import MetersPage from './pages/MetersPage.jsx'
+import EmployeesPage from './pages/EmployeesPage.jsx'
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -23,10 +28,17 @@ function App() {
 
   return (
     <div >
-      <Navbar />
       <Routes>
-        <Route path="/" element={ authUser ? <HomePage /> : <Navigate to="/login" /> }/>
-        <Route path="/login" element={ !authUser ? <LoginPage /> : <Navigate to="/" /> }/>
+        <Route path="/logowanie" element={ !authUser ? <LoginPage /> : <Navigate to="/" /> }/>
+        <Route
+          path="/"
+          element={authUser ? <DashboardLayout /> : <Navigate to="/logowanie" />}
+        >
+          <Route path="mierniki" element={<MetersPage />} />
+          <Route path="sprzet-ochronny" element={<ProtectiveEquipmentPage />} />
+          <Route path="pracownicy" element={<EmployeesPage />} />
+          <Route path="*" element={<NoMatchPage />} />
+        </Route>
       </Routes>
       <Toaster />
     </div>
