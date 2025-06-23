@@ -3,14 +3,12 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/useAuthStore.js'
 import { LoaderCircle } from 'lucide-react'
-import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
-import Navbar from './components/Navbar.jsx'
 import DashboardLayout from './layouts/DashboardLayout.jsx'
-import NoMatchPage from './pages/NoMatchPage.jsx'
 import ProtectiveEquipmentPage from './pages/ProtectiveEquipmentPage.jsx'
 import MetersPage from './pages/MetersPage.jsx'
 import EmployeesPage from './pages/EmployeesPage.jsx'
+import NoMatchPage from './pages/NoMatchpage.jsx'
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();

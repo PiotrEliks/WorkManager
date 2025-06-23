@@ -1,6 +1,8 @@
 import React from 'react'
+import useDocumentTitle from '../lib/useDocumentTitle'
 
-const NoMatchpage = () => {
+const NoMatchPage = () => {
+  useDocumentTitle('Nie znaleziono strony | Panel Elektropomiar')
   return (
     <div>
       404
@@ -8,4 +10,4 @@ const NoMatchpage = () => {
   )
 }
 
-export default NoMatchpage
+export default NoMatchPage
