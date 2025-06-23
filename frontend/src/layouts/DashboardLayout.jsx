@@ -212,7 +212,7 @@ const DashboardLayout = () => {
             </button>
             {
               showUserInfo &&
-                <div className="fixed top-15 bg-zinc-100 rounded-2xl px-3 py-1">
+                <div className="fixed top-15 z-50 bg-zinc-100 rounded-2xl px-3 py-1">
                   <span className="">{authUser.role.charAt(0).toUpperCase()}{authUser.role.slice(1)}</span>
                 </div>
             }

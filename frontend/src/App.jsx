@@ -9,6 +9,9 @@ import ProtectiveEquipmentPage from './pages/ProtectiveEquipmentPage.jsx'
 import MetersPage from './pages/MetersPage.jsx'
 import EmployeesPage from './pages/EmployeesPage.jsx'
 import NoMatchPage from './pages/NoMatchpage.jsx'
+import EmployeeDetailPage from './pages/EmployeeDetailPage.jsx'
+import AddEmployeePage from './pages/AddEmployeePage.jsx'
+import EditEmployeePage from './pages/EditEmployeePage';
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -35,6 +38,9 @@ function App() {
           <Route path="mierniki" element={<MetersPage />} />
           <Route path="sprzet-ochronny" element={<ProtectiveEquipmentPage />} />
           <Route path="pracownicy" element={<EmployeesPage />} />
+          <Route path="pracownicy/:id" element={<EmployeeDetailPage />} />
+          <Route path="pracownicy/:id/edytuj" element={<EditEmployeePage />} />
+          <Route path="pracownicy/nowy" element={<AddEmployeePage />} />
           <Route path="*" element={<NoMatchPage />} />
         </Route>
       </Routes>
