@@ -1,19 +1,17 @@
 import React from 'react';
 
 const permissionLabels = {
-  view_permission: 'Odczyt',
-  add_permission: 'Dodawanie',
-  edit_permission: 'Edycja',
-  delete_permission: 'Usuwanie'
+  can_read: 'Odczyt',
+  can_write: 'Zapis',
+  can_edit: 'Edycja',
+  can_delete: 'Usuwanie'
 };
 
 const EmployeePermissions = ({ permissions }) => {
-  console.log('EmployeePermissions', permissions);
   return (
     <div>
-      <h4 className="font-semibold mb-2">Uprawnienia</h4>
       <ul className="flex flex-wrap gap-2">
-        {Object.entries(permissions).map(([key, value]) => (
+        {Object.entries(permissions).filter(([key]) => key.startsWith('can_')).map(([key, value]) => (
           <li
             key={key}
             className={`px-3 py-1 rounded-xl text-sm text-white ${

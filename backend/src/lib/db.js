@@ -10,13 +10,4 @@ const sequelize = new Sequelize(process.env.POSTGRESQL_URI, {
     }
 });
 
-export const connectDB = async () => {
-    try {
-        await sequelize.authenticate();
-        console.log("PostgreSQL connected");
-    } catch (error) {
-        console.error("PostgreSQL connection error: ", error);
-    }
-};
-
 export default sequelize;

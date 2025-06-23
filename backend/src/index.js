@@ -6,9 +6,10 @@ import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import meterRoutes from "./routes/meter.route.js";
 import ProtectiveEquipmentRoutes from "./routes/protectiveEquipment.route.js"
-import { connectDB } from "./lib/db.js";
+//import { connectDB } from "./lib/db.js";
 import "./lib/cronTasks.js"
 import path from 'path';
+import { syncDb } from './models/index.js';
 
 const app = express();
 
@@ -43,5 +44,5 @@ if (process.env.NODE_ENV === "production") {
 
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
-    connectDB();
+    syncDb();
 });

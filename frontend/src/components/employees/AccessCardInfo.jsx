@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 const AccessCardInfo = ({ cardId, logs }) => {
   return (
     <div>
-      <h4 className="font-semibold mb-2">Karta dostępu</h4>
       <p><strong>ID:</strong> {cardId}</p>
 
       <h5 className="font-medium mt-4 mb-2">Historia odbić</h5>

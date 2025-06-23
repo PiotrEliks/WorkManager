@@ -1,3 +1,4 @@
+import { Check, X } from 'lucide-react';
 import React, { useState } from 'react';
 
 const EmployeeForm = ({ initialData = {}, onSubmit, isSubmitting }) => {
@@ -6,14 +7,21 @@ const EmployeeForm = ({ initialData = {}, onSubmit, isSubmitting }) => {
     email: initialData.email || '',
     role: initialData.role || '',
     cardId: initialData.cardId || '',
-    permissions: {
-      read: initialData.permissions?.read || false,
-      write: initialData.permissions?.write || false,
-      edit: initialData.permissions?.edit || false,
-      delete: initialData.permissions?.delete || false,
+    Permission: {
+      can_read: initialData.Permission?.can_read || false,
+      can_write: initialData.Permission?.can_write || false,
+      can_edit: initialData.Permission?.can_edit || false,
+      can_delete: initialData.Permission?.can_delete || false,
     },
     changedDefaultPassword: initialData.changedDefaultPassword || false,
   }));
+
+  const PERMISSION_KEYS = {
+    can_read: 'Odczyt',
+    can_write: 'Zapis',
+    can_edit: 'Edycja',
+    can_delete: 'Usuwanie'
+  };
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -22,9 +30,9 @@ const EmployeeForm = ({ initialData = {}, onSubmit, isSubmitting }) => {
   const handlePermissionChange = (perm) => {
     setFormData(prev => ({
       ...prev,
-      permissions: {
-        ...prev.permissions,
-        [perm]: !prev.permissions[perm],
+      Permission: {
+        ...prev.Permission,
+        [perm]: !prev.Permission[perm],
       },
     }));
   };
@@ -52,13 +60,16 @@ const EmployeeForm = ({ initialData = {}, onSubmit, isSubmitting }) => {
         className="border px-3 py-2 rounded"
         required
       />
-      <input
-        type="text"
+      <select
         value={formData.role}
         onChange={e => handleChange('role', e.target.value)}
-        placeholder="Rola"
         className="border px-3 py-2 rounded"
-      />
+        required
+      >
+        <option value="">Wybierz rolę</option>
+        <option value="administrator">Administrator</option>
+        <option value="pracownik">Pracownik</option>
+      </select>
       <input
         type="text"
         value={formData.cardId}
@@ -66,32 +77,35 @@ const EmployeeForm = ({ initialData = {}, onSubmit, isSubmitting }) => {
         placeholder="ID karty dostępu"
         className="border px-3 py-2 rounded"
       />
-
       <div>
         <label className="block font-semibold">Uprawnienia:</label>
-        {['read', 'write', 'edit', 'delete'].map(p => (
-          <label key={p} className="block">
-            <input
-              type="checkbox"
-              checked={formData.permissions[p]}
-              onChange={() => handlePermissionChange(p)}
-              className="mr-2"
-            />
-            {p}
-          </label>
-        ))}
+        {Object.entries(PERMISSION_KEYS).map(([key, label]) => {
+          const isChecked = formData.Permission[key];
+          return (
+            <label key={key} className="flex items-center gap-2 select-none">
+              <span
+                onClick={() => handlePermissionChange(key)}
+                className={`text-xl cursor-pointer transition-colors
+                  ${isChecked ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {isChecked ? <Check /> : <X />}
+              </span>
+              <span className="text-gray-800">{label}</span>
+            </label>
+          );
+        })}
       </div>
-
-      <label className="flex items-center">
-        <input
-          type="checkbox"
-          checked={formData.changedDefaultPassword}
-          onChange={() => handleChange('changedDefaultPassword', !formData.changedDefaultPassword)}
-          className="mr-2"
-        />
+      {/* <label
+        className="flex items-center gap-2 cursor-pointer select-none"
+        onClick={() =>
+          handleChange('changedDefaultPassword', !formData.changedDefaultPassword)
+        }
+      >
+        <span className={formData.changedDefaultPassword ? 'text-green-600' : 'text-red-600'}>
+          {formData.changedDefaultPassword ? <Check size={20} /> : <X size={20} />}
+        </span>
         Zmienił domyślne hasło
-      </label>
-
+      </label> */}
       <button
         type="submit"
         disabled={isSubmitting}

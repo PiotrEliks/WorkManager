@@ -6,9 +6,11 @@ import AccessCardInfo from '../components/employees/AccessCardInfo';
 import { ArrowLeft, Pencil, Trash  } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Loader from '../components/Loader';
+import useDocumentTitle from '../lib/useDocumentTitle';
 
 
 const EmployeeDetailPage = () => {
+  useDocumentTitle('Szczegóły pracownika | Panel Elektropomiar')
   const { id } = useParams();
   const navigate = useNavigate();
   const { users, getUsers, areUsersLoading, deleteUser } = useUserstore();
@@ -31,6 +33,8 @@ const EmployeeDetailPage = () => {
     const found = users.find(u => u.id ===id);
     setEmployee(found || null);
   }, [users, id]);
+
+  console.log('EmployeeDetailPage', { employee, users });
 
   if (areUsersLoading) return <Loader />;
   if (!employee) return <div className="text-center mt-10 text-lg font-medium">Nie znaleziono pracownika.</div>;
@@ -64,12 +68,12 @@ const EmployeeDetailPage = () => {
         {employee.fullName}
       </h2>
       <p><strong>Email:</strong> {employee.email}</p>
-      <p><strong>Rola:</strong> {employee.role}</p>
+      <p><strong>Rola:</strong> {employee.role.charAt(0).toUpperCase()}{employee.role.slice(1)}</p>
       <p><strong>Zmienił hasło domyślne:</strong> {employee.changedDefaultPassword ? 'Tak' : 'Nie'}</p>
 
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Uprawnienia</h3>
-        <EmployeePermissions permissions={employee.Permissions[0]} />
+        <EmployeePermissions permissions={employee.Permission} />
       </div>
 
       <div className="mt-6">

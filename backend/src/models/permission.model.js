@@ -1,32 +1,34 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../lib/db.js';
+import User from './users.model.js';
 
 const Permission = sequelize.define('Permission', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false
-    },
-    view_permission: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-    },
-    edit_permission: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-    },
-    add_permission: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-    },
-    delete_permission: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-    },
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
+  },
+  can_read: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  can_write: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  can_edit: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  can_delete: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  }
 }, {
-    tableName: 'Permissions',
-    timestamps: false,
+  timestamps: false
 });
+
+User.hasOne(Permission, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Permission.belongsTo(User, { foreignKey: 'userId' });
 
 export default Permission;
