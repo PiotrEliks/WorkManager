@@ -12,6 +12,8 @@ import NoMatchPage from './pages/NoMatchpage.jsx'
 import EmployeeDetailPage from './pages/EmployeeDetailPage.jsx'
 import AddEmployeePage from './pages/AddEmployeePage.jsx'
 import EditEmployeePage from './pages/EditEmployeePage';
+import AddNewMeterPage from './pages/AddNewMeterPage.jsx'
+import AddNewProtEqPage from './pages/AddNewProtEqPage.jsx'
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -36,7 +38,9 @@ function App() {
           element={authUser ? <DashboardLayout /> : <Navigate to="/logowanie" />}
         >
           <Route path="mierniki" element={<MetersPage />} />
+          <Route path="mierniki/nowy" element={<AddNewMeterPage />} />
           <Route path="sprzet-ochronny" element={<ProtectiveEquipmentPage />} />
+          <Route path="sprzet-ochronny/nowy" element={<AddNewProtEqPage />} />
           <Route path="pracownicy" element={<EmployeesPage />} />
           <Route path="pracownicy/:id" element={<EmployeeDetailPage />} />
           <Route path="pracownicy/:id/edytuj" element={<EditEmployeePage />} />
