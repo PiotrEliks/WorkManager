@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useMeterStore } from '../store/useMeterStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
-import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet  } from 'lucide-react'
+import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet, Delete  } from 'lucide-react'
 import { isWithinInterval, addDays } from 'date-fns'
 import { exportToExcel, exportToPDF } from '../lib/utlis.js'
 import HeadBar from './HeadBar.jsx'
+import DeleteConfirmation from './DeleteConfirmation.jsx'
 
 const MetersManager = ({ onClose }) => {
   const { meters, getMeters, deleteMeter, updateMeter, addMeter, isAdding, isUpdating, areMetersLoading } = useMeterStore();
@@ -553,23 +554,11 @@ const MetersManager = ({ onClose }) => {
     }
     {
       showDeleteConfirmation && (
-        <div className="fixed bg-gray-900 text-white p-10 rounded-xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          Na pewno chcesz usunąć <span className="font-bold">{meterToDelete.type} {meterToDelete.number} {meterToDelete.producer}</span>?
-          <div className="mt-4 flex justify-center gap-4">
-            <button
-              onClick={() => handleDeleteMeter(meterToDelete.id)}
-              className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded-xl cursor-pointer"
-            >
-              Potwierdź
-            </button>
-            <button
-              onClick={() => handleCancelDeleteMeter()}
-              className="bg-red-500 hover:bg-red-700 text-white py-1 px-4 rounded-xl cursor-pointer"
-            >
-              Anuluj
-            </button>
-          </div>
-        </div>
+      <DeleteConfirmation 
+        itemLabel={`${meterToDelete.type} ${meterToDelete.number} ${meterToDelete.producer}`}
+        onConfirm={() => handleDeleteMeter(meterToDelete.id)}
+        onCancel={() => handleCancelDeleteMeter()}
+      />
       )
     }
   </div>
