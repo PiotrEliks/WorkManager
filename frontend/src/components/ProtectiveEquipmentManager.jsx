@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useProtectiveEquipmentStore } from '../store/useProtectiveEquipmentStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
-import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet } from 'lucide-react'
-import { isWithinInterval, addDays, format } from 'date-fns'
-import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
-import { autoTable } from 'jspdf-autotable';
+import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, X, FilePlus, Hash, FileText, Calendar, Tag, FileSpreadsheet } from 'lucide-react'
+import { isWithinInterval, addDays } from 'date-fns'
+import { exportToExcel, exportToPDF } from '../lib/utlis.js'
 
 const ProtectiveEquipmentManager = ({ onClose }) => {
   const { equipment, getEq, deleteEq, updateEq, addEq, isAdding, isUpdating, isEquipmentLoading } = useProtectiveEquipmentStore();
@@ -21,60 +19,25 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
     getEq();
   }, [getEq]);
 
-  const exportToExcel = () => {
-      const tableColumns = ["Nazwa", "Nr fabr", "Nr protokołu", "Data sprawdzenia", "Data następnego sprawdzenia", "Uwagi", "Edytowane przez"];
+  const tableColumns = [
+    { key: 'name', label: "Nazwa" }, 
+    { key: 'factoryNumber', label: "Nr fabr" }, 
+    { key: 'protocolNumber', label: "Nr protokołu" }, 
+    { key: 'checkDate', label: "Data sprawdzenia" }, 
+    { key: 'nextCheckDate', label: "Data następnego spradzenia" }, 
+    { key: 'comments', label: "Uwagi" }, 
+    { key: 'editedBy', label: "Edytowane przez" }
+  ];
 
-      const tableData = equipment.map(eq => ({
-        "Nazwa": eq.name,
-        "Nr fabr": eq.factoryNumber,
-        "Nr protokołu": eq.protocolNumber,
-        "Data sprawdzenia": eq.checkDate,
-        "Data następnego sprawdzenia": eq.nextCheckDate,
-        "Uwagi": eq.comments || '',
-        "Edytowane przez": eq.editedBy
-      }));
-
-      const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
-
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Sprzęt ochronny');
-
-      XLSX.writeFile(wb, `sprzet_ochronny${format(new Date(), 'dd/MM/yyyy-h:m')}.xlsx`);
-    };
-
-    const exportToPDF = () => {
-      const doc = new jsPDF();
-
-      doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
-      doc.setFont('Roboto', 'normal');
-
-      doc.setFontSize(12);
-
-      const tableColumns = ["Nazwa", "Nr fabr", "Nr protokołu", "Data sprawdzenia", "Data następnego sprawdzenia", "Uwagi", "Edytowane przez"];
-
-      const tableData = equipment.map(eq => [
-        eq.name,
-        eq.factoryNumber,
-        eq.protocolNumber,
-        eq.checkDate,
-        eq.nextCheckDate,
-        eq.comments || '',
-        eq.editedBy
-      ]);
-
-      autoTable(doc, {
-        head: [tableColumns],
-        body: tableData,
-        startY: 20,
-      });
-
-      const pdfOutput = doc.output('bloburl');
-
-      const link = document.createElement('a');
-      link.href = pdfOutput;
-      link.target = '_blank';
-      link.click();
-    };
+  const tableData = equipment.map(eq => ({
+    name: eq.name,
+    factoryNumber: eq.factoryNumber,
+    protocolNumber: eq.protocolNumber,
+    checkDate: eq.checkDate,
+    nextCheckDate: eq.nextCheckDate,
+    comments: eq.comments || '',
+    editedBy: eq.editedBy
+  }));
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -449,7 +412,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
               </button>
               <div className="flex flex-row gap-1">
                 <button
-                  onClick={exportToExcel}
+                  onClick={() => exportToExcel(tableColumns, tableData, 'sprzęt_ochronny')}
                   className="cursor-pointer bg-green-800 hover:bg-green-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                   title="Pobierz w formacie .xlsx"
                 >
@@ -457,7 +420,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                   Excel
                 </button>
                 <button
-                  onClick={exportToPDF}
+                  onClick={() => exportToPDF(tableColumns, tableData, 'sprzęt_ochronny')}
                   className="cursor-pointer bg-red-800 hover:bg-red-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                   title="Pobierz w formacie PDF"
                 >
@@ -465,7 +428,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                   PDF
                 </button>
                 {
-                  authUser.Permissions[0].add_permission &&
+                  authUser.Permission.can_write &&
                     <button
                       className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                       onClick={() => {setShowAddNewWindow(true)}}
@@ -522,7 +485,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
           <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{eq.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
             {
-              authUser.Permissions[0].edit_permission &&
+              authUser.Permission.can_edit &&
                 <button
                   onClick={() => {
                     setShowEditWindow(true);
@@ -536,7 +499,7 @@ const ProtectiveEquipmentManager = ({ onClose }) => {
                 </button>
             }
             {
-              authUser.Permissions[0].delete_permission &&
+              authUser.Permission.can_delete &&
                 <button
                   onClick={() => handleShowDeleteConfirmationWindow(eq.id, eq.name, eq.factoryNumber, eq.protocolNumber)}
                   className="bg-red-500 hover:bg-red-500/70 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"

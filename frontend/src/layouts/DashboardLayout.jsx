@@ -80,7 +80,6 @@ const DashboardLayout = () => {
               onClick={() => {
                 setOpenResources(prev => !prev);
                 if (sidebarCollapsed) toggleSidebar();
-                setOpenEmployees(false);
               }}
               className={`
                 w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer
@@ -147,7 +146,6 @@ const DashboardLayout = () => {
               <button
                 onClick={() => {
                   setOpenResources(prev => !prev);
-                  setOpenEmployees(false);
                 }}
                 className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-700/80 ${openResources ? 'bg-blue-700/80' : ''}`}
               >

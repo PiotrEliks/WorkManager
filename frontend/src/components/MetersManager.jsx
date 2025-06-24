@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useMeterStore } from '../store/useMeterStore.js'
 import { useAuthStore } from '../store/useAuthStore.js'
 import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet  } from 'lucide-react'
-import { isToday, isThisWeek, isWithinInterval, startOfWeek, addDays, format } from 'date-fns'
-import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
-import { autoTable } from 'jspdf-autotable';
+import { isWithinInterval, addDays } from 'date-fns'
+import { exportToExcel, exportToPDF } from '../lib/utlis.js'
 
 const MetersManager = ({ onClose }) => {
   const { meters, getMeters, deleteMeter, updateMeter, addMeter, isAdding, isUpdating, areMetersLoading } = useMeterStore();
@@ -21,70 +19,27 @@ const MetersManager = ({ onClose }) => {
     getMeters();
   }, [getMeters]);
 
-  const replacePolishChars = (str) =>
-    str?.replace(/[ąćęłńóśźż]/gi, (c) =>
-     ({
-      ą: 'a', ć: 'c', ę: 'e', ł: 'l', ń: 'n', ó: 'o', ś: 's', ź: 'z', ż: 'z',
-      Ą: 'A', Ć: 'C', Ę: 'E', Ł: 'L', Ń: 'N', Ó: 'O', Ś: 'S', Ź: 'Z', Ż: 'Z'
-    }[c]) || c
-  );
+  const tableColumns = [
+    { key: 'type', label: "Typ" }, 
+    { key: 'number', label: "Numer"}, 
+    { key: 'producer', label: "Producent" }, 
+    { key: 'comments', label: "Uwagi" }, 
+    { key: 'checkdate', label: "Termin sprawdzenia" }, 
+    { key: 'nextcheckdate', label: "Nastepny termin sprawdzenia" }, 
+    { key: 'condition', label: "Stan" }, 
+    { key: 'editedBy', label: "Edytowane przez" }
+  ];
 
-  const exportToExcel = () => {
-    const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Następny termin sprawdzenia", "Stan", "Edytowane przez"];
-
-    const tableData = meters.map(meter => ({
-      "Typ": replacePolishChars(meter.type),
-      "Numer": replacePolishChars(meter.number),
-      "Producent": replacePolishChars(meter.producer),
-      "Uwagi": replacePolishChars(meter.comments || ''),
-      "Termin sprawdzenia": replacePolishChars(meter.checkdate),
-      "Następny termin sprawdzenia": replacePolishChars(meter.nextcheckdate),
-      "Stan": replacePolishChars(meter.condition || ''),
-      "Edytowane przez": replacePolishChars(meter.editedBy)
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Mierniki');
-
-    XLSX.writeFile(wb, `mierniki_${format(new Date(), 'dd/MM/yyyy-h:m')}.xlsx`);
-  };
-
-  const exportToPDF = () => {
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-    doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
-    doc.setFont('Roboto', 'normal');
-
-    doc.setFontSize(12);
-
-    const tableColumns = ["Typ", "Numer", "Producent", "Uwagi", "Termin sprawdzenia", "Nastepny termin sprawdzenia", "Stan", "Edytowane przez"];
-
-    const tableData = meters.map(meter => [
-      replacePolishChars(meter.type),
-      replacePolishChars(meter.number),
-      replacePolishChars(meter.producer),
-      replacePolishChars(meter.comments || ''),
-      replacePolishChars(meter.checkdate),
-      replacePolishChars(meter.nextcheckdate),
-      replacePolishChars(meter.condition || ''),
-      replacePolishChars(meter.editedBy)
-    ]);
-
-    autoTable(doc, {
-      head: [tableColumns],
-      body: tableData,
-      startY: 20,
-    });
-
-    const pdfOutput = doc.output('bloburl');
-
-    const link = document.createElement('a');
-    link.href = pdfOutput;
-    link.target = '_blank';
-    link.click();
-  };
+  const tableData = meters.map(meter => ({
+    type: meter.type,
+    number: meter.number,
+    producer: meter.producer,
+    comments: meter.comments || '',
+    checkdate: meter.checkdate,
+    nextcheckdate: meter.nextcheckdate,
+    condition: meter.condition || '',
+    editedBy: meter.editedBy
+  }));
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -515,7 +470,7 @@ const MetersManager = ({ onClose }) => {
               </button>
               <div className="flex flex-row gap-1">
                 <button
-                  onClick={exportToExcel}
+                  onClick={() => exportToExcel(tableColumns, tableData, 'mierniki')}
                   className="cursor-pointer bg-green-800 hover:bg-green-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                   title="Pobierz w formacie .xlsx"
                 >
@@ -523,7 +478,7 @@ const MetersManager = ({ onClose }) => {
                   Excel
                 </button>
                 <button
-                  onClick={exportToPDF}
+                  onClick={() => exportToPDF(tableColumns, tableData, 'mierniki')}
                   className="cursor-pointer bg-red-800 hover:bg-red-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                   title="Pobierz w formacie PDF"
                 >
@@ -531,7 +486,7 @@ const MetersManager = ({ onClose }) => {
                   PDF
                 </button>
                 {
-                  authUser.Permissions[0].add_permission &&
+                  authUser.Permission.can_write &&
                     <button
                       className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
                       onClick={() => {setShowAddNewWindow(true)}}
@@ -599,7 +554,7 @@ const MetersManager = ({ onClose }) => {
           <div className="border-b-1 border-zinc-300 sm:border-none mx-5 sm:mx-0">{meter.editedBy}</div>
           <div className="flex flex-col items-center justify-center gap-1">
             {
-              authUser.Permissions[0].edit_permission &&
+              authUser.Permission.can_edit &&
                 <button
                 onClick={() => {
                   setShowEditWindow(true);
@@ -614,7 +569,7 @@ const MetersManager = ({ onClose }) => {
             }
             {
 
-              authUser.Permissions[0].delete_permission &&
+              authUser.Permission.can_delete &&
                 <button
                 onClick={() => handleShowDeleteConfirmationWindow(meter.id, meter.type, meter.number, meter.producer)}
                 className="bg-red-500 hover:bg-red-500/70 text-white py-1 px-3 rounded-xl cursor-pointer flex flex-row items-center gap-1"
