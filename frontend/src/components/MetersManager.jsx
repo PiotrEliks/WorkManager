@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/useAuthStore.js'
 import { LoaderCircle, Trash2, FilePenLine, ArrowLeft, Mail, X, FilePlus, Hash, FileText, CheckCircle, Clock, Calendar, Building2, Tag, FileSpreadsheet  } from 'lucide-react'
 import { isWithinInterval, addDays } from 'date-fns'
 import { exportToExcel, exportToPDF } from '../lib/utlis.js'
+import HeadBar from './HeadBar.jsx'
 
 const MetersManager = ({ onClose }) => {
   const { meters, getMeters, deleteMeter, updateMeter, addMeter, isAdding, isUpdating, areMetersLoading } = useMeterStore();
@@ -460,44 +461,11 @@ const MetersManager = ({ onClose }) => {
       {
         !showAddNewWindow && !showEditWindow &&
           <>
-            <div className="w-full flex flex-row items-center justify-between">
-              <button
-                className="cursor-pointer"
-                onClick={() => {onClose(false)}}
-                title="Powrót do menu"
-              >
-                <ArrowLeft className="size-6"/>
-              </button>
-              <div className="flex flex-row gap-1">
-                <button
-                  onClick={() => exportToExcel(tableColumns, tableData, 'mierniki')}
-                  className="cursor-pointer bg-green-800 hover:bg-green-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-                  title="Pobierz w formacie .xlsx"
-                >
-                  <FileSpreadsheet className="size-5" />
-                  Excel
-                </button>
-                <button
-                  onClick={() => exportToPDF(tableColumns, tableData, 'mierniki')}
-                  className="cursor-pointer bg-red-800 hover:bg-red-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-                  title="Pobierz w formacie PDF"
-                >
-                  <FileText className="size-5" />
-                  PDF
-                </button>
-                {
-                  authUser.Permission.can_write &&
-                    <button
-                      className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-                      onClick={() => {setShowAddNewWindow(true)}}
-                      title="Dodaj nowy miernik"
-                    >
-                      <FilePlus className="size-5"/>
-                      Dodaj nowy
-                    </button>
-                }
-              </div>
-            </div>
+            <HeadBar 
+              tableColumns={tableColumns}
+              tableData={tableData}
+              name="mierniki"
+            />
 
   <div className="hidden sm:grid-cols-10 gap-2 font-bold text-sm border-b pb-2 text-center items-center sm:grid">
     <div>Typ</div>
