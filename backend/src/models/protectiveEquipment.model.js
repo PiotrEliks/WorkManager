@@ -21,11 +21,11 @@ const ProtectiveEquipment = sequelize.define('ProtectiveEquipment', {
       allowNull: false
     },
     checkDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false
     },
     nextCheckDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
     comments: {
