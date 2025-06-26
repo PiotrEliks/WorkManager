@@ -51,7 +51,11 @@ export const useMeterStore = create((set, get) => ({
   updateMeter: async (meterId, formData) => {
     set({ isUpdating: true });
     try {
-      const res = await axiosInstance.put(`/meters/meter/update/${meterId}`, formData);
+      const payload = Object.entries(formData).reduce((acc, [key, value]) => {
+        acc[key] = value === '' ? null : value
+        return acc
+      }, {})
+      const res = await axiosInstance.put(`/meters/meter/update/${meterId}`, payload);
       set({ meters: res.data });
       toast.success("Miernik został zaktualizowany");
     } catch (error) {

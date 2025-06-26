@@ -1,16 +1,12 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import ResourceManager from '../../components/ResourceManager'
 import { useProtectiveEquipmentStore } from '../../store/useProtectiveEquipmentStore'
-import { useAuthStore } from '../../store/useAuthStore'
-import { Trash2, FilePenLine } from 'lucide-react'
 import useDocumentTitle from '../../lib/useDocumentTitle'
 import { isAfterDeadline, isDeadline, dateFormat } from '../../lib/deadline'
+import { ResourceActions } from '../../components/ResourceActions'
 
 const ProtectiveEquipmentPage = () => {
   useDocumentTitle('Sprzęt ochronny | Panel Elektropomiar')
-  const navigate = useNavigate()
-    const { authUser } = useAuthStore()
     const { equipment, getEq, deleteEq, isEquipmentLoading } = useProtectiveEquipmentStore()
   
     const columns = [
@@ -58,32 +54,11 @@ const ProtectiveEquipmentPage = () => {
       loading={isEquipmentLoading}
       fetchItems={getEq}
       deleteItem={deleteEq}
-      renderActions={(eq, confirmDelete) => (
-        <div className="flex flex-col items-center justify-center gap-1">
-          {authUser.Permission.can_edit && (
-            <button
-              onClick={() => navigate(`${eq.id}/edytuj`)}
-              className="bg-blue-800 hover:bg-blue-800/80 text-white py-1 px-3 rounded-xl flex items-center gap-1 cursor-pointer"
-            >
-              <FilePenLine className="size-5" />
-              Edytuj
-            </button>
-          )}
-          {authUser.Permission.can_delete && (
-            <button
-              onClick={() =>
-                confirmDelete({
-                  ...eq,
-                  _label: `${eq.type} ${eq.number}`
-                })
-              }
-              className="bg-red-500 hover:bg-red-500/70 text-white py-1 px-3 rounded-xl flex items-center gap-1 cursor-pointer"
-            >
-              <Trash2 className="size-5" />
-              Usuń
-            </button>
-          )}
-        </div>
+       renderActions={(eq, confirmDelete) => (
+        <ResourceActions
+          entity={{ ...eq, _label: eq.name }}
+          confirmDelete={confirmDelete}
+        />
       )}
     />
   )

@@ -51,7 +51,11 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   updateEq: async (eqId, formData) => {
     set({ isUpdating: true });
     try {
-      const res = await axiosInstance.put(`/protectiveEquipment/${eqId}/update`, formData);
+      const payload = Object.entries(formData).reduce((acc, [key, value]) => {
+        acc[key] = value === '' ? null : value
+        return acc
+      }, {})
+      const res = await axiosInstance.put(`/protectiveEquipment/${eqId}/update`, payload);
       set({ equipment: res.data });
       toast.success("Sprzęt został zaktualizowany");
     } catch (error) {

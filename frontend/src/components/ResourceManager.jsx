@@ -32,7 +32,7 @@ export default function ResourceManager({
       />
       <DataTable
         columns={columns}
-        data={items}                 // ← upewnij się, że tu jest `items`
+        data={items}
         renderActions={(item) => renderActions(item, setToDelete)}
       />
 
