@@ -13,11 +13,17 @@ const replacePolishChars = (str) => {
   });
 };
 
+const clean = (val) => {
+  return typeof val === 'string'
+    ? replacePolishChars(val)
+    : val;
+};
+
 export const exportToExcel = (headers, data, fileName = 'eksport') => {
-  const tableColumns = headers.map(h => replacePolishChars(h.label));
+  const tableColumns = headers.map(h => clean(h.label));
   const tableData = data.map(item =>
     headers.reduce((row, h) => {
-      row[h.label] = replacePolishChars(item[h.key]);
+      row[h.label] = clean(item[h.key]);
       return row;
     }, {})
   );
@@ -48,9 +54,9 @@ export const exportToPDF = (headers, data, fileName = 'eksport') => {
     keywords: 'eksport, dane, PDF',
   });
 
-  const tableColumns = headers.map(h => replacePolishChars(h.label));
+  const tableColumns = headers.map(h => clean(h.label));
   const tableData = data.map(item =>
-    headers.map(h => replacePolishChars(item[h.key]))
+    headers.map(h => clean(item[h.key]))
   );
 
   autoTable(doc, {

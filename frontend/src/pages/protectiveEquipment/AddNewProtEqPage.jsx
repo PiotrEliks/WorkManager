@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import DataForm from '../../components/DataForm.jsx'
+import DataForm from '../../components/forms/DataForm.jsx'
 import { Tag, Hash, Building2, Calendar, Clock, CheckCircle, FileText } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore.js'

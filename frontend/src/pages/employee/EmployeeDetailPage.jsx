@@ -5,7 +5,7 @@ import EmployeePermissions from '../../components/employees/EmployeePermissions'
 import AccessCardInfo from '../../components/employees/AccessCardInfo';
 import { ArrowLeft, Pencil, Trash  } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Loader from '../../components/Loader';
+import Loader from '../../components/ui/Loader';
 import useDocumentTitle from '../../lib/useDocumentTitle';
 
 

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useMeterStore } from '../../store/useMeterStore.js'
 import { useAuthStore } from '../../store/useAuthStore.js'
-import DataForm from '../../components/DataForm.jsx'
+import DataForm from '../../components/forms/DataForm.jsx'
 import { useNavigate } from 'react-router-dom'
 import { Tag, Hash, Building2, Calendar, Clock, CheckCircle, FileText } from 'lucide-react'
-import Loader from '../../components/Loader.jsx'
+import Loader from '../../components/ui/Loader.jsx'
 import useDocumentTitle from '../../lib/useDocumentTitle.jsx';
 
 const EditMeterPage = () => {

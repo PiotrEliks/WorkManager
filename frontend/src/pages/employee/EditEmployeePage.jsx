@@ -4,7 +4,7 @@ import EmployeeForm from '../../components/employees/EmployeeForm';
 import { useUserstore } from '../../store/useUserstore';
 import useDocumentTitle from '../../lib/useDocumentTitle';
 import { X } from 'lucide-react';
-import Loader from '../../components/Loader';
+import Loader from '../../components/ui/Loader';
 
 const EditEmployeePage = () => {
   useDocumentTitle('Edycja pracownika | Panel Elektropomiar');
