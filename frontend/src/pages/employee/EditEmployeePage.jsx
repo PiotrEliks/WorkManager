@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import EmployeeForm from '../components/employees/EmployeeForm';
-import { useUserstore } from '../store/useUserstore';
-import useDocumentTitle from '../lib/useDocumentTitle';
+import EmployeeForm from '../../components/employees/EmployeeForm';
+import { useUserstore } from '../../store/useUserstore';
+import useDocumentTitle from '../../lib/useDocumentTitle';
 import { X } from 'lucide-react';
-import Loader from '../components/Loader';
+import Loader from '../../components/Loader';
 
 const EditEmployeePage = () => {
   useDocumentTitle('Edycja pracownika | Panel Elektropomiar');

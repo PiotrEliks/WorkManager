@@ -100,3 +100,24 @@ export const updateEq = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     }
 };
+
+export const getEqById = async (req, res) => {
+    try {
+        const { eqId } = req.params;
+
+        const eq = await ProtectiveEquipment.findOne({
+            where: {
+                id: eqId,
+            }
+        });
+
+        if (!eq) {
+            return res.status(404).json({ message: "Eq not found" });
+        }
+
+        return res.status(200).json(eq);
+    } catch (error) {
+        console.error("Error in getEqById: ", error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    }
+};

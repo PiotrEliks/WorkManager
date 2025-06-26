@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useUserstore } from '../store/useUserstore';
-import EmployeePermissions from '../components/employees/EmployeePermissions';
-import AccessCardInfo from '../components/employees/AccessCardInfo';
+import { useUserstore } from '../../store/useUserstore';
+import EmployeePermissions from '../../components/employees/EmployeePermissions';
+import AccessCardInfo from '../../components/employees/AccessCardInfo';
 import { ArrowLeft, Pencil, Trash  } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Loader from '../components/Loader';
-import useDocumentTitle from '../lib/useDocumentTitle';
+import Loader from '../../components/Loader';
+import useDocumentTitle from '../../lib/useDocumentTitle';
 
 
 const EmployeeDetailPage = () => {

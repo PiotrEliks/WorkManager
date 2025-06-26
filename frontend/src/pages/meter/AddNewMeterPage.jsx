@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { useAuthStore } from '../store/useAuthStore.js'
-import { useMeterStore } from '../store/useMeterStore.js'
-import DataForm from '../components/DataForm.jsx'
+import { useAuthStore } from '../../store/useAuthStore.js'
+import { useMeterStore } from '../../store/useMeterStore.js'
+import DataForm from '../../components/DataForm.jsx'
 import { Tag, Hash, Building2, Calendar, Clock, CheckCircle, FileText } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import useDocumentTitle from '../../lib/useDocumentTitle.jsx';
 
 const AddNewMeterPage = () => {
+  useDocumentTitle('Dodaj miernik | Panel Elektropomiar');
   const navigate = useNavigate();
   const { authUser } = useAuthStore();
   const { addMeter, isAdding } = useMeterStore();

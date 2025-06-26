@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { useUserstore } from '../store/useUserstore';
-import EmployeeCard from '../components/employees/EmployeeCard';
-import useDocumentTitle from '../lib/useDocumentTitle';
+import { useUserstore } from '../../store/useUserstore';
+import EmployeeCard from '../../components/employees/EmployeeCard';
+import useDocumentTitle from '../../lib/useDocumentTitle';
 import { useNavigate } from 'react-router-dom';
 import { UserRoundPlus } from 'lucide-react';
-import Loader from '../components/Loader';
+import Loader from '../../components/Loader';
 
 const EmployeesPage = () => {
   const navigate = useNavigate();

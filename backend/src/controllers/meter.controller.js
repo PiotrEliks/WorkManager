@@ -103,3 +103,24 @@ export const updateMeter = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     }
 };
+
+export const getMeter = async (req, res) => {
+    try {
+        const { meterId } = req.params;
+
+        const meter = await Meter.findOne({
+            where: {
+                id: meterId,
+            }
+        });
+
+        if (!meter) {
+            return res.status(404).json({ message: "Meter not found" });
+        }
+
+        return res.status(200).json(meter);
+    } catch (error) {
+        console.error("Error in getMeter: ", error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    }
+};

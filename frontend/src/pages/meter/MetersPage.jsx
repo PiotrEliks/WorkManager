@@ -1,6 +1,6 @@
 import React, { use } from 'react'
-import MetersManager from '../components/MetersManager'
-import useDocumentTitle from '../lib/useDocumentTitle'
+import MetersManager from '../../components/MetersManager'
+import useDocumentTitle from '../../lib/useDocumentTitle'
 
 const MetersPage = () => {
   useDocumentTitle('Mierniki | Panel Elektropomiar')

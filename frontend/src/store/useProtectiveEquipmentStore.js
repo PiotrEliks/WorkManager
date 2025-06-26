@@ -62,4 +62,15 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
     }
   },
 
+  getEqById: async (eqId) => {
+    try {
+      const res = await axiosInstance.get(`protectiveEquipment
+/eq/${eqId}`);
+      return res.data;
+    } catch (error) {
+      console.log("Error in getEqById: ", error);
+      toast.error("Błąd podczas pobierania sprzętu ochronnego");
+    }
+  },
+
 }));

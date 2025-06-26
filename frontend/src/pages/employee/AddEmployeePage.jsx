@@ -1,7 +1,7 @@
 import React from 'react';
-import EmployeeForm from '../components/employees/EmployeeForm';
-import { useUserstore } from '../store/useUserstore';
-import useDocumentTitle from '../lib/useDocumentTitle';
+import EmployeeForm from '../../components/employees/EmployeeForm';
+import { useUserstore } from '../../store/useUserstore';
+import useDocumentTitle from '../../lib/useDocumentTitle';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 

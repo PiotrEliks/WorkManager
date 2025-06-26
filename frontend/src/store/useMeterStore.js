@@ -62,4 +62,14 @@ export const useMeterStore = create((set, get) => ({
     }
   },
 
+  getMeter: async (meterId) => {
+    try {
+      const res = await axiosInstance.get(`/meters/meter/${meterId}`);
+      return res.data;
+    } catch (error) {
+      console.log("Error in getMeter: ", error);
+      toast.error("Błąd podczas pobierania miernika");
+    }
+  },
+
 }));
