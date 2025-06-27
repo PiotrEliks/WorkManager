@@ -27,7 +27,7 @@ export const addMeter = async (req, res) => {
         });
 
         if (existingMeter) {
-            return res.status(400).json({ message: "Meter already exists" });
+            return res.status(400).json({ message: "Miernik już isnieje" });
         }
 
         let checkDateObj = parse(checkdate, 'dd.MM.yyyy', new Date());
@@ -95,7 +95,7 @@ export const updateMeter = async (req, res) => {
 
         const existing = await Meter.findByPk(meterId);
         if (!existing) {
-          return res.status(404).json({ message: "Meter not found" });
+          return res.status(404).json({ message: "Nie znaleziono miernika" });
         }
 
         let checkDateObj = existing.checkdate;
@@ -161,7 +161,7 @@ export const getMeter = async (req, res) => {
         });
 
         if (!meter) {
-            return res.status(404).json({ message: "Meter not found" });
+            return res.status(404).json({ message: "Nie znaleziono miernika" });
         }
 
         return res.status(200).json(meter);

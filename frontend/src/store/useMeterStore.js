@@ -14,7 +14,7 @@ export const useMeterStore = create((set, get) => ({
       const res = await axiosInstance.get("/meters/all", data);
       set({ meters: res.data });
     } catch (error) {
-      console.log("Error in getMeters: ", error);
+      console.error(error.response.data.message);
     } finally {
       set({ areMetersLoading: false });
     }
@@ -27,8 +27,8 @@ export const useMeterStore = create((set, get) => ({
       set({ meters: res.data });
       toast.success("Miernik został dodany");
     } catch (error) {
-      console.log("Error in addMeter: ", error);
-      toast.error("Błąd podczas dodawania miernika");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       set({ isAdding: false });
     }
@@ -41,8 +41,8 @@ export const useMeterStore = create((set, get) => ({
       set({ meters: res.data });
       toast.success("Miernik został usunięty");
     } catch (error) {
-      console.log("Error in deleteMeter: ", error);
-      toast.error("Błąd podczas usuwania miernika");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       set({ areMetersLoading: false });
     }
@@ -59,8 +59,8 @@ export const useMeterStore = create((set, get) => ({
       set({ meters: res.data });
       toast.success("Miernik został zaktualizowany");
     } catch (error) {
-      console.log("Error in updateMeter: ", error);
-      toast.error("Błąd podczas aktualizowania miernika");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       set({ isUpdating: false });
     }
@@ -71,8 +71,7 @@ export const useMeterStore = create((set, get) => ({
       const res = await axiosInstance.get(`/meters/meter/${meterId}`);
       return res.data;
     } catch (error) {
-      console.log("Error in getMeter: ", error);
-      toast.error("Błąd podczas pobierania miernika");
+      console.error(error.response.data.message);
     }
   },
 

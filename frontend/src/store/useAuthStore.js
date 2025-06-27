@@ -13,7 +13,7 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
     } catch (error) {
-      console.log("Error in checkAuth: ", error);
+      console.error(error.response.data.message);
       set({ authUser: null});
     } finally {
       set({ isCheckingAuth: false });
@@ -25,7 +25,6 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
-      toast.success("Zalogowano");
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -37,7 +36,6 @@ export const useAuthStore = create((set, get) => ({
     try {
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
-      toast.success("Wylogowano");
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -52,8 +50,8 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast.success("Hasło zostało zmienione");
     } catch (error) {
-      console.log("Error in updateUser: ", error);
-      toast.error("Błąd podczas zmiany hasła");
+      console.error("Error in updateUser: ", error);
+      toast.error(error.response.data.message);
     } finally {
       set({ isUpdating: false });
     }

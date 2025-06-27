@@ -15,12 +15,12 @@ export const login = async (req, res) => {
         });
 
         if (!user) {
-           return res.status(404).json({ message: "User not found"});
+           return res.status(404).json({ message: "Nie znaleziono użytkownika"});
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "Nie prawidłowe dane logowania" });
         }
 
         generateToken(user.id, res);
@@ -35,7 +35,7 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         res.cookie("token", "", { maxAge: 0 });
-        res.status(200).json({ message: "Logged out successfully" });
+        res.status(200).json({ message: "Wylogowano" });
     } catch (error) {
         console.error("Error in logout: ", error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -58,26 +58,26 @@ export const checkAuth = (req, res) => {
 
         const user = await User.findByPk(userId);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Nie znaleziono użytkownika' });
         }
 
         if (password.length < 8) {
-            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+            return res.status(400).json({ message: 'Hasło musi mieć przynajmniej 8 znaków' });
         }
 
         const hasLowerCase = /[a-z]/.test(password);
         if (!hasLowerCase) {
-            return res.status(400).json({ message: 'Password must have at least one small letter' });
+            return res.status(400).json({ message: 'Hasło musi mieć przynajmniej jedną małą literę' });
         }
 
         const hasUpperCase = /[A-Z]/.test(password);
         if (!hasUpperCase) {
-            return res.status(400).json({ message: 'Password must have at least one capital letter' });
+            return res.status(400).json({ message: 'Hasło mus mieć przynajmniej jedną wielką literę' });
         }
 
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
         if (!hasSpecialChar) {
-            return res.status(400).json({ message: 'Password must have at least one special character' });
+            return res.status(400).json({ message: 'Hasło musi mieć przynajmniej jeden znak specjalny' });
         }
 
         const salt = await bcrypt.genSalt(10);

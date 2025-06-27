@@ -25,7 +25,7 @@ export const addEq = async (req, res) => {
         });
 
         if (existingEquipment) {
-            return res.status(400).json({ message: "Equipment already exists" });
+            return res.status(400).json({ message: "Sprzęt już istnieje" });
         }
 
         const newEq = await ProtectiveEquipment.create({
@@ -75,6 +75,11 @@ export const updateEq = async (req, res) => {
         const { eqId } = req.params;
         const { name, factoryNumber, protocolNumber, checkDate, nextCheckDate, comments, editedBy } = req.body;
 
+        const existing = await ProtectiveEquipment.findByPk(eqId);
+        if (!existing) {
+          return res.status(404).json({ message: "Nie znaleziono sprzętu" });
+        }
+
         const updatedData = {};
         if (name) updatedData.name = name;
         if (factoryNumber) updatedData.factoryNumber = factoryNumber;
@@ -112,7 +117,7 @@ export const getEqById = async (req, res) => {
         });
 
         if (!eq) {
-            return res.status(404).json({ message: "Eq not found" });
+            return res.status(404).json({ message: "Nie znaleziono sprzętu" });
         }
 
         return res.status(200).json(eq);

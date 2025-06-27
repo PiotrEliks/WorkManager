@@ -14,7 +14,7 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
       const res = await axiosInstance.get("/protectiveEquipment/all", data);
       set({ equipment: res.data });
     } catch (error) {
-      console.log("Error in getEq: ", error);
+      console.error(error.response.data.message);
     } finally {
       set({ isEquipmentLoading: false });
     }
@@ -27,8 +27,8 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
       set({ equipment: res.data });
       toast.success("Sprzęt został dodany");
     } catch (error) {
-      console.log("Error in addEq: ", error);
-      toast.error("Błąd podczas dodawania sprzętu");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       set({ isAdding: false });
     }
@@ -41,8 +41,8 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
       set({ equipment: res.data });
       toast.success("Sprzęt został usunięty");
     } catch (error) {
-      console.log("Error in deleteEq: ", error);
-      toast.error("Błąd podczas usuwania sprzętu");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       set({ isEquipmentLoading: false });
     }
@@ -59,8 +59,8 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
       set({ equipment: res.data });
       toast.success("Sprzęt został zaktualizowany");
     } catch (error) {
-      console.log("Error in updateEq: ", error);
-      toast.error("Błąd podczas aktualizowania sprzętu");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       set({ isUpdating: false });
     }
@@ -72,8 +72,8 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
 /eq/${eqId}`);
       return res.data;
     } catch (error) {
-      console.log("Error in getEqById: ", error);
-      toast.error("Błąd podczas pobierania sprzętu ochronnego");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   },
 

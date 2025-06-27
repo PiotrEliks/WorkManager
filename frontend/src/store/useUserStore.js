@@ -14,7 +14,7 @@ export const useUserstore = create((set, get) => ({
       const res = await axiosInstance.get("/users/all", data);
       set({ users: res.data });
     } catch (error) {
-      console.log("Error in getUsers: ", error);
+      console.error(error.response.data.message);
     } finally {
       set({ areUsersLoading: false });
     }
@@ -27,8 +27,7 @@ export const useUserstore = create((set, get) => ({
       set({ users: res.data });
       toast.success("Pracownik został dodany");
     } catch (error) {
-      console.log("Error in addUser: ", error);
-      toast.error("Błąd podczas dodawania pracownika");
+      toast.error(error.response.data.message);
     } finally {
       set({ isAdding: false });
     }
@@ -41,8 +40,7 @@ export const useUserstore = create((set, get) => ({
       set({ users: res.data });
       toast.success("Pracownik został usunięty");
     } catch (error) {
-      console.log("Error in deleteUser: ", error);
-      toast.error("Błąd podczas usuwania pracownika");
+      toast.error(error.response.data.message);
     } finally {
       set({ areUsersLoading: false });
     }
@@ -53,10 +51,9 @@ export const useUserstore = create((set, get) => ({
     try {
       const res = await axiosInstance.put(`/users/${userId}/update`, formData);
       set({ users: res.data });
-      toast.success("Pracownik został zaktualizowany");
+      toast.success("Dane pracownika zostały zaktualizowane");
     } catch (error) {
-      console.log("Error in updateUser: ", error);
-      toast.error("Błąd podczas aktualizowania pracownika");
+      toast.error(error.response.data.message);
     } finally {
       set({ isUpdating: false });
     }
