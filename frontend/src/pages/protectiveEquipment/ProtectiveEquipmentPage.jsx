@@ -11,11 +11,11 @@ const ProtectiveEquipmentPage = () => {
   
     const columns = [
       { key: 'name', label: "Nazwa" }, 
-      { key: 'factoryNumber', label: "Nr fabr" }, 
-      { key: 'protocolNumber', label: "Nr protokołu" }, 
+      { key: 'factoryNumber', label: "Nr fabr." }, 
+      { key: 'protocolNumber', label: "Nr prot." }, 
       { 
         key: 'checkDate',
-        label: "Data sprawdzenia",
+        label: "Data sprawdz.",
         getClassName: (val, row) => {
           if (isAfterDeadline(row.nextCheckDate)) return 'bg-red-500 text-white rounded px-2';
           if (isDeadline(val, 30)) return 'bg-orange-400 text-white rounded px-2';
@@ -30,7 +30,7 @@ const ProtectiveEquipmentPage = () => {
       }, 
       { 
         key: 'nextCheckDate', 
-        label: "Data następnego sprawdzenia",
+        label: "Nast. sprawdz.",
         getClassName: (val) => {
           if (isAfterDeadline(val)) return 'bg-red-500 text-white rounded px-2';
           if (isDeadline(val, 30)) return 'bg-orange-400 text-white rounded px-2';
@@ -44,7 +44,7 @@ const ProtectiveEquipmentPage = () => {
         render: (val) => dateFormat(val)
       }, 
       { key: 'comments', label: "Uwagi" }, 
-      { key: 'editedBy', label: "Edytowane przez" }
+      { key: 'editedBy', label: "Edyt. przez" }
     ]
   return (
     <ResourceManager

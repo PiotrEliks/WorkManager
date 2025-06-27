@@ -11,11 +11,11 @@ export default function MetersPage() {
 
   const columns = [
     { key: 'type', label: 'Typ' },
-    { key: 'number', label: 'Numer' },
+    { key: 'number', label: 'Nr' },
     { key: 'producer', label: 'Producent' },
     { 
       key: 'checkdate',
-      label: 'Termin sprawdzenia',
+      label: 'Data spraw.',
       getClassName: (val, row) => {
         if (isAfterDeadline(row.nextcheckdate)) return 'bg-red-500 text-white rounded px-2';
         if (isDeadline(val, 30)) return 'bg-orange-500 text-white rounded px-2';
@@ -30,7 +30,7 @@ export default function MetersPage() {
     },
     { 
       key: 'nextcheckdate',
-      label: 'Następny termin sprawdzenia',
+      label: 'Nast. sprawdz.',
       getClassName: (val) => {
         if (isAfterDeadline(val)) return 'bg-red-500 text-white rounded px-2';
         if (isDeadline(val, 30)) return 'bg-orange-400 text-white rounded px-2';
@@ -46,7 +46,7 @@ export default function MetersPage() {
     { key: 'nextcheckin', label: 'Okres (msc)' },
     { key: 'condition', label: 'Stan' },
     { key: 'comments', label: 'Uwagi' },
-    { key: 'editedBy', label: 'Edytowane przez' },
+    { key: 'editedBy', label: 'Edyt. przez' },
   ]
 
   return (

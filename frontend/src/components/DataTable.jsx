@@ -1,57 +1,39 @@
 import React from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 export default function DataTable({
   columns,
   data = [],
   renderActions,
 }) {
-  const reducedColumns = columns.filter(col => col.key !== 'nextcheckin');
-  const totalCols = reducedColumns.length + (renderActions ? 1 : 0);
-  const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${totalCols}, minmax(0,1fr))`,
-  };
+  const reduced = columns.filter(col => col.key !== 'nextcheckin');
+  const isMobile = useMediaQuery({ maxWidth: 1188 });
 
-  return (
-    <div className="w-full overflow-x-auto mt-3">
-      <div
-        className="hidden font-bold text-sm border-b text-center items-center sm:grid border-1 rounded-tl-xl rounded-tr-xl bg-zinc-200"
-        style={gridStyle}
-      >
-        {reducedColumns.map(col => (
-          <div key={col.key} className="border-r-1 w-full h-full flex items-center justify-center">{col.label}</div>
-        ))}
-        {renderActions && <div>Akcje</div>}
-      </div>
-      <div className="flex flex-col mt-3 sm:mt-0">
-        {
-          data.length == 0 ? 
-            <div className="w-full p-3 text-center border-b border-x">
-              Brak danych
-            </div>
-          :
-            data.map(row => (
-            <div
-              key={row.id}
-              className="border-b border-x text-center items-center text-sm grid"
-              style={gridStyle}
-            >
-              {reducedColumns.map(col => {
-                const val = row[col.key];
+  if (isMobile) {
+    return (
+      <div className="space-y-4 mt-3">
+        {data.length === 0
+          ? <div className="p-4 bg-white rounded-lg shadow text-center">Brak danych</div>
+          : data.map(row => (
+            <div key={row.id} className="bg-white p-4 rounded-lg shadow">
+              {reduced.map(col => {
+                const val = row[col.key] ?? '—';
                 const cls = col.getClassName?.(val, row) ?? '';
                 const title = col.getTitle?.(val, row);
                 return (
-                  <div key={col.key} className="border-r-1 w-full h-full flex items-center justify-center py-1" title={title}>
-                    <span className={cls}>
-                    {col.render
-                      ? col.render(val, row)
-                      : val ? val : '—'}
+                  <div key={col.key} className="flex justify-between py-1">
+                    <span className="font-medium text-gray-600">{col.label}:</span>
+                    <span
+                      className={`${cls} text-gray-800 whitespace-normal break-all min-w-0`}
+                      title={title}
+                    >
+                      {col.render ? col.render(val, row) : val}
                     </span>
                   </div>
                 );
               })}
               {renderActions && (
-                <div>
+                <div className="mt-2 flex justify-end space-x-2">
                   {renderActions(row)}
                 </div>
               )}
@@ -59,6 +41,66 @@ export default function DataTable({
           ))
         }
       </div>
+    );
+  }
+
+  const totalCols = reduced.length + (renderActions ? 1 : 0);
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))`,
+  };
+
+  return (
+    <div className="w-full overflow-x-auto mt-3">
+      <div
+        className="grid border bg-gray-100 text-sm font-semibold text-center"
+        style={gridStyle}
+      >
+        {reduced.map(col => (
+          <div
+            key={col.key}
+            className="py-2 border-r last:border-r-0 px-2 min-w-0"
+          >
+            <span className="whitespace-normal break-all">{col.label}</span>
+          </div>
+        ))}
+        {renderActions && (
+          <div className="py-2 px-2 min-w-0"><span>Akcje</span></div>
+        )}
+      </div>
+
+      {data.length === 0
+        ? <div className="p-4 text-center">Brak danych</div>
+        : data.map(row => (
+          <div
+            key={row.id}
+            className="grid border-b border-x text-sm text-center"
+            style={gridStyle}
+          >
+            {reduced.map(col => {
+              const val = row[col.key] ?? '—';
+              const cls = col.getClassName?.(val, row) ?? '';
+              const title = col.getTitle?.(val, row);
+              return (
+                <div
+                  key={col.key}
+                  className="py-2 border-r last:border-r-0 px-2 min-w-0 flex items-center justify-center"
+                  title={title}
+                >
+                  <span className={`${cls} whitespace-normal break-all`}>
+                    {col.render ? col.render(val, row) : val}
+                  </span>
+                </div>
+              );
+            })}
+            {renderActions && (
+              <div className="py-2 px-2 min-w-0">
+                {renderActions(row)}
+              </div>
+            )}
+          </div>
+        ))
+      }
     </div>
   );
 }
