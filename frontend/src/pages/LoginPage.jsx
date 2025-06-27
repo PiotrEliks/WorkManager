@@ -26,9 +26,16 @@ const LoginPage = () => {
   return (
     <div className="h-screen bg-gradient-to-r from-violet-700 to-blue-800 w-full flex items-center justify-center">
       <div className="w-full bg-white m-1 sm:m-5 rounded-3xl sm:w-xl shadow-2xl">
-        <div className="w-full h-full flex flex-col items-center justify-center gap-1 py-5 sm:p-10">
-          <div className="w-full p-5">
-            <img src="/logo.png" alt="logo" />
+        <div className="w-full h-full flex flex-col items-center justify-center gap-1 py-5 sm:p-2">
+          <div className="w-4/5 p-5">
+            <img 
+              src="/logo.webp" 
+              alt="Elektropomiar logo" 
+              loading="lazy"
+              className="w-full h-full"
+              width={48}
+              height={48}
+            />
           </div>
           {error && <p className="text-red-600">{error}</p>}
           <div className="w-full p-3 sm:p-5">
@@ -41,7 +48,7 @@ const LoginPage = () => {
                 </label>
                 <div className="w-full relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Mail className="size-5 text-black/70 z-10" />
+                    <Mail className="size-5 text-gray-400 z-10" />
                   </div>
                   <input
                     type="email"
@@ -60,12 +67,12 @@ const LoginPage = () => {
                 </label>
                 <div className="w-full relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Lock className="size-5 text-black/70 z-10" />
+                    <Lock className="size-5 text-gray-400 z-10" />
                   </div>
                   <input
                     type={showPassword ? "text" : "password"}
                     className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
-                    placeholder="••••••"
+                    placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
@@ -76,9 +83,9 @@ const LoginPage = () => {
                     title={!showPassword ? 'Pokaż hasło' : 'Ukryj hasło'}
                   >
                     {showPassword ? (
-                      <EyeOff className="size-5 text-base-content/70" />
+                      <EyeOff className="size-5 text-gray-400" />
                     ) : (
-                      <Eye className="size-5 text-base-content/70" />
+                      <Eye className="size-5 text-gray-400" />
                     )}
                   </button>
                 </div>

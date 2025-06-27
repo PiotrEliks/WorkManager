@@ -16,9 +16,12 @@ import AddNewMeterPage from './pages/meter/AddNewMeterPage.jsx'
 import AddNewProtEqPage from './pages/protectiveEquipment/AddNewProtEqPage.jsx'
 import EditMeterPage from './pages/meter/EditMeterPage.jsx'
 import EditProtEqPage from './pages/protectiveEquipment/EditProtEqPage.jsx'
+import PasswordChangePage from './pages/PasswordChangePage.jsx'
+import { RequireAdmin } from './components/RequireAdmin';
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  console.log(authUser)
 
   useEffect(() => {
     checkAuth();
@@ -34,7 +37,8 @@ function App() {
   return (
     <div >
       <Routes>
-        <Route path="/logowanie" element={ !authUser ? <LoginPage /> : <Navigate to="/" /> }/>
+        <Route path="/logowanie" element={ !authUser ? <LoginPage /> : authUser.changedDefaultPassword ? <Navigate to="/" /> : <Navigate to="/zmiana-hasla" /> }/>
+        <Route path="/zmiana-hasla" element={<PasswordChangePage />} />
         <Route
           path="/"
           element={authUser ? <DashboardLayout /> : <Navigate to="/logowanie" />}
@@ -45,10 +49,12 @@ function App() {
           <Route path="sprzet-ochronny" element={<ProtectiveEquipmentPage />} />
           <Route path="sprzet-ochronny/nowy" element={<AddNewProtEqPage />} />
           <Route path="sprzet-ochronny/:id/edytuj" element={<EditProtEqPage />} />
-          <Route path="pracownicy" element={<EmployeesPage />} />
-          <Route path="pracownicy/:id" element={<EmployeeDetailPage />} />
-          <Route path="pracownicy/:id/edytuj" element={<EditEmployeePage />} />
-          <Route path="pracownicy/nowy" element={<AddEmployeePage />} />
+          <Route element={<RequireAdmin />}>
+            <Route path="pracownicy" element={<EmployeesPage />} />
+            <Route path="pracownicy/:id" element={<EmployeeDetailPage />} />
+            <Route path="pracownicy/:id/edytuj" element={<EditEmployeePage />} />
+            <Route path="pracownicy/nowy" element={<AddEmployeePage />} />
+          </Route>
           <Route path="*" element={<NoMatchPage />} />
         </Route>
       </Routes>

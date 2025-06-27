@@ -11,7 +11,7 @@ export const login = async (req, res) => {
             where: {
                 email: email,
             },
-            include: Permission,
+            include: { model: Permission },
         });
 
         if (!user) {
@@ -85,12 +85,33 @@ export const checkAuth = (req, res) => {
 
         await user.update({
             password: hashedPassword,
-            passwordChanged: true
+            changedDefaultPassword: true
         });
 
-        return res.status(200).json(user);
+        const updatedUser = await User.findByPk(userId, {
+            attributes: { exclude: ['password'] },
+            include: Permission
+        });
+
+        return res.status(200).json(updatedUser);
     } catch (error) {
         console.error("Error in changePassword: ", error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] },
+      include: Permission
+    });
+    if (!user) {
+      return res.status(404).json({ error: "Nie znaleziono użytkownika" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error in getMe:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };

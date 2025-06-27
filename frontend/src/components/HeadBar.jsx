@@ -10,7 +10,7 @@ const HeadBar = ({ tableColumns, tableData, name}) => {
 
   console.log(tableData)
   return (
-    <div className="w-full flex flex-row items-center justify-between">
+    <div className={`w-full flex flex-row items-center ${authUser.Permission.can_write ? 'justify-between' : 'justify-end'}`}>
       {
         authUser.Permission.can_write &&
           <button

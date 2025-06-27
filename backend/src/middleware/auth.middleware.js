@@ -21,7 +21,7 @@ export const protectRoute = async (req, res, next) => {
         id: decoded.userId
       },
       attributes: { exclude: ['password'] },
-      include: Permission,
+      include: { model: Permission },
     });
 
     if (!user) {

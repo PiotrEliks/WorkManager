@@ -112,24 +112,26 @@ const DashboardLayout = () => {
               </ul>
             )}
           </li>
-
-          <li>
-            <button
-              onClick={() => {
-                setOpenEmployees(true);
-                setOpenResources(false);
-                setOpenResourcesSection(null);
-                handleNavigation('/pracownicy');
-              }}
-              className={`
-                w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer
-                hover:bg-blue-700/80
-                ${openEmployees ? 'bg-blue-700/80' : ''}
-              `}
-            >
-              <UserRound /> {!sidebarCollapsed && 'Pracownicy'}
-            </button>
-          </li>
+          {
+            authUser.role === "administrator" &&
+              <li>
+                <button
+                  onClick={() => {
+                    setOpenEmployees(true);
+                    setOpenResources(false);
+                    setOpenResourcesSection(null);
+                    handleNavigation('/pracownicy');
+                  }}
+                  className={`
+                    w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer
+                    hover:bg-blue-700/80
+                    ${openEmployees ? 'bg-blue-700/80' : ''}
+                  `}
+                >
+                  <UserRound /> {!sidebarCollapsed && 'Pracownicy'}
+                </button>
+              </li>
+          }
         </ul>
       </aside>
 
@@ -169,19 +171,22 @@ const DashboardLayout = () => {
                 </ul>
               )}
             </li>
-            <li>
-              <button
-                onClick={() => {
-                  setOpenEmployees(true);
-                  setOpenResources(false);
-                  setOpenResourcesSection(null);
-                  handleNavigation('/pracownicy');
-                }}
-                className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-700/80 ${openEmployees ? 'bg-blue-700/80' : ''}`}
-              >
-                <UserRound /> Pracownicy
-              </button>
-            </li>
+            {
+              authUser.role === "administrator" &&
+                <li>
+                  <button
+                    onClick={() => {
+                      setOpenEmployees(true);
+                      setOpenResources(false);
+                      setOpenResourcesSection(null);
+                      handleNavigation('/pracownicy');
+                    }}
+                    className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-700/80 ${openEmployees ? 'bg-blue-700/80' : ''}`}
+                  >
+                    <UserRound /> Pracownicy
+                  </button>
+                </li>
+            }
           </ul>
         </div>
       )}

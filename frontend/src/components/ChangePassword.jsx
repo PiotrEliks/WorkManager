@@ -1,123 +1,133 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Eye, EyeOff, LoaderCircle, Lock } from 'lucide-react';
+import { Eye, EyeOff, LoaderCircle, Lock, CheckCircle2, XCircle } from 'lucide-react';
+
+const passwordRules = [
+  { key: 'length', label: 'Min. 8 znaków', test: pwd => pwd.length >= 8 },
+  { key: 'lower',  label: 'Min. jedna mała litera', test: pwd => /[a-z]/.test(pwd) },
+  { key: 'upper',  label: 'Min. jedna wielka litera', test: pwd => /[A-Z]/.test(pwd) },
+  { key: 'number', label: 'Min. jedna cyfra',        test: pwd => /\d/.test(pwd) },
+  { key: 'special',label: 'Min. jeden znak specjalny (!@#$...)', test: pwd => /[!@#$%^&*(),.?":{}|<>]/.test(pwd) },
+];
 
 const ChangePassword = () => {
+  const navigate = useNavigate();
   const { authUser, changePassword, isUpdating } = useAuthStore();
-  const [password, setPassword] = useState({
-    password1: "",
-    password2: ""
-  });
-  const [showPassword, setShowPassword] = useState({
-    password1: false,
-    password2: false
-  });
-  const [error, setError] = useState("");
+  const [password1, setPassword1] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [show1, setShow1] = useState(false);
+  const [show2, setShow2] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  const validatePassword = (password) => {
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    return hasLowerCase && hasUpperCase && hasSpecialChar;
-  };
+  useEffect(() => {
+    const newErr = {};
+    passwordRules.forEach(rule => {
+      if (!rule.test(password1)) newErr[rule.key] = rule.label;
+    });
+    if (password2 && password1 !== password2) {
+      newErr.match = 'Hasła muszą być takie same';
+    }
+    setErrors(newErr);
+  }, [password1, password2]);
 
-  const handleSubmit = async (e) => {
+  const canSubmit = 
+    passwordRules.every(r => r.test(password1)) && 
+    password1 === password2 && 
+    !isUpdating;
+
+  const handleSubmit = async e => {
     e.preventDefault();
+    if (!canSubmit) return;
 
-    if (!password.password1 || !password.password2) {
-      setError("Oba pola muszą być wypełnione");
-    } else if (password.password1 !== password.password2) {
-      setError("Oba pola muszą zawierać to samo hasło");
-    } else if (!validatePassword(password.password1)) {
-      setError("Hasło musi zawierać przynajmniej jedną małą literę, jedną wielką literę i jeden znak specjalny.");
-    } else {
-      setError("");
-      changePassword(authUser.id, password.password1);
+    try {
+      await changePassword(authUser.id, password1);
+      setPassword1('');
+      setPassword2('');
+      navigate("/");
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className="h-screen bg-gradient-to-r from-violet-700 to-blue-800 w-full flex items-center justify-center sm:p-5 md:p-15">
-      <div className="bg-white w-full p-5 rounded-2xl flex flex-col shadow-2xl m-1 sm:w-2xl">
-        <div className="w-full flex flex-col gap-3 justify-center items-center">
-          <p className="font-bold text-xl">Ustaw nowe hasło</p>
-          {error && <p className="text-red-600">{error}</p>}
-          <form onSubmit={handleSubmit} className="space-y-6 w-full">
-            <div className="w-full relative">
-              <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
-                <span className="font-medium">Hasło</span>
-              </label>
-              <div className="w-full relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                  <Lock className="size-5 text-black/70 z-10" />
-                </div>
-                <input
-                  type={showPassword.password1 ? "text" : "password"}
-                  className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
-                  placeholder="••••••"
-                  value={password.password1}
-                  onChange={(e) => setPassword({ ...password, password1: e.target.value })}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                  onClick={() => setShowPassword({ ...showPassword, password1: !showPassword.password1 })}
-                  title={!showPassword.password1 ? 'Pokaż hasło' : 'Ukryj hasło'}
-                >
-                  {showPassword.password1 ? (
-                    <EyeOff className="size-5 text-base-content/70" />
-                  ) : (
-                    <Eye className="size-5 text-base-content/70" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="w-full relative">
-              <label className="absolute top-0 left-3 z-1 bg-white -translate-y-3 px-2">
-                <span className="font-medium">Powtórz hasło</span>
-              </label>
-              <div className="w-full relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                  <Lock className="size-5 text-black/70 z-10" />
-                </div>
-                <input
-                  type={showPassword.password2 ? "text" : "password"}
-                  className="w-full pl-10 py-4 bg-white rounded-2xl border-1"
-                  placeholder="••••••"
-                  value={password.password2}
-                  onChange={(e) => setPassword({ ...password, password2: e.target.value })}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                  onClick={() => setShowPassword({ ...showPassword, password2: !showPassword.password2 })}
-                  title={!showPassword.password2 ? 'Pokaż hasło' : 'Ukryj hasło'}
-                >
-                  {showPassword.password2 ? (
-                    <EyeOff className="size-5 text-base-content/70" />
-                  ) : (
-                    <Eye className="size-5 text-base-content/70" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-2xl py-3 text-white font-bold w-full flex flex-row items-center justify-center gap-2"
-              disabled={isUpdating}
-              title="Zapisz"
+    <div className="h-screen bg-gradient-to-r from-violet-700 to-blue-800 w-full flex items-center justify-center p-5">
+      <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-4 text-center">Ustaw nowe hasło</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type={show1 ? 'text' : 'password'}
+              placeholder="Nowe hasło"
+              value={password1}
+              onChange={e => setPassword1(e.target.value)}
+              className="w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none"
+            />
+            <div
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+              onClick={() => setShow1(!show1)}
+              title={show1 ? 'Ukryj hasło' : 'Pokaż hasło'}
             >
-              {isUpdating ? (
-                <>
-                  <LoaderCircle className="size-5 animate-spin" />
-                  Zapisywanie...
-                </>
-              ) : (
-                "Zapisz"
-              )}
-            </button>
-          </form>
-        </div>
+              {show1 ? <Eye /> : <EyeOff />}
+            </div>
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type={show2 ? 'text' : 'password'}
+              placeholder="Powtórz hasło"
+              value={password2}
+              onChange={e => setPassword2(e.target.value)}
+              className="w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none"
+            />
+            <div
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+              onClick={() => setShow2(!show2)}
+              title={show2 ? 'Ukryj hasło' : 'Pokaż hasło'}
+            >
+              {show2 ? <Eye /> : <EyeOff />}
+            </div>
+          </div>
+
+          <ul className="mb-4 space-y-1">
+            {passwordRules.map(rule => {
+              const ok = rule.test(password1);
+              return (
+                <li key={rule.key} className="flex items-center text-sm">
+                  {ok ? (
+                    <CheckCircle2 className="text-green-500 mr-2" />
+                  ) : (
+                    <XCircle className="text-red-500 mr-2" />
+                  )}
+                  <span className={ok ? 'text-gray-700' : 'text-gray-400'}>
+                    {rule.label}
+                  </span>
+                </li>
+              );
+            })}
+            {errors.match && (
+              <li className="flex items-center text-sm text-red-500">
+                <XCircle className="mr-2" />{errors.match}
+              </li>
+            )}
+          </ul>
+
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className={`w-full py-3 rounded-lg text-white font-bold transition-colors cursor-pointer flex flex-row items-center justify-center 
+              ${canSubmit ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
+          >
+            {isUpdating ? (
+              <><LoaderCircle className="animate-spin mr-2" />Zmiana... </>
+            ) : (
+              'Zmień hasło'
+            )}
+          </button>
+        </form>
       </div>
     </div>
   );
