@@ -13,14 +13,13 @@ export default function MetersPage() {
     { key: 'type', label: 'Typ' },
     { key: 'number', label: 'Numer' },
     { key: 'producer', label: 'Producent' },
-    { key: 'comments', label: 'Uwagi' },
     { 
       key: 'checkdate',
       label: 'Termin sprawdzenia',
-      getClassName: (val) => {
-        if (isAfterDeadline(val)) return 'bg-red-600 text-white rounded px-2';
-        if (isDeadline(val, 30)) return 'bg-orange-400 text-white rounded px-2';
-        return 'bg-green-600 text-white rounded px-2';
+      getClassName: (val, row) => {
+        if (isAfterDeadline(row.nextcheckdate)) return 'bg-red-500 text-white rounded px-2';
+        if (isDeadline(val, 30)) return 'bg-orange-500 text-white rounded px-2';
+        return 'bg-green-500 text-white rounded px-2';
       },
       getTitle: (val) => {
         if (isAfterDeadline(val)) return 'Termin upłynął';
@@ -33,9 +32,9 @@ export default function MetersPage() {
       key: 'nextcheckdate',
       label: 'Następny termin sprawdzenia',
       getClassName: (val) => {
-        if (isAfterDeadline(val)) return 'bg-red-600 text-white rounded px-2';
+        if (isAfterDeadline(val)) return 'bg-red-500 text-white rounded px-2';
         if (isDeadline(val, 30)) return 'bg-orange-400 text-white rounded px-2';
-        return 'bg-green-600 text-white rounded px-2';
+        return 'bg-green-500 text-white rounded px-2';
       },
       getTitle: (val) => {
         if (isAfterDeadline(val)) return 'Termin upłynął';
@@ -46,6 +45,7 @@ export default function MetersPage() {
     },
     { key: 'nextcheckin', label: 'Okres (msc)' },
     { key: 'condition', label: 'Stan' },
+    { key: 'comments', label: 'Uwagi' },
     { key: 'editedBy', label: 'Edytowane przez' },
   ]
 

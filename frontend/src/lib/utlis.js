@@ -60,12 +60,23 @@ export const exportToPDF = (headers, data, fileName = 'eksport') => {
   );
 
   autoTable(doc, {
-    head: [tableColumns],
-    body: tableData,
+    theme: 'grid',
+    head:  [tableColumns],
+    body:  tableData,
     startY: 20,
     margin: { top: 20, left: 10, right: 10 },
-    styles: { fontSize: 9 },
-    headStyles: { fillColor: [22, 160, 133] },
+    styles: {
+      fontSize:   9,
+      lineWidth:  0.1,
+      lineColor:  [0, 0, 0],
+      cellPadding: 2,
+    },
+    headStyles: {
+      fillColor:   [22, 160, 133],
+      lineWidth:   0.1,
+      lineColor:   [0,0,0]
+    },
+    alternateRowStyles: { fillColor: [240,240,240] }
   });
 
   const pdfOutput = doc.output('bloburl');

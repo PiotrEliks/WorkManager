@@ -16,10 +16,10 @@ const ProtectiveEquipmentPage = () => {
       { 
         key: 'checkDate',
         label: "Data sprawdzenia",
-        getClassName: (val) => {
-          if (isAfterDeadline(val)) return 'bg-red-600 text-white rounded px-2';
+        getClassName: (val, row) => {
+          if (isAfterDeadline(row.nextCheckDate)) return 'bg-red-500 text-white rounded px-2';
           if (isDeadline(val, 30)) return 'bg-orange-400 text-white rounded px-2';
-          return 'bg-green-600 text-white rounded px-2';
+          return 'bg-green-500 text-white rounded px-2';
         },
         getTitle: (val) => {
           if (isAfterDeadline(val)) return 'Termin upłynął';
@@ -30,11 +30,11 @@ const ProtectiveEquipmentPage = () => {
       }, 
       { 
         key: 'nextCheckDate', 
-        label: "Data następnego spradzenia",
+        label: "Data następnego sprawdzenia",
         getClassName: (val) => {
-          if (isAfterDeadline(val)) return 'bg-red-600 text-white rounded px-2';
+          if (isAfterDeadline(val)) return 'bg-red-500 text-white rounded px-2';
           if (isDeadline(val, 30)) return 'bg-orange-400 text-white rounded px-2';
-          return 'bg-green-600 text-white rounded px-2';
+          return 'bg-green-500 text-white rounded px-2';
         },
         getTitle: (val) => {
           if (isAfterDeadline(val)) return 'Termin upłynął';

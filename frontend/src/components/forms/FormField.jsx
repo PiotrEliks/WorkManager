@@ -10,7 +10,6 @@ const FormField = ({
   options = []
 }) => (
   <div className="w-full relative gap-3">
-    {console.log(value)}
     <label className="absolute top-0 left-3 -translate-y-3 bg-gray-50 px-2 font-medium z-10">
       {label}
     </label>
@@ -41,7 +40,7 @@ const FormField = ({
     ) : (
       <input
         type={type}
-        className="w-full pl-10 py-4 bg-gray-50 rounded-2xl border-1"
+        className="w-full pl-10 pr-3 py-4 bg-gray-50 rounded-2xl border-1"
         placeholder={placeholder}
         value={value}
         onChange={onChange}

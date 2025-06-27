@@ -8,21 +8,21 @@ export function ResourceActions({ entity, confirmDelete }) {
   const { authUser } = useAuthStore()
 
   return (
-    <div className="flex flex-col items-center justify-center gap-1">
+    <div className="flex flex-row items-center justify-center gap-1">
       {authUser.Permission.can_edit && (
         <button
           onClick={() => navigate(`${entity.id}/edytuj`)}
-          className="bg-blue-800 hover:bg-blue-800/80 text-white py-1 px-3 rounded-xl flex items-center gap-1 cursor-pointer"
+          className="cursor-pointer"
         >
-          <FilePenLine className="size-5" /> Edytuj
+          <FilePenLine className="size-5 text-blue-500 hover:text-blue-500/50" />
         </button>
       )}
       {authUser.Permission.can_delete && (
         <button
           onClick={() => confirmDelete({ ...entity, _label: entity._label })}
-          className="bg-red-500 hover:bg-red-500/70 text-white py-1 px-3 rounded-xl flex items-center gap-1 cursor-pointer"
+          className="cursor-pointer"
         >
-          <Trash2 className="size-5" /> Usuń
+          <Trash2 className="size-5 text-red-500 hover:text-red-500/50" />
         </button>
       )}
     </div>
