@@ -44,7 +44,7 @@ export const useAuthStore = create((set, get) => ({
   changePassword: async (userId, password) => {
     set({ isUpdating: true });
     try {
-      const res = await axiosInstance.put(`/auth/${userId}/changePassword`, {
+      const res = await axiosInstance.put(`/auth/${userId}`, {
         password
       });
       set({ authUser: res.data });

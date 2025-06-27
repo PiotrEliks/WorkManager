@@ -11,7 +11,7 @@ export const useMeterStore = create((set, get) => ({
   getMeters: async (data) => {
     set({ areMetersLoading: true });
     try {
-      const res = await axiosInstance.get("/meters/all", data);
+      const res = await axiosInstance.get("/meters", data);
       set({ meters: res.data });
     } catch (error) {
       console.error(error.response.data.message);
@@ -23,8 +23,10 @@ export const useMeterStore = create((set, get) => ({
   addMeter: async (formData) => {
     set({ isAdding: true });
     try {
-      const res = await axiosInstance.post("/meters/meter/add", formData);
-      set({ meters: res.data });
+      const res = await axiosInstance.post("/meters", formData);
+      set((state) => ({
+        meters: [res.data, ...state.meters]
+      }));
       toast.success("Miernik został dodany");
     } catch (error) {
       console.error(error.response.data.message);
@@ -37,8 +39,10 @@ export const useMeterStore = create((set, get) => ({
   deleteMeter: async (meterId) => {
     set({ areMetersLoading: true });
     try {
-      const res = await axiosInstance.delete(`/meters/meter/delete/${meterId}`);
-      set({ meters: res.data });
+      await axiosInstance.delete(`/meters/${meterId}`);
+      set((state) => ({
+        meters: state.meters.filter((m) => m.id !== meterId),
+      }));
       toast.success("Miernik został usunięty");
     } catch (error) {
       console.error(error.response.data.message);
@@ -55,8 +59,12 @@ export const useMeterStore = create((set, get) => ({
         acc[key] = value === '' ? null : value
         return acc
       }, {})
-      const res = await axiosInstance.put(`/meters/meter/update/${meterId}`, payload);
-      set({ meters: res.data });
+      const res = await axiosInstance.put(`/meters/${meterId}`, payload);
+      // set((state) => ({
+      //   meters: state.meters.map((m) =>
+      //     m.id === meterId ? res.data : m  
+      //   ),
+      // }));
       toast.success("Miernik został zaktualizowany");
     } catch (error) {
       console.error(error.response.data.message);
@@ -68,7 +76,7 @@ export const useMeterStore = create((set, get) => ({
 
   getMeter: async (meterId) => {
     try {
-      const res = await axiosInstance.get(`/meters/meter/${meterId}`);
+      const res = await axiosInstance.get(`/meters/${meterId}`);
       return res.data;
     } catch (error) {
       console.error(error.response.data.message);

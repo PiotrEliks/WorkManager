@@ -4,7 +4,6 @@ import { useUserstore } from '../../store/useUserstore';
 import EmployeePermissions from '../../components/employees/EmployeePermissions';
 import AccessCardInfo from '../../components/employees/AccessCardInfo';
 import { ArrowLeft, Pencil, Trash  } from 'lucide-react';
-import toast from 'react-hot-toast';
 import Loader from '../../components/ui/Loader';
 import useDocumentTitle from '../../lib/useDocumentTitle';
 
@@ -19,7 +18,6 @@ const EmployeeDetailPage = () => {
   const handleDelete = async () => {
   if (window.confirm(`Czy na pewno chcesz usunąć pracownika: ${employee.fullName}?`)) {
     await deleteUser(employee.id);
-    toast.success("Pracownik usunięty");
     navigate('/pracownicy');
   }
 };

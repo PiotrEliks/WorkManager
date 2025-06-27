@@ -20,11 +20,12 @@ export const protectRoute = async (req, res, next) => {
       where: {
         id: decoded.userId
       },
+      attributes: { exclude: ['password'] },
       include: Permission,
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found"} );
+      return res.status(404).json({ message: "Nie znaleziono użytkownika"} );
     }
 
     req.user = user;

@@ -4,10 +4,12 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.NODEMAILER_HOST,

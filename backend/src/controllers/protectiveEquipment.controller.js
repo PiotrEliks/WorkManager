@@ -38,11 +38,7 @@ export const addEq = async (req, res) => {
             editedBy,
         });
 
-        const equipment = await ProtectiveEquipment.findAll({
-            order: [['updatedAt', 'DESC']]
-        });
-
-        return res.status(200).json(equipment);
+        return res.status(201).json(newEq);
     } catch (error) {
         console.error("Error in addMeter: ", error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -59,11 +55,7 @@ export const deleteEq = async (req, res) => {
             }
         });
 
-        const equipment = await ProtectiveEquipment.findAll({
-            order: [['updatedAt', 'DESC']]
-        });
-
-        return res.status(200).json(equipment);
+        return res.status(204).send();
     } catch (error) {
         console.error("Error in deleteEq: ", error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -95,11 +87,7 @@ export const updateEq = async (req, res) => {
             }
         });
 
-        const equipment = await ProtectiveEquipment.findAll({
-            order: [['updatedAt', 'DESC']]
-        });
-
-        return res.status(200).json(equipment);
+        return res.status(200).json(eq);
     } catch (error) {
         console.error("Error in updateEq: ", error);
         return res.status(500).json({ message: "Internal Server Error"});

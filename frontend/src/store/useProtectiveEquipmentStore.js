@@ -11,7 +11,7 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   getEq: async (data) => {
     set({ isEquipmentLoading: true });
     try {
-      const res = await axiosInstance.get("/protectiveEquipment/all", data);
+      const res = await axiosInstance.get("/protectiveEquipment", data);
       set({ equipment: res.data });
     } catch (error) {
       console.error(error.response.data.message);
@@ -23,8 +23,10 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   addEq: async (formData) => {
     set({ isAdding: true });
     try {
-      const res = await axiosInstance.post("/protectiveEquipment/add", formData);
-      set({ equipment: res.data });
+      const res = await axiosInstance.post("/protectiveEquipment", formData);
+      set((state) => ({
+        equipment: [res.data, ...state.equipment]
+      }));
       toast.success("Sprzęt został dodany");
     } catch (error) {
       console.error(error.response.data.message);
@@ -37,8 +39,10 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   deleteEq: async (eqId) => {
     set({ isEquipmentLoading: true });
     try {
-      const res = await axiosInstance.delete(`/protectiveEquipment//${eqId}/delete`);
-      set({ equipment: res.data });
+      await axiosInstance.delete(`/protectiveEquipment/${eqId}`);
+      set((state) => ({
+        equipment: state.equipment.filter((eq) => eq.id !== eqId),
+      }));
       toast.success("Sprzęt został usunięty");
     } catch (error) {
       console.error(error.response.data.message);
@@ -55,8 +59,12 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
         acc[key] = value === '' ? null : value
         return acc
       }, {})
-      const res = await axiosInstance.put(`/protectiveEquipment/${eqId}/update`, payload);
-      set({ equipment: res.data });
+      const res = await axiosInstance.put(`/protectiveEquipment/${eqId}`, payload);
+      // set((state) => ({
+      //   equipment: state.equipment.map((eq) =>
+      //     eq.id === eqId ? res.data : eq  
+      //   ),
+      // }));
       toast.success("Sprzęt został zaktualizowany");
     } catch (error) {
       console.error(error.response.data.message);
@@ -68,8 +76,7 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
 
   getEqById: async (eqId) => {
     try {
-      const res = await axiosInstance.get(`protectiveEquipment
-/eq/${eqId}`);
+      const res = await axiosInstance.get(`protectiveEquipment/${eqId}`);
       return res.data;
     } catch (error) {
       console.error(error.response.data.message);

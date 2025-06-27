@@ -56,11 +56,7 @@ export const addMeter = async (req, res) => {
             editedBy,
         });
 
-        const meters = await Meter.findAll({
-            order: [['updatedAt', 'DESC']]
-        });
-
-        return res.status(200).json(meters);
+        return res.status(201).json(newMeter);
     } catch (error) {
         console.error("Error in addMeter: ", error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -77,11 +73,7 @@ export const deleteMeter = async (req, res) => {
             }
         });
 
-        const meters = await Meter.findAll({
-            order: [['updatedAt', 'DESC']]
-        });
-
-        return res.status(200).json(meters);
+        return res.status(204).send();
     } catch (error) {
         console.error("Error in deleteMeter: ", error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -139,11 +131,7 @@ export const updateMeter = async (req, res) => {
             }
         });
 
-        const meters = await Meter.findAll({
-            order: [['updatedAt', 'DESC']]
-        });
-
-        return res.status(200).json(meters);
+        return res.status(200).json(meter);
     } catch (error) {
         console.error("Error in updateMeter: ", error);
         return res.status(500).json({ message: "Internal Server Error"});

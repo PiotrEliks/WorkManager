@@ -4,10 +4,10 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/meter/add", protectRoute, addMeter);
-router.get("/all", protectRoute, getMeters);
-router.get("/meter/:meterId", protectRoute, getMeter);
-router.delete("/meter/delete/:meterId", protectRoute, deleteMeter);
-router.put("/meter/update/:meterId", protectRoute, updateMeter);
+router.post("/", protectRoute, addMeter);
+router.get("/", protectRoute, getMeters);
+router.get("/:meterId", protectRoute, getMeter);
+router.delete("/:meterId", protectRoute, deleteMeter);
+router.put("/:meterId", protectRoute, updateMeter);
 
 export default router;

@@ -19,7 +19,7 @@ export default function ResourceManager({
     fetchItems();
   }, [fetchItems]);
 
-  if (loading || items === undefined) {
+  if (!items) {
     return <Loader />;
   }
 
