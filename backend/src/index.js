@@ -5,7 +5,8 @@ import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import meterRoutes from "./routes/meter.route.js";
-import ProtectiveEquipmentRoutes from "./routes/protectiveEquipment.route.js"
+import ProtectiveEquipmentRoutes from "./routes/protectiveEquipment.route.js";
+import entriesRoutes from "./routes/entries.route.js";
 //import { connectDB } from "./lib/db.js";
 import "./lib/cronTasks.js"
 import path from 'path';
@@ -34,6 +35,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/meters", meterRoutes);
 app.use("/api/protectiveEquipment", ProtectiveEquipmentRoutes);
+app.use("/api/entries", entriesRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
