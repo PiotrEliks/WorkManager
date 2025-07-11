@@ -16,12 +16,11 @@ const EmployeeDetailPage = () => {
   const [employee, setEmployee] = useState(null);
 
   const handleDelete = async () => {
-  if (window.confirm(`Czy na pewno chcesz usunąć pracownika: ${employee.fullName}?`)) {
-    await deleteUser(employee.id);
-    navigate('/pracownicy');
-  }
-};
-
+    if (window.confirm(`Czy na pewno chcesz usunąć pracownika: ${employee.fullName}?`)) {
+      await deleteUser(employee.id);
+      navigate('/pracownicy');
+    }
+  };
 
   useEffect(() => {
     getUsers();
@@ -31,8 +30,6 @@ const EmployeeDetailPage = () => {
     const found = users.find(u => u.id ===id);
     setEmployee(found || null);
   }, [users, id]);
-
-  console.log('EmployeeDetailPage', { employee, users });
 
   if (areUsersLoading) return <Loader />;
   if (!employee) return <div className="text-center mt-10 text-lg font-medium">Nie znaleziono pracownika.</div>;
@@ -76,7 +73,7 @@ const EmployeeDetailPage = () => {
 
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Karta dostępu</h3>
-        <AccessCardInfo cardId={employee.cardId} entries={employee.entries} />
+        <AccessCardInfo cardId={employee.cardId} employeeId={employee.id} />
       </div>
     </div>
   );

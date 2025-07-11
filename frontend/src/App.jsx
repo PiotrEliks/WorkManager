@@ -21,7 +21,6 @@ import { RequireAdmin } from './components/RequireAdmin';
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-  console.log(authUser)
 
   useEffect(() => {
     checkAuth();

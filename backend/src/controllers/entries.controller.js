@@ -4,10 +4,11 @@ export const getUserEntries = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const entry = await Entry.findOne({
+        const entry = await Entry.findAll({
             where: {
-                id: userId,
-            }
+                userId: userId,
+            },
+            order: [['timestamp', 'DESC']],
         });
 
         if (!entry) {
