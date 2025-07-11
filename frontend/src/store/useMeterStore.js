@@ -7,12 +7,29 @@ export const useMeterStore = create((set, get) => ({
   areMetersLoading: false,
   isAdding: false,
   isUpdating: false,
+  totalItems: 0,
 
-  getMeters: async (data) => {
+  getMeters: async (page, pageSize, fullData) => {
     set({ areMetersLoading: true });
     try {
-      const res = await axiosInstance.get("/meters", data);
-      set({ meters: res.data });
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', page);
+      queryParams.append('pageSize', pageSize);
+
+      if (fullData) {
+        queryParams.append('fullData', true);
+      }
+
+      const res = await axiosInstance.get(`/meters?${queryParams.toString()}`);
+      
+      if (fullData) {
+        return res.data.meters;
+      } else {
+        set({ 
+          meters: res.data.meters,
+          totalItems: res.data.totalItems,
+        });
+      }
     } catch (error) {
       console.error(error.response.data.message);
     } finally {

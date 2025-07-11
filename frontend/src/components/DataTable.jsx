@@ -94,7 +94,7 @@ export default function DataTable({
               );
             })}
             {renderActions && (
-              <div className="py-2 px-2 min-w-0">
+              <div className="py-2 px-2 min-w-0 flex items-center justify-center">
                 {renderActions(row)}
               </div>
             )}

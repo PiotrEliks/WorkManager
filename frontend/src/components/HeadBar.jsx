@@ -8,7 +8,6 @@ const HeadBar = ({ tableColumns, tableData, name}) => {
   const navigate = useNavigate();
   const { authUser } = useAuthStore();
 
-  console.log(tableData)
   return (
     <div className={`w-full flex flex-row items-center ${authUser.Permission.can_write ? 'justify-between' : 'justify-end'}`}>
       {

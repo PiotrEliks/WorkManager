@@ -3,12 +3,38 @@ import { addMonths, parseISO, parse, isValid } from 'date-fns';
 
 export const getMeters = async (req, res) => {
     try {
+        let { page = 1, pageSize = 10, fullData = false } = req.query;
+        
+        page = parseInt(page, 10);
+        pageSize = parseInt(pageSize, 10);
 
-        const meters = await Meter.findAll({
-            order: [['updatedAt', 'DESC']]
+        if (isNaN(page) || page < 1) {
+            page = 1;
+        }
+        if (isNaN(pageSize) || pageSize < 1) {
+            pageSize = 10;
+        }
+
+        const offset = (page - 1) * pageSize;
+
+        if (fullData) {
+            const meters = await Meter.findAll({
+                order: [['updatedAt', 'DESC']],
+            });
+            console.log(meters)
+            return res.status(200).json({ meters, totalItems: meters.length });
+        }
+
+        const { count, rows } = await Meter.findAndCountAll({
+            order: [['updatedAt', 'DESC']],
+            offset,
+            limit: pageSize
         });
 
-        return res.status(200).json(meters);
+        return res.status(200).json({
+            meters: rows,
+            totalItems: count,
+        });
     } catch (error) {
         console.error("Error in getMeters: ", error);
         return res.status(500).json({ message: "Internal Server Error"});

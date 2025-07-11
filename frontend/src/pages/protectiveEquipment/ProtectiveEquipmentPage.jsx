@@ -1,14 +1,23 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import ResourceManager from '../../components/ResourceManager'
 import { useProtectiveEquipmentStore } from '../../store/useProtectiveEquipmentStore'
 import useDocumentTitle from '../../lib/useDocumentTitle'
 import { isAfterDeadline, isDeadline, dateFormat } from '../../lib/deadline'
 import { ResourceActions } from '../../components/ResourceActions'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const ProtectiveEquipmentPage = () => {
   useDocumentTitle('Sprzęt ochronny | Panel Elektropomiar')
-    const { equipment, getEq, deleteEq, isEquipmentLoading } = useProtectiveEquipmentStore()
+    const { equipment, totalItems, getEq, deleteEq, isEquipmentLoading } = useProtectiveEquipmentStore()
   
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const currentPage = parseInt(queryParams.get('page'), 10) || 1;
+    const [pageSize, setPageSize] = useState(parseInt(queryParams.get('pageSize'), 10) || 10); // Default to 10 items per page
+
+    const [page, setPage] = useState(currentPage);
+
     const columns = [
       { key: 'name', label: "Nazwa" }, 
       { key: 'factoryNumber', label: "Nr fabr." }, 
@@ -46,6 +55,23 @@ const ProtectiveEquipmentPage = () => {
       { key: 'comments', label: "Uwagi" }, 
       { key: 'editedBy', label: "Edyt. przez" }
     ]
+
+  useEffect(() => {
+    // Update the page query parameter in the URL
+    navigate(`?page=${page}&pageSize=${pageSize}`);
+    getEq(page, pageSize); // Pass page and pageSize to the store to fetch the data
+  }, [page, pageSize, navigate, getEq]);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize); // Update page size
+    setPage(1); // Reset to the first page when page size changes
+  };
+
   return (
     <ResourceManager
       name="sprzet-ochronny"
@@ -60,6 +86,11 @@ const ProtectiveEquipmentPage = () => {
           confirmDelete={confirmDelete}
         />
       )}
+      handlePageChange={handlePageChange}
+      currentPage={page}
+      pageSize={pageSize}
+      totalItems={totalItems}
+      handlePageSizeChange={handlePageSizeChange}
     />
   )
 }
