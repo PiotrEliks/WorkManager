@@ -14,9 +14,20 @@ const ProtectiveEquipmentPage = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page'), 10) || 1;
-    const [pageSize, setPageSize] = useState(parseInt(queryParams.get('pageSize'), 10) || 10);
+    const currentPageSize = parseInt(queryParams.get('pageSize'), 10) || 10;
 
+    const [pageSize, setPageSize] = useState(currentPageSize);
     const [page, setPage] = useState(currentPage);
+    
+    useEffect(() => {
+      if (pageSize && page) {
+        getEq(page, pageSize);
+      }
+    }, [page, pageSize, getEq]);
+    
+    useEffect(() => {
+       navigate(`?page=${page}&pageSize=${pageSize}`, { replace: true });
+    }, [page, pageSize, navigate]);
 
     const columns = [
       { key: 'name', label: "Nazwa" }, 
@@ -55,11 +66,6 @@ const ProtectiveEquipmentPage = () => {
       { key: 'comments', label: "Uwagi" }, 
       { key: 'editedBy', label: "Edyt. przez" }
     ]
-
-  useEffect(() => {
-    navigate(`?page=${page}&pageSize=${pageSize}`);
-    getEq(page, pageSize);
-  }, [page, pageSize, navigate, getEq]);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);

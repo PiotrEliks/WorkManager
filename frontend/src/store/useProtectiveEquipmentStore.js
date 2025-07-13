@@ -9,14 +9,26 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   isUpdating: false,
   totalItems: 0,
 
-  getEq: async (page, pageSize) => {
+  getEq: async (page, pageSize, fullData) => {
     set({ isEquipmentLoading: true });
     try {
-      const res = await axiosInstance.get(`/protectiveEquipment?page=${page}&pageSize=${pageSize}`);
-      set({ 
-        equipment: res.data.equipment,
-        totalItems: res.data.totalItems,
-       });
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', page);
+      queryParams.append('pageSize', pageSize);
+
+      if (fullData) {
+        queryParams.append('fullData', true);
+      }
+
+      const res = await axiosInstance.get(`/protectiveEquipment?${queryParams.toString()}`);
+       if (fullData) {
+        return res.data.equipment;
+      } else {
+        set({ 
+          equipment: res.data.equipment,
+          totalItems: res.data.totalItems,
+        });
+      }
     } catch (error) {
       console.error(error.response.data.message);
     } finally {

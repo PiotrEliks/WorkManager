@@ -2,22 +2,29 @@ import ProtectiveEquipment from "../models/protectiveEquipment.model.js";
 
 export const getEq = async (req, res) => {
     try {
-        let { page = 1, pageSize = 10 } = req.query;
+        let { page = 1, pageSize = 10, fullData = false } = req.query;
         
-        // Ensure `page` and `pageSize` are numbers and not NaN
         page = parseInt(page, 10);
         pageSize = parseInt(pageSize, 10);
 
         if (isNaN(page) || page < 1) {
-            page = 1; // Default to 1 if page is invalid
+            page = 1;
         }
         if (isNaN(pageSize) || pageSize < 1) {
-            pageSize = 10; // Default to 10 if pageSize is invalid
+            pageSize = 10;
         }
 
         const offset = (page - 1) * pageSize;
 
-       const { count, rows } = await ProtectiveEquipment.findAndCountAll({
+        if (fullData) {
+            const equipment = await ProtectiveEquipment.findAll({
+                order: [['updatedAt', 'DESC']],
+            });
+            console.log(equipment)
+            return res.status(200).json({ equipment, totalItems: equipment.length });
+        }
+
+        const { count, rows } = await ProtectiveEquipment.findAndCountAll({
             order: [['updatedAt', 'DESC']],
             offset,
             limit: pageSize
@@ -25,7 +32,7 @@ export const getEq = async (req, res) => {
 
         return res.status(200).json({
             equipment: rows,
-            totalItems: count,  // Send total number of items
+            totalItems: count,
         });
     } catch (error) {
         console.error("Error in getEq: ", error);
