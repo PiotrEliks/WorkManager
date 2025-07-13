@@ -14,7 +14,7 @@ const ProtectiveEquipmentPage = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page'), 10) || 1;
-    const [pageSize, setPageSize] = useState(parseInt(queryParams.get('pageSize'), 10) || 10); // Default to 10 items per page
+    const [pageSize, setPageSize] = useState(parseInt(queryParams.get('pageSize'), 10) || 10);
 
     const [page, setPage] = useState(currentPage);
 
@@ -57,19 +57,17 @@ const ProtectiveEquipmentPage = () => {
     ]
 
   useEffect(() => {
-    // Update the page query parameter in the URL
     navigate(`?page=${page}&pageSize=${pageSize}`);
-    getEq(page, pageSize); // Pass page and pageSize to the store to fetch the data
+    getEq(page, pageSize);
   }, [page, pageSize, navigate, getEq]);
 
-  // Handle page change
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
 
   const handlePageSizeChange = (newPageSize) => {
-    setPageSize(newPageSize); // Update page size
-    setPage(1); // Reset to the first page when page size changes
+    setPageSize(newPageSize);
+    setPage(1);
   };
 
   return (

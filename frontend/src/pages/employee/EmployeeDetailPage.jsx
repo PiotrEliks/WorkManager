@@ -6,6 +6,7 @@ import AccessCardInfo from '../../components/employees/AccessCardInfo';
 import { ArrowLeft, Pencil, Trash  } from 'lucide-react';
 import Loader from '../../components/ui/Loader';
 import useDocumentTitle from '../../lib/useDocumentTitle';
+import { useAuthStore } from '../../store/useAuthStore';
 
 
 const EmployeeDetailPage = () => {
@@ -14,6 +15,7 @@ const EmployeeDetailPage = () => {
   const navigate = useNavigate();
   const { users, getUsers, areUsersLoading, deleteUser } = useUserstore();
   const [employee, setEmployee] = useState(null);
+  const { authUser } = useAuthStore();
 
   const handleDelete = async () => {
     if (window.confirm(`Czy na pewno chcesz usunąć pracownika: ${employee.fullName}?`)) {
@@ -50,12 +52,16 @@ const EmployeeDetailPage = () => {
           >
             <Pencil className="size-4" /> Edytuj
           </button>
-          <button
-            onClick={handleDelete}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2 cursor-pointer"
-          >
-            <Trash className="size-4" /> Usuń
-          </button>
+          {
+            authUser.id !== employee.id && (
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2 cursor-pointer"
+              >
+                <Trash className="size-4" /> Usuń
+              </button>
+            )
+          }
         </div>
       </div>
 
