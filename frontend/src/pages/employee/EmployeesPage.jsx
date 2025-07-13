@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useUserstore } from '../../store/useUserstore';
+import { useUserstore } from '../../store/useUserStore';
 import EmployeeCard from '../../components/employees/EmployeeCard';
 import useDocumentTitle from '../../lib/useDocumentTitle';
 import { useNavigate } from 'react-router-dom';

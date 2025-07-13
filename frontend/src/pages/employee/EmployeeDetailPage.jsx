@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useUserstore } from '../../store/useUserstore';
+import { useUserstore } from '../../store/useUserStore';
 import EmployeePermissions from '../../components/employees/EmployeePermissions';
 import AccessCardInfo from '../../components/employees/AccessCardInfo';
 import { ArrowLeft, Pencil, Trash  } from 'lucide-react';
