@@ -16,23 +16,26 @@ export default function ResourceManager({
   currentPage: page,
   pageSize,
   totalItems,
-  handlePageSizeChange
+  handlePageSizeChange,
+  type = null
 }) {
   const totalPages = Math.ceil(totalItems / pageSize);
   const [toDelete, setToDelete] = useState(null);
   const [fullData, setFullData] = useState([]);
 
   useEffect(() => {
-    fetchItems(page, pageSize, false);
-  }, [fetchItems, page, pageSize]);
+    if (type) {
+      fetchItems(page, pageSize, type, false);
+    }
+  }, [fetchItems, page, pageSize, type]);
 
   useEffect(() => {
     const fetchFullData = async () => {
-      const response = await fetchItems(page, pageSize, true);
+      const response = await fetchItems(page, pageSize, type, true);
       setFullData(response);
     };
     fetchFullData();
-  }, [fetchItems]);
+  }, [fetchItems, page, pageSize, type]);
 
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, totalItems);

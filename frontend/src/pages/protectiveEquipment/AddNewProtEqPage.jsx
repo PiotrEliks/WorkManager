@@ -8,6 +8,8 @@ import useDocumentTitle from '../../lib/useDocumentTitle.jsx';
 
 const AddNewProtEqPage = () => {
   useDocumentTitle('Dodaj sprzęt ochronny | Panel Elektropomiar');
+  const queryParams = new URLSearchParams(location.search);
+  const type = queryParams.get('type') || 'elektropomiar';
   const navigate = useNavigate();
   const { authUser } = useAuthStore();
   const { addEq, isAdding } = useProtectiveEquipmentStore();
@@ -18,14 +20,15 @@ const AddNewProtEqPage = () => {
       checkDate: "",
       nextCheckDate: "",
       comments: "",
-      editedBy: authUser.fullName
+      editedBy: authUser.fullName,
+      type: type
     });
     
     const handleSubmit = async (e) => {
       e.preventDefault();
       await addEq(formData);
-      setFormData({ name: "", factoryNumber: "", protocolNumber: "", checkDate: "", nextCheckDate: "", comments: "", editedBy: authUser.fullName });
-      navigate('/sprzet-ochronny');
+      setFormData({ name: "", factoryNumber: "", protocolNumber: "", checkDate: "", nextCheckDate: "", comments: "", editedBy: authUser.fullName, type: type });
+      navigate(`/sprzet-ochronny?page=1&pageSize=10&type=${type}`);
     }
     
   return (
@@ -41,7 +44,7 @@ const AddNewProtEqPage = () => {
         ]}
         onSubmit={handleSubmit}
         onCancel={() => {
-          navigate('/sprzet-ochronny');
+          navigate(`/sprzet-ochronny?page=1&pageSize=10&type=${type}`);
           setFormData({ editedBy: authUser.fullName });
         }}
         isSubmitting={isAdding}

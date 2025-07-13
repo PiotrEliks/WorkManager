@@ -7,6 +7,8 @@ import { useAuthStore } from '../store/useAuthStore'
 const HeadBar = ({ tableColumns, tableData, name}) => {
   const navigate = useNavigate();
   const { authUser } = useAuthStore();
+  const queryParams = new URLSearchParams(location.search);
+  const type = queryParams.get('type') || 'elektropomiar';
 
   return (
     <div className={`w-full flex flex-row items-center ${authUser.Permission.can_write ? 'justify-between' : 'justify-end'}`}>
@@ -14,8 +16,8 @@ const HeadBar = ({ tableColumns, tableData, name}) => {
         authUser.Permission.can_write &&
           <button
             className="cursor-pointer bg-blue-800 hover:bg-blue-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
-            onClick={() => navigate(`/${name}/nowy`)}
-            title="Dodaj nowy miernik"
+            onClick={() => navigate(`/${name}/nowy?type=${type}`)}
+            title="Dodaj nowy"
           >
             <FilePlus className="size-5"/>
             <span className="hidden md:inline">Dodaj nowy</span>

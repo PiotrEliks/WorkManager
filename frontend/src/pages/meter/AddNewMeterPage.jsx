@@ -9,6 +9,8 @@ import useDocumentTitle from '../../lib/useDocumentTitle.jsx';
 const AddNewMeterPage = () => {
   useDocumentTitle('Dodaj miernik | Panel Elektropomiar');
   const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  console.log(queryParams);
   const { authUser } = useAuthStore();
   const { addMeter, isAdding } = useMeterStore();
   const [formData, setFormData] = useState({
@@ -26,7 +28,7 @@ const AddNewMeterPage = () => {
     e.preventDefault();
     await addMeter(formData);
     setFormData({ type: "", number: "", producer: "", checkdate: "", nextcheckin: "", condition: "", comments: "", editedBy: authUser.fullName });
-    navigate('/mierniki');
+    navigate(`/mierniki?page=1&pageSize=10`);
   }
   return (
     <div>
@@ -42,7 +44,7 @@ const AddNewMeterPage = () => {
         ]}
         onSubmit={handleSubmit}
         onCancel={() => {
-          navigate('/mierniki');
+          navigate('/mierniki?page=1&pageSize=10');
           setFormData({ editedBy: authUser.fullName });
         }}
         isSubmitting={isAdding}

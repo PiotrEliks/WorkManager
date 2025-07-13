@@ -15,19 +15,28 @@ const ProtectiveEquipmentPage = () => {
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page'), 10) || 1;
     const currentPageSize = parseInt(queryParams.get('pageSize'), 10) || 10;
+    const currentType = queryParams.get('type') || 'elektropomiar';
 
     const [pageSize, setPageSize] = useState(currentPageSize);
     const [page, setPage] = useState(currentPage);
-    
+    const [type, setType] = useState(currentType);
+
+    useEffect(() => {
+    const newType = queryParams.get('type') || 'elektropomiar';
+    if (newType !== type) {
+      setType(newType);
+    }
+  }, [location.search]);
+
     useEffect(() => {
       if (pageSize && page) {
-        getEq(page, pageSize);
+        getEq(page, pageSize, type);
       }
-    }, [page, pageSize, getEq]);
+    }, [page, pageSize, getEq, type]);
     
     useEffect(() => {
-       navigate(`?page=${page}&pageSize=${pageSize}`, { replace: true });
-    }, [page, pageSize, navigate]);
+       navigate(`?page=${page}&pageSize=${pageSize}&type=${type}`, { replace: true });
+    }, [page, pageSize, type, navigate]);
 
     const columns = [
       { key: 'name', label: "Nazwa" }, 
@@ -95,6 +104,7 @@ const ProtectiveEquipmentPage = () => {
       pageSize={pageSize}
       totalItems={totalItems}
       handlePageSizeChange={handlePageSizeChange}
+      type={type}
     />
   )
 }

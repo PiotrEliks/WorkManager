@@ -9,12 +9,13 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   isUpdating: false,
   totalItems: 0,
 
-  getEq: async (page, pageSize, fullData) => {
+  getEq: async (page, pageSize, type, fullData) => {
     set({ isEquipmentLoading: true });
     try {
       const queryParams = new URLSearchParams();
       queryParams.append('page', page);
       queryParams.append('pageSize', pageSize);
+      queryParams.append('type', type);
 
       if (fullData) {
         queryParams.append('fullData', true);

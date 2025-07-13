@@ -8,6 +8,10 @@ const ProtectiveEquipment = sequelize.define('ProtectiveEquipment', {
         primaryKey: true,
         allowNull: false
     },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false
@@ -36,6 +40,7 @@ const ProtectiveEquipment = sequelize.define('ProtectiveEquipment', {
       type: DataTypes.STRING,
       allowNull: false
     },
+
 }, {
     tableName: 'ProtectiveEquipments',
     timestamps: true

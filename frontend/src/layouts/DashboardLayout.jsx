@@ -20,6 +20,7 @@ const DashboardLayout = () => {
   const [openResources, setOpenResources] = useState(false);
   const [openResourcesSection, setOpenResourcesSection] = useState(null);
   const [openEmployees, setOpenEmployees] = useState(false);
+  const [showProtectiveEquipmentSubMenu, setShowProtectiveEquipmentSubMenu] = useState(false);
 
   useEffect(() => {
     const mapping = {
@@ -37,6 +38,10 @@ const DashboardLayout = () => {
     setOpenResources(!!found);
     setOpenResourcesSection(found);
     setOpenEmployees(location.pathname.startsWith('/pracownicy'));
+    
+    if (location.pathname.startsWith('/sprzet-ochronny')) {
+      setShowProtectiveEquipmentSubMenu(true);
+    }
   }, [location.pathname]);
 
   const handleNavigation = (path) => {
@@ -53,19 +58,47 @@ const DashboardLayout = () => {
   };
 
   const resourceSections = [
-    { key: 'meters', icon: <Zap />, label: 'Mierniki', path: '/mierniki' },
-    { key: 'protectiveEquipment', icon: <ShieldCheck />, label: 'Sprzęt ochronny', path: '/sprzet-ochronny' },
+    { 
+      key: 'meters', 
+      icon: <Zap />, 
+      label: 'Mierniki', 
+      path: '/mierniki?page=1&pageSize=10',
+      onClick: () => {
+        closeProtectiveEquipmentSubMenu();
+        handleNavigation('/mierniki?page=1&pageSize=10');
+      }
+    },
+    { 
+      key: 'protectiveEquipment', 
+      icon: <ShieldCheck />, 
+      label: 'Sprzęt ochronny', 
+      path: '',  
+      onClick: () => setShowProtectiveEquipmentSubMenu(prev => !prev),  
+      subMenu: [
+        {
+          key: 'elektropomiar',
+          label: 'Elektropomiar',
+          path: '/sprzet-ochronny?page=1&pageSize=10&type=elektropomiar'
+        },
+        {
+          key: 'deceuninck',
+          label: 'Deceuninck',
+          path: '/sprzet-ochronny?page=1&pageSize=10&type=deceuninck'
+        }
+      ]
+    },
   ];
+
+  const closeProtectiveEquipmentSubMenu = () => {
+    setShowProtectiveEquipmentSubMenu(false);
+  };
+
+  const isProtectiveEquipmentActive = location.pathname.startsWith('/sprzet-ochronny') || showProtectiveEquipmentSubMenu;
 
   return (
     <div className="flex h-screen">
 
-      <aside className={`
-        bg-blue-900 text-white p-4
-        ${sidebarCollapsed ? "w-18" : "w-54"}
-        flex-none overflow-y-auto
-        transition-all duration-300 hidden md:block
-      `}>
+      <aside className={`bg-blue-900 text-white p-4 ${sidebarCollapsed ? "w-18" : "w-54"} flex-none overflow-y-auto transition-all duration-300 hidden md:block`}>
         <button
           onClick={toggleSidebar}
           className="mb-4 cursor-pointer hover:text-white/60"
@@ -81,11 +114,7 @@ const DashboardLayout = () => {
                 setOpenResources(prev => !prev);
                 if (sidebarCollapsed) toggleSidebar();
               }}
-              className={`
-                w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer
-                hover:bg-blue-700/80
-                ${openResources ? 'bg-blue-700/80' : ''}
-              `}
+              className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-700/80 ${openResources ? 'bg-blue-700/80' : ''}`}
             >
               <FolderOpen /> {!sidebarCollapsed && 'Zasoby'}
             </button>
@@ -96,42 +125,49 @@ const DashboardLayout = () => {
                   <li key={sec.key}>
                     <button
                       onClick={() => {
-                        setOpenEmployees(false);
-                        handleNavigation(sec.path);
+                        sec.onClick();  
                       }}
-                      className={`
-                        w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer
-                        hover:bg-blue-800/40
-                        ${openResourcesSection === sec.key ? 'bg-blue-800/80' : ''}
-                      `}
+                      className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-800/40 ${openResourcesSection === sec.key ? 'bg-blue-800/80' : ''} ${sec.key === 'protectiveEquipment' && isProtectiveEquipmentActive ? 'bg-blue-800/80' : ''}`}
                     >
                       {sec.icon} {sec.label}
                     </button>
+                    {sec.subMenu && showProtectiveEquipmentSubMenu && (
+                      <ul className="pl-4">
+                        {sec.subMenu.map(sub => (
+                          <li key={sub.key}>
+                            <button
+                              onClick={() => {
+                                handleNavigation(sub.path);
+                              }}
+                              className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-800/40 ${location.search.includes(sub.key) ? 'bg-blue-800/40' : ''}`}
+                            >
+                              {sub.label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>
             )}
           </li>
-          {
-            authUser.role === "administrator" &&
-              <li>
-                <button
-                  onClick={() => {
-                    setOpenEmployees(true);
-                    setOpenResources(false);
-                    setOpenResourcesSection(null);
-                    handleNavigation('/pracownicy');
-                  }}
-                  className={`
-                    w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer
-                    hover:bg-blue-700/80
-                    ${openEmployees ? 'bg-blue-700/80' : ''}
-                  `}
-                >
-                  <UserRound /> {!sidebarCollapsed && 'Pracownicy'}
-                </button>
-              </li>
-          }
+          {authUser.role === "administrator" && (
+            <li>
+              <button
+                onClick={() => {
+                  setOpenEmployees(true);
+                  setOpenResources(false);
+                  setOpenResourcesSection(null);
+                  closeProtectiveEquipmentSubMenu();
+                  handleNavigation('/pracownicy');
+                }}
+                className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-700/80 ${openEmployees ? 'bg-blue-700/80' : ''}`}
+              >
+                <UserRound /> {!sidebarCollapsed && 'Pracownicy'}
+              </button>
+            </li>
+          )}
         </ul>
       </aside>
 
@@ -159,34 +195,50 @@ const DashboardLayout = () => {
                     <li key={sec.key}>
                       <button
                         onClick={() => {
-                          setOpenEmployees(false);
-                          handleNavigation(sec.path);
+                          if (sec.onClick) sec.onClick();
+                          else handleNavigation(sec.path);
                         }}
-                        className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-800/40 ${openResourcesSection === sec.key ? 'bg-blue-800/80' : ''}`}
+                        className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-800/40 ${openResourcesSection === sec.key ? 'bg-blue-800/80' : ''} ${sec.key === 'protectiveEquipment' && isProtectiveEquipmentActive ? 'bg-blue-800/80' : ''}`}
                       >
                         {sec.icon} {sec.label}
                       </button>
+                      {sec.subMenu && showProtectiveEquipmentSubMenu && (
+                        <ul className="pl-4">
+                          {sec.subMenu.map(sub => (
+                            <li key={sub.key}>
+                              <button
+                                onClick={() => {
+                                  handleNavigation(sub.path);
+                                }}
+                                className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-800/40 ${location.search.includes(sub.key) ? 'bg-blue-800/40' : ''}`}
+                              >
+                                {sub.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))}
                 </ul>
               )}
             </li>
-            {
-              authUser.role === "administrator" &&
-                <li>
-                  <button
-                    onClick={() => {
-                      setOpenEmployees(true);
-                      setOpenResources(false);
-                      setOpenResourcesSection(null);
-                      handleNavigation('/pracownicy');
-                    }}
-                    className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-700/80 ${openEmployees ? 'bg-blue-700/80' : ''}`}
-                  >
-                    <UserRound /> Pracownicy
-                  </button>
-                </li>
-            }
+            {authUser.role === "administrator" && (
+              <li>
+                <button
+                  onClick={() => {
+                    setOpenEmployees(true);
+                    setOpenResources(false);
+                    setOpenResourcesSection(null);
+                    closeProtectiveEquipmentSubMenu();
+                    handleNavigation('/pracownicy');
+                  }}
+                  className={`w-full text-left p-2 mb-1 flex items-center gap-1 rounded-xl cursor-pointer hover:bg-blue-700/80 ${openEmployees ? 'bg-blue-700/80' : ''}`}
+                >
+                  <UserRound /> Pracownicy
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       )}
@@ -213,12 +265,11 @@ const DashboardLayout = () => {
             >
               <LogOut /> Wyloguj
             </button>
-            {
-              showUserInfo &&
-                <div className="fixed top-15 z-50 bg-zinc-100 rounded-2xl px-3 py-1">
-                  <span className="">{authUser.role.charAt(0).toUpperCase()}{authUser.role.slice(1)}</span>
-                </div>
-            }
+            {showUserInfo && (
+              <div className="fixed top-15 z-50 bg-zinc-100 rounded-2xl px-3 py-1">
+                <span className="">{authUser.role.charAt(0).toUpperCase()}{authUser.role.slice(1)}</span>
+              </div>
+            )}
           </div>
         </nav>
         <main className="flex-1 overflow-auto p-4 bg-gray-50">

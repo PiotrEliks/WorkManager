@@ -1,8 +1,9 @@
+import { where } from "sequelize";
 import ProtectiveEquipment from "../models/protectiveEquipment.model.js";
 
 export const getEq = async (req, res) => {
     try {
-        let { page = 1, pageSize = 10, fullData = false } = req.query;
+        let { page = 1, pageSize = 10, fullData = false, type } = req.query;
         
         page = parseInt(page, 10);
         pageSize = parseInt(pageSize, 10);
@@ -18,13 +19,14 @@ export const getEq = async (req, res) => {
 
         if (fullData) {
             const equipment = await ProtectiveEquipment.findAll({
+                where: type ? { type } : {},
                 order: [['updatedAt', 'DESC']],
             });
-            console.log(equipment)
             return res.status(200).json({ equipment, totalItems: equipment.length });
         }
 
         const { count, rows } = await ProtectiveEquipment.findAndCountAll({
+            where: type ? { type } : {},
             order: [['updatedAt', 'DESC']],
             offset,
             limit: pageSize
@@ -42,7 +44,7 @@ export const getEq = async (req, res) => {
 
 export const addEq = async (req, res) => {
     try {
-        const { name, factoryNumber, protocolNumber, checkDate, nextCheckDate, comments, editedBy } = req.body;
+        const { name, factoryNumber, protocolNumber, checkDate, nextCheckDate, comments, editedBy, type } = req.body;
 
         const existingEquipment = await ProtectiveEquipment.findOne({
             where: {
@@ -62,6 +64,7 @@ export const addEq = async (req, res) => {
             nextCheckDate,
             comments,
             editedBy,
+            type
         });
 
         return res.status(201).json(newEq);
