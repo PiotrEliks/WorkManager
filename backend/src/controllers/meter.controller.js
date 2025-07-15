@@ -43,7 +43,7 @@ export const getMeters = async (req, res) => {
 
 export const addMeter = async (req, res) => {
     try {
-        const { type, number, producer, comments, checkdate, nextcheckin, condition, editedBy } = req.body;
+        const { type, number, producer, comments, checkDate, nextCheckIn, condition, editedBy } = req.body;
 
         const existingMeter = await Meter.findOne({
             where: {
@@ -56,15 +56,15 @@ export const addMeter = async (req, res) => {
             return res.status(400).json({ message: "Miernik już isnieje" });
         }
 
-        let checkDateObj = parse(checkdate, 'dd.MM.yyyy', new Date());
+        let checkDateObj = parse(checkDate, 'dd.MM.yyyy', new Date());
         if (!isValid(checkDateObj)) {
-          checkDateObj = parseISO(checkdate);
+          checkDateObj = parseISO(checkDate);
           if (!isValid(checkDateObj)) {
             return res.status(400).json({ message: "Niepoprawna data sprawdzenia" });
           }
         }
 
-        const months = Number(nextcheckin);
+        const months = Number(nextCheckIn);
 
         const nextCheckDate = isValid(checkDateObj) && !isNaN(months)
           ? addMonths(checkDateObj, months)
@@ -75,9 +75,9 @@ export const addMeter = async (req, res) => {
             number,
             producer,
             comments,
-            checkdate: checkDateObj,
-            nextcheckdate: nextCheckDate,
-            nextcheckin,
+            checkDate: checkDateObj,
+            nextCheckDate: nextCheckDate,
+            nextCheckIn,
             condition,
             editedBy,
         });
@@ -109,18 +109,18 @@ export const deleteMeter = async (req, res) => {
 export const updateMeter = async (req, res) => {
     try {
         const { meterId } = req.params;
-        const { type, number, producer, comments, checkdate, nextcheckin, condition, editedBy } = req.body;
+        const { type, number, producer, comments, checkDate, nextCheckIn, condition, editedBy } = req.body;
 
         const existing = await Meter.findByPk(meterId);
         if (!existing) {
           return res.status(404).json({ message: "Nie znaleziono miernika" });
         }
 
-        let checkDateObj = existing.checkdate;
-        if (checkdate !== undefined) {
-          let parsed = parse(checkdate, 'dd.MM.yyyy', new Date());
+        let checkDateObj = existing.checkDate;
+        if (checkDate !== undefined) {
+          let parsed = parse(checkDate, 'dd.MM.yyyy', new Date());
           if (!isValid(parsed)) {
-            parsed = parseISO(checkdate);
+            parsed = parseISO(checkDate);
           }
           if (!isValid(parsed)) {
             return res.status(400).json({ message: "Niepoprawna data sprawdzenia" });
@@ -128,9 +128,9 @@ export const updateMeter = async (req, res) => {
           checkDateObj = parsed;
         }
 
-        let months = existing.nextcheckin;
-        if (nextcheckin !== undefined) {
-          const asNum = Number(nextcheckin);
+        let months = existing.nextCheckIn;
+        if (nextCheckIn !== undefined) {
+          const asNum = Number(nextCheckIn);
           months = isNaN(asNum) ? null : asNum;
         }
 
@@ -144,9 +144,9 @@ export const updateMeter = async (req, res) => {
           number:    number     !== undefined ? number     : existing.number,
           producer:  producer   !== undefined ? producer   : existing.producer,
           comments:  comments   !== undefined ? comments   : existing.comments,
-          checkdate: checkdate  !== undefined ? checkDateObj : existing.checkdate,
-          nextcheckin: months,
-          nextcheckdate: nextCheckDate,
+          checkDate: checkDate  !== undefined ? checkDateObj : existing.checkDate,
+          nextCheckIn: months,
+          nextCheckDate: nextCheckDate,
           condition: condition  !== undefined ? condition  : existing.condition,
           editedBy:  editedBy   !== undefined ? editedBy   : existing.editedBy,
         };

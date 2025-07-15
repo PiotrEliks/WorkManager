@@ -34,10 +34,10 @@ export default function MetersPage() {
     { key: 'number', label: 'Nr' },
     { key: 'producer', label: 'Producent' },
     {
-      key: 'checkdate',
+      key: 'checkDate',
       label: 'Data spraw.',
       getClassName: (val, row) => {
-        if (isAfterDeadline(row.nextcheckdate)) return 'bg-red-500 text-white rounded px-2';
+        if (isAfterDeadline(row.nextCheckDate)) return 'bg-red-500 text-white rounded px-2';
         if (isDeadline(val, 30)) return 'bg-orange-500 text-white rounded px-2';
         return 'bg-green-500 text-white rounded px-2';
       },
@@ -49,7 +49,7 @@ export default function MetersPage() {
       render: (val) => dateFormat(val),
     },
     {
-      key: 'nextcheckdate',
+      key: 'nextCheckDate',
       label: 'Nast. sprawdz.',
       getClassName: (val) => {
         if (isAfterDeadline(val)) return 'bg-red-500 text-white rounded px-2';

@@ -32,8 +32,8 @@ const EditMeterPage = () => {
     type: meter ? meter.type : "",
     number: meter ? meter.number : "",
     producer: meter ? meter.producer : "",
-    checkdate: meter ? meter.checkdate : "",
-    nextcheckin: meter ? meter.nextcheckin : "",
+    checkDate: meter ? meter.checkDate : "",
+    nextCheckIn: meter ? meter.nextCheckIn : "",
     condition: meter ? meter.condition : "",
     comments: meter ? meter.comments : "",
     editedBy: meter ? meter.editedBy : authUser.fullName
@@ -45,7 +45,7 @@ const EditMeterPage = () => {
         type:        meter.type ?? "",
         number:      meter.number ?? "",
         producer:    meter.producer ?? "",
-        checkdate:   meter.checkdate ?? "",
+        checkDate:   meter.checkDate ?? "",
         nextcheckin: meter.nextcheckin ?? "",
         condition:   meter.condition ?? "",
         comments:    meter.comments ?? "",
@@ -57,7 +57,7 @@ const EditMeterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await updateMeter(meter.id, formData);
-    setFormData({ type: "", number: "", producer: "", checkdate: "", nextcheckin: "", condition: "", comments: "", editedBy: authUser.fullName });
+    setFormData({ type: "", number: "", producer: "", checkDate: "", nextcheckin: "", condition: "", comments: "", editedBy: authUser.fullName });
     navigate('/mierniki');
   }
 
@@ -72,8 +72,8 @@ const EditMeterPage = () => {
           { label: "Typ", icon: Tag, value: formData.type, onChange: (e) => setFormData({ ...formData, type: e.target.value }), placeholder: "Wprowadź typ" },
           { label: "Numer", icon: Hash, value: formData.number, onChange: (e) => setFormData({ ...formData, number: e.target.value }), placeholder: "Wprowadź numer" },
           { label: "Producent", icon: Building2, value: formData.producer, onChange: (e) => setFormData({ ...formData, producer: e.target.value }), placeholder: "Wprowadź producenta" },
-          { label: "Termin sprawdzenia", icon: Calendar, value: formData.checkdate, onChange: (e) => setFormData({ ...formData, checkdate: e.target.value }), type: "date" },
-          { label: "Następne sprawdzanie za", icon: Clock, value: formData.nextcheckin, onChange: (e) => setFormData({ ...formData, nextcheckin: e.target.value }), type: "select", options: ["", 12, 13, 24] },
+          { label: "Termin sprawdzenia", icon: Calendar, value: formData.checkDate, onChange: (e) => setFormData({ ...formData, checkDate: e.target.value }), type: "date" },
+          { label: "Następne sprawdzanie za", icon: Clock, value: formData.nextCheckIn, onChange: (e) => setFormData({ ...formData, nextCheckIn: e.target.value }), type: "select", options: ["", 12, 13, 24] },
           { label: "Stan", icon: CheckCircle, value: formData.condition, onChange: (e) => setFormData({ ...formData, condition: e.target.value }), placeholder: "Wprowadź stan" },
           { label: "Uwagi", icon: FileText, value: formData.comments, onChange: (e) => setFormData({ ...formData, comments: e.target.value }), placeholder:"Wprowadź uwagi" }
         ]}

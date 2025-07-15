@@ -1,71 +1,69 @@
 import cron from "node-cron";
+import addDays from "date-fns/addDays";
+import format from "date-fns/format";
 import Meter from "../models/meter.model.js";
 import ProtectiveEquipment from "../models/protectiveEquipment.model.js";
-import { Sequelize, Op } from "sequelize";
-import { sendEmail } from "./mailer.js";
 import User from "../models/users.model.js";
+import { sendEmail } from "./mailer.js";
 
-cron.schedule("0 7 * * *", async () => {
-  try {
-    const meters = await Meter.findAll({
-      where: {
-        [Op.or]: [
-        //  { checkdate: { [Op.eq]: Sequelize.literal("CURRENT_DATE + INTERVAL '7 days'") }},
-          { nextcheckdate: { [Op.eq]: Sequelize.literal("CURRENT_DATE + INTERVAL '7 days'") }}
-        ]
+const ENTITIES = [
+  {
+    model: Meter,
+    templateSubject: "Zbliża się termin przeglądu miernika",
+    mapRow: ({ type, number, producer, checkDate, nextCheckDate }) => ({
+      name1: type,
+      name2: number,
+      name3: producer,
+      checkDate,
+      nextCheckDate,
+    }),
+  },
+  {
+    model: ProtectiveEquipment,
+    templateSubject: "Zbliża się termin przeglądu sprzętu ochronnego",
+    mapRow: ({ name, factoryNumber, protocolNumber, checkDate, nextCheckDate }) => ({
+      name1: name,
+      name2: factoryNumber,
+      name3: protocolNumber,
+      checkDate,
+      nextCheckDate,
+    }),
+  },
+];
+
+cron.schedule(
+  "* 7 * * *",
+  async () => {
+    try {
+      const targetDate = format(addDays(new Date(), 7), "yyyy-MM-dd");
+      
+      const admins = await User.findAll({
+        where: { role: "administrator" },
+        attributes: ["email"],
+      });
+      const emails = admins.map(u => u.email);
+      if (emails.length === 0) {
+        console.warn("No admin emails found — skipping notifications.");
+        return;
       }
-    });
-
-    const equipment = await ProtectiveEquipment.findAll({
-      where: {
-        [Op.or]: [
-        //  { checkDate: { [Op.eq]: Sequelize.literal("CURRENT_DATE + INTERVAL '7 days'") }},
-          { nextCheckDate: { [Op.eq]: Sequelize.literal("CURRENT_DATE + INTERVAL '7 days'") }}
-        ]
+      
+      for (const { model, templateSubject, mapRow } of ENTITIES) {
+        const items = await model.findAll({
+          where: { nextCheckDate: targetDate },
+        });
+        
+        if (!items.length) continue;
+        
+        for (const row of items) {
+          const data = mapRow(row);
+          await sendEmail(emails, templateSubject, data);
+        }
       }
-    });
-
-    const users = await User.findAll({
-      where: {
-        role: 'administrator'
-      },
-      attributes: ['email']
-    });
-
-    const emails = users.map(row => row.email);
-
-    meters.forEach(meter => {
-      const emailData = {
-        name1: meter.type,
-        name2: meter.number,
-        name3: meter.producer,
-        checkDate: meter.checkdate,
-        nextCheckDate: meter.nextcheckdate
-      };
-      sendEmail(
-        emails,
-        `Zbliża się termin przeglądu miernika`,
-        emailData
-      );
-    });
-
-    equipment.forEach(eq => {
-      const emailData = {
-        name1: eq.name,
-        name2: eq.factoryNumber,
-        name3: eq.protocolNumber,
-        checkDate: eq.checkDate,
-        nextCheckDate: eq.nextCheckDate
-      };
-      sendEmail(
-        emails,
-        `Zbliża się termin przeglądu sprzętu ochronnego`,
-        emailData
-      );
-    });
-  } catch (error) {
-    console.error("Error in cron.schedule: ", error);
+    } catch (err) {
+      console.error("Error in scheduled check:", err);
+    }
+  },
+  {
+    timezone: "Europe/Warsaw",
   }
-}, {
-  timezone: "Europe/Warsaw",
-});
+);

@@ -24,15 +24,15 @@ const Meter = sequelize.define('Meter', {
       type: DataTypes.STRING,
       allowNull: true
     },
-    checkdate: {
+    checkDate: {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    nextcheckdate: {
+    nextCheckDate: {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
-    nextcheckin: {
+    nextCheckIn: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
