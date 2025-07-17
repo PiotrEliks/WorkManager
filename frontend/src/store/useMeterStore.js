@@ -9,7 +9,7 @@ export const useMeterStore = create((set, get) => ({
   isUpdating: false,
   totalItems: 0,
 
-  getMeters: async (page, pageSize, fullData) => {
+  getMeters: async (page, pageSize, type, fullData) => {
     set({ areMetersLoading: true });
     try {
       const queryParams = new URLSearchParams();

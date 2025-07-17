@@ -4,11 +4,21 @@ import { exportToExcel, exportToPDF } from '../lib/utlis'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 
-const HeadBar = ({ tableColumns, tableData, name}) => {
+const HeadBar = ({ tableColumns, fetchItems, name }) => {
   const navigate = useNavigate();
   const { authUser } = useAuthStore();
   const queryParams = new URLSearchParams(location.search);
   const type = queryParams.get('type') || 'elektropomiar';
+
+  const handleExcelExport = async () => {
+    const response = await fetchItems(1, 1, type, true);
+    exportToExcel(tableColumns, response, name, type);
+  }
+
+  const handlePDFExport = async () => {
+    const response = await fetchItems(1, 1, type, true);
+    exportToPDF(tableColumns, response, name, type);
+  }
 
   return (
     <div className={`w-full flex flex-row items-center ${authUser.Permission.can_write ? 'justify-between' : 'justify-end'}`}>
@@ -26,7 +36,7 @@ const HeadBar = ({ tableColumns, tableData, name}) => {
       }
       <div className="flex flex-row items-center justify-center gap-1">
         <button
-          onClick={() => exportToExcel(tableColumns, tableData, name)}
+          onClick={() => handleExcelExport()}
           className="cursor-pointer bg-green-800 hover:bg-green-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
           title="Pobierz w formacie .xlsx"
         >
@@ -34,7 +44,7 @@ const HeadBar = ({ tableColumns, tableData, name}) => {
           Excel
         </button>
         <button
-          onClick={() => exportToPDF(tableColumns, tableData, name)}
+          onClick={() => handlePDFExport()}
           className="cursor-pointer bg-red-800 hover:bg-red-800/80 rounded-xl text-white py-1 px-3 flex flex-row items-center justify-center gap-1"
           title="Pobierz w formacie PDF"
         >

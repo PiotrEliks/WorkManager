@@ -63,7 +63,7 @@ export default function MetersPage() {
       },
       render: (val) => dateFormat(val),
     },
-    { key: 'nextcheckin', label: 'Okres (msc)' },
+    { key: 'nextCheckIn', label: 'Okres (msc)' },
     { key: 'condition', label: 'Stan' },
     { key: 'comments', label: 'Uwagi' },
     { key: 'editedBy', label: 'Edyt. przez' },

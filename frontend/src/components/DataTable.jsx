@@ -17,7 +17,7 @@ export default function DataTable({
           : data.map(row => (
             <div key={row.id} className="bg-white p-4 rounded-lg shadow">
               {reduced.map(col => {
-                const val = row[col.key] ?? '—';
+                const val = row[col.key] && row[col.key] !== '' ? row[col.key] : '—';
                 const cls = col.getClassName?.(val, row) ?? '';
                 const title = col.getTitle?.(val, row);
                 return (
@@ -78,7 +78,7 @@ export default function DataTable({
             style={gridStyle}
           >
             {reduced.map(col => {
-              const val = row[col.key] ?? '—';
+              const val = row[col.key] && row[col.key] !== '' ? row[col.key] : '—';
               const cls = col.getClassName?.(val, row) ?? '';
               const title = col.getTitle?.(val, row);
               return (

@@ -21,7 +21,6 @@ export default function ResourceManager({
 }) {
   const totalPages = Math.ceil(totalItems / pageSize);
   const [toDelete, setToDelete] = useState(null);
-  const [fullData, setFullData] = useState([]);
 
   useEffect(() => {
     if (type) {
@@ -29,23 +28,20 @@ export default function ResourceManager({
     }
   }, [fetchItems, page, pageSize, type]);
 
-  useEffect(() => {
-    const fetchFullData = async () => {
-      const response = await fetchItems(page, pageSize, type, true);
-      setFullData(response);
-    };
-    fetchFullData();
-  }, [fetchItems, page, pageSize, type]);
-
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, totalItems);
+
+  if (loading && !items.length) {
+    return <Loader />;
+  }
 
   return (
     <>
       <HeadBar
         tableColumns={columns}
-        tableData={fullData}
+        fetchItems={fetchItems}
         name={name}
+        type={type}
       />
       <DataTable
         columns={columns}

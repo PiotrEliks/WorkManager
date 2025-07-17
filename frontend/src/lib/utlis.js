@@ -19,7 +19,7 @@ const clean = (val) => {
     : val;
 };
 
-export const exportToExcel = (headers, data, fileName = 'eksport') => {
+export const exportToExcel = (headers, data, fileName = 'eksport', type = null) => {
   const tableColumns = headers.map(h => clean(h.label));
   const tableData = data.map(item =>
     headers.reduce((row, h) => {
@@ -30,7 +30,7 @@ export const exportToExcel = (headers, data, fileName = 'eksport') => {
   
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
-  const fullFileName = `${fileName}-${dateStr}`;
+  const fullFileName = `${fileName}-${type}-${dateStr}`;
 
   const ws = XLSX.utils.json_to_sheet(tableData, { header: tableColumns });
   const wb = XLSX.utils.book_new();
@@ -38,19 +38,19 @@ export const exportToExcel = (headers, data, fileName = 'eksport') => {
   XLSX.writeFile(wb, `${fullFileName}.xlsx`);
 };
 
-export const exportToPDF = (headers, data, fileName = 'eksport') => {
+export const exportToPDF = (headers, data, fileName = 'eksport', type = null) => {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
   doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf', 'Roboto', 'normal');
   doc.setFont('Roboto', 'normal');
   doc.setFontSize(12);
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
-  const fullFileName = `${fileName}-${dateStr}`;
+  const fullFileName = `${fileName}-${type}-${dateStr}`;
 
   doc.setProperties({
     title: fullFileName,
     subject: 'Eksport danych',
-    author: 'Twoja aplikacja',
+    author: 'Panel Elektropomiar',
     keywords: 'eksport, dane, PDF',
   });
 
