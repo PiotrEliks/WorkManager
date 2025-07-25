@@ -8,9 +8,7 @@ import useDocumentTitle from '../../lib/useDocumentTitle.jsx';
 
 const AddNewMeterPage = () => {
   useDocumentTitle('Dodaj miernik | Panel Elektropomiar');
-  const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
-  console.log(queryParams);
+  const navigate = useNavigate();;
   const { authUser } = useAuthStore();
   const { addMeter, isAdding } = useMeterStore();
   const [formData, setFormData] = useState({
@@ -27,9 +25,12 @@ const AddNewMeterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await addMeter(formData);
-    setFormData({ type: "", number: "", producer: "", checkDate: "", nextcheckin: "", condition: "", comments: "", editedBy: authUser.fullName });
+    setFormData({ type: "", number: "", producer: "", checkDate: "", nextCheckIn: "", condition: "", comments: "", editedBy: authUser.fullName });
     navigate(`/mierniki?page=1&pageSize=10`);
   }
+
+  console.log(formData);
+
   return (
     <div>
       <DataForm
@@ -38,7 +39,7 @@ const AddNewMeterPage = () => {
           { label: "Numer", icon: Hash, value: formData.number, onChange: (e) => setFormData({ ...formData, number: e.target.value }), placeholder: "Wprowadź numer" },
           { label: "Producent", icon: Building2, value: formData.producer, onChange: (e) => setFormData({ ...formData, producer: e.target.value }), placeholder: "Wprowadź producenta" },
           { label: "Termin sprawdzenia", icon: Calendar, value: formData.checkDate, onChange: (e) => setFormData({ ...formData, checkDate: e.target.value }), type: "date" },
-          { label: "Następne sprawdzanie za", icon: Clock, value: formData.nextCheckIn, onChange: (e) => setFormData({ ...formData, nextcheckin: e.target.value }), type: "select", options: ["", 12, 13, 24] },
+          { label: "Następne sprawdzanie za", icon: Clock, value: formData.nextCheckIn, onChange: (e) => setFormData({ ...formData, nextCheckIn: e.target.value }), type: "select", options: ["", 12, 13, 24] },
           { label: "Stan", icon: CheckCircle, value: formData.condition, onChange: (e) => setFormData({ ...formData, condition: e.target.value }), placeholder: "Wprowadź stan" },
           { label: "Uwagi", icon: FileText, value: formData.comments, onChange: (e) => setFormData({ ...formData, comments: e.target.value }), placeholder:"Wprowadź uwagi" }
         ]}

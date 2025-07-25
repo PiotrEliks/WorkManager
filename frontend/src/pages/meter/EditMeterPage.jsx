@@ -46,7 +46,7 @@ const EditMeterPage = () => {
         number:      meter.number ?? "",
         producer:    meter.producer ?? "",
         checkDate:   meter.checkDate ?? "",
-        nextcheckin: meter.nextcheckin ?? "",
+        nextCheckIn: meter.nextCheckIn ?? "",
         condition:   meter.condition ?? "",
         comments:    meter.comments ?? "",
         editedBy:    authUser.fullName ?? ""
@@ -57,7 +57,7 @@ const EditMeterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await updateMeter(meter.id, formData);
-    setFormData({ type: "", number: "", producer: "", checkDate: "", nextcheckin: "", condition: "", comments: "", editedBy: authUser.fullName });
+    setFormData({ type: "", number: "", producer: "", checkDate: "", nextCheckIn: "", condition: "", comments: "", editedBy: authUser.fullName });
     navigate('/mierniki');
   }
 

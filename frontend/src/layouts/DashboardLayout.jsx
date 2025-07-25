@@ -257,17 +257,17 @@ const DashboardLayout = () => {
               onMouseOver={() => setShowUserInfo(true)}
               onMouseLeave={() => setShowUserInfo(false)}
             >
-              <CircleUser /> {authUser.fullName}
+              <CircleUser /> <span className="hidden md:inline">{authUser.fullName}</span>
             </span>
             <button
               onClick={logout}
-              className="bg-blue-700 hover:bg-blue-700/80 text-white px-3 py-1 rounded-xl flex items-center gap-1 cursor-pointer"
+              className="md:bg-blue-700 hover:bg-blue-700/80 px-3 md:py-1 md:rounded-xl md:flex md:items-center md:gap-1 cursor-pointer"
             >
-              <LogOut /> Wyloguj
+              <LogOut className="text-blue-700 md:text-white"/> <span className="hidden md:inline text-white">Wyloguj</span>
             </button>
             {showUserInfo && (
-              <div className="fixed top-15 z-50 bg-zinc-100 rounded-2xl px-3 py-1">
-                <span className="">{authUser.role.charAt(0).toUpperCase()}{authUser.role.slice(1)}</span>
+              <div className="fixed top-15 right-5 md:right-auto z-50 bg-zinc-100 rounded-2xl px-3 py-1">
+                <span className="flex flex-col items-center"><span className="md:hidden">{authUser.fullName}</span>{authUser.role.charAt(0).toUpperCase()}{authUser.role.slice(1)}</span>
               </div>
             )}
           </div>

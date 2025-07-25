@@ -42,7 +42,7 @@ const FormField = ({
         type={type}
         className="w-full pl-10 pr-3 py-4 bg-gray-50 rounded-2xl border-1"
         placeholder={placeholder}
-        value={value}
+        value={value || ''}
         onChange={onChange}
       />
     )}
