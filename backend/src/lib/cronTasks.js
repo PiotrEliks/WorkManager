@@ -32,7 +32,7 @@ const ENTITIES = [
 ];
 
 cron.schedule(
-  "* 7 * * *",
+  "0 7 * * *",
   async () => {
     try {
       const targetDate = format(addDays(new Date(), 7), "yyyy-MM-dd");
