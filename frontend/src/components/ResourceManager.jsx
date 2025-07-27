@@ -17,16 +17,12 @@ export default function ResourceManager({
   pageSize,
   totalItems,
   handlePageSizeChange,
-  type = null
+  type = null,
+  searchQuery,
+  setSearchQuery
 }) {
   const totalPages = Math.ceil(totalItems / pageSize);
   const [toDelete, setToDelete] = useState(null);
-
-  useEffect(() => {
-    if (type) {
-      fetchItems(page, pageSize, type, false);
-    }
-  }, [fetchItems, page, pageSize, type]);
 
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, totalItems);
@@ -42,6 +38,8 @@ export default function ResourceManager({
         fetchItems={fetchItems}
         name={name}
         type={type}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
       <DataTable
         columns={columns}

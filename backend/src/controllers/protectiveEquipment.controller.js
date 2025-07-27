@@ -1,9 +1,10 @@
 import { where } from "sequelize";
 import ProtectiveEquipment from "../models/protectiveEquipment.model.js";
+import { Op } from 'sequelize';
 
 export const getEq = async (req, res) => {
     try {
-        let { page = 1, pageSize = 10, fullData = false, type } = req.query;
+        let { page = 1, pageSize = 10, fullData = false, type, filterText = '', sortBy, sortDirection = 'asc' } = req.query;
         
         page = parseInt(page, 10);
         pageSize = parseInt(pageSize, 10);
@@ -17,17 +18,29 @@ export const getEq = async (req, res) => {
 
         const offset = (page - 1) * pageSize;
 
+        let whereCondition = {};
+        if (filterText) {
+            whereCondition = {
+            [Op.or]: [
+                { name: { [Op.iLike]: `%${filterText}%` } },
+                { factoryNumber: { [Op.iLike]: `%${filterText}%` } },
+                { protocolNumber: { [Op.iLike]: `%${filterText}%` } },
+                { editedBy: { [Op.iLike]: `%${filterText}%` } }
+            ]
+            };
+        }
+
         if (fullData) {
             const equipment = await ProtectiveEquipment.findAll({
                 where: type ? { type } : {},
-                order: [['updatedAt', 'DESC']],
+                order: [[sortBy || 'updatedAt', sortDirection || 'DESC']],
             });
             return res.status(200).json({ equipment, totalItems: equipment.length });
         }
 
         const { count, rows } = await ProtectiveEquipment.findAndCountAll({
-            where: type ? { type } : {},
-            order: [['updatedAt', 'DESC']],
+            where: type ? { type, ...whereCondition } : whereCondition,
+            order: [[sortBy || 'updatedAt', sortDirection || 'DESC']],
             offset,
             limit: pageSize
         });

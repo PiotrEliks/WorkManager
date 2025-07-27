@@ -253,7 +253,7 @@ const DashboardLayout = () => {
           </button>
           <div className="flex items-center gap-2 relative">
             <span
-              className="flex items-center gap-1 bg-white rounded-2xl px-3 py-1 cursor-pointer hover:bg-blue-700/10"
+              className="flex items-center gap-1 bg-white rounded-2xl md:px-3 md:py-1 cursor-pointer hover:bg-blue-700/10"
               onMouseOver={() => setShowUserInfo(true)}
               onMouseLeave={() => setShowUserInfo(false)}
             >
@@ -261,7 +261,7 @@ const DashboardLayout = () => {
             </span>
             <button
               onClick={logout}
-              className="md:bg-blue-700 hover:bg-blue-700/80 px-3 md:py-1 md:rounded-xl md:flex md:items-center md:gap-1 cursor-pointer"
+              className="md:bg-blue-700 hover:bg-blue-700/80 md:px-3 md:py-1 md:rounded-xl md:flex md:items-center md:gap-1 cursor-pointer"
             >
               <LogOut className="text-blue-700 md:text-white"/> <span className="hidden md:inline text-white">Wyloguj</span>
             </button>

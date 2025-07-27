@@ -9,7 +9,10 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   isUpdating: false,
   totalItems: 0,
 
-  getEq: async (page, pageSize, type, fullData) => {
+  searchQuery: '',
+  setSearchQuery: (query) => set({ searchQuery: query }),
+
+  getEq: async (page, pageSize, type, fullData, filterText = '', sortConfig = { key: null, direction: 'asc' }) => {
     set({ isEquipmentLoading: true });
     try {
       const queryParams = new URLSearchParams();
@@ -21,8 +24,18 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
         queryParams.append('fullData', true);
       }
 
+      if (filterText) {
+        queryParams.append('filterText', filterText);
+      }
+
+      if (sortConfig.key) {
+        queryParams.append('sortBy', sortConfig.key);
+        queryParams.append('sortDirection', sortConfig.direction);
+      }
+
       const res = await axiosInstance.get(`/protectiveEquipment?${queryParams.toString()}`);
-       if (fullData) {
+
+      if (fullData) {
         return res.data.equipment;
       } else {
         set({ 
