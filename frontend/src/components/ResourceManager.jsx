@@ -19,7 +19,9 @@ export default function ResourceManager({
   handlePageSizeChange,
   type = null,
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
+  sortConfig,
+  setSortConfig
 }) {
   const totalPages = Math.ceil(totalItems / pageSize);
   const [toDelete, setToDelete] = useState(null);
@@ -45,6 +47,8 @@ export default function ResourceManager({
         columns={columns}
         data={items}
         renderActions={(item) => renderActions(item, setToDelete)}
+        sortConfig={sortConfig}
+        setSortConfig={setSortConfig}
       />
 
       {toDelete && (

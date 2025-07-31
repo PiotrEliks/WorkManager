@@ -1,13 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 
 export default function DataTable({
   columns,
   data = [],
   renderActions,
+  sortConfig,
+  setSortConfig,
 }) {
   const reduced = columns.filter(col => col.key !== 'nextcheckin');
   const isMobile = useMediaQuery({ maxWidth: 1188 });
+
+  const [visibleSortMenu, setVisibleSortMenu] = useState(null);
+
+  const toggleSortMenu = (key) => {
+    setVisibleSortMenu(visibleSortMenu === key ? null : key);
+  };
+
+  const handleClearSort = () => {
+    setSortConfig(null, null);
+  };
 
   if (isMobile) {
     return (
@@ -59,9 +72,42 @@ export default function DataTable({
         {reduced.map(col => (
           <div
             key={col.key}
-            className="py-2 border-r last:border-r-0 px-2 min-w-0"
+            className="py-2 border-r last:border-r-0 px-2 min-w-0 cursor-pointer"
+            onClick={() => toggleSortMenu(col.key)}
           >
-            <span className="whitespace-normal break-all">{col.label}</span>
+            <div className="flex items-center justify-center w-full gap-0.5">
+              <span>{col.label}</span>
+              {sortConfig.key === col.key && sortConfig.direction && (
+                <span className="text-xs">
+                  {sortConfig.direction === 'asc' ? <ArrowUp className='size-4 text-blue-700' /> : <ArrowDown className='size-4 text-blue-700' />}
+                </span>
+              )}
+            </div>
+
+            {visibleSortMenu === col.key && (
+              <div className="absolute bg-white border border-gray-300 mt-1 p-2 shadow-lg rounded-md">
+                <button
+                  onClick={() => setSortConfig(col.key, 'asc')}
+                  className="block w-full text-sm text-gray-600 hover:bg-gray-100 p-1 cursor-pointer"
+                >
+                  Sortuj malejąco
+                </button>
+                <button
+                  onClick={() => setSortConfig(col.key, 'desc')}
+                  className="block w-full text-sm text-gray-600 hover:bg-gray-100 p-1 cursor-pointer"
+                >
+                  Sortuj rosnąco
+                </button>
+                {sortConfig.key === col.key && sortConfig.direction && (
+                  <button
+                    onClick={handleClearSort}
+                    className="block w-full text-sm text-red-500 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
+                  >
+                    Wyczyść sortowanie
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ))}
         {renderActions && (

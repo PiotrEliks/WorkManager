@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function MetersPage() {
   useDocumentTitle('Mierniki | Panel Elektropomiar');
-  const { meters, totalItems, getMeters, deleteMeter, areMetersLoading, searchQuery, setSearchQuery } = useMeterStore();
+  const { meters, totalItems, getMeters, deleteMeter, areMetersLoading, searchQuery, setSearchQuery, sortConfig, setSortConfig } = useMeterStore();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,9 +21,9 @@ export default function MetersPage() {
 
   useEffect(() => {
     if (pageSize && page) {
-      getMeters(page, pageSize, 'dd', false, searchQuery, { key: null, direction: 'asc' });
+      getMeters(page, pageSize, 'dd', false, searchQuery, sortConfig);
     }
-  }, [page, pageSize, getMeters, searchQuery]);
+  }, [page, pageSize, getMeters, searchQuery, sortConfig]);
 
   useEffect(() => {
     navigate(`?page=${page}&pageSize=${pageSize}`, { replace: true });
@@ -99,6 +99,8 @@ export default function MetersPage() {
       handlePageSizeChange={handlePageSizeChange}
       searchQuery={searchQuery}
       setSearchQuery={setSearchQuery}
+      sortConfig={sortConfig}
+      setSortConfig={setSortConfig}
     />
 
   );

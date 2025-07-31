@@ -29,8 +29,6 @@ const AddNewMeterPage = () => {
     navigate(`/mierniki?page=1&pageSize=10`);
   }
 
-  console.log(formData);
-
   return (
     <div>
       <DataForm
