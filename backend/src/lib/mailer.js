@@ -23,14 +23,18 @@ const transporter = nodemailer.createTransport({
 
 async function sendEmail(to, subject, data) {
   try {
-    const templatePath = path.join(__dirname, "emailTemplate.html");
+    const templatePath = path.join(__dirname, "emailReminderTemplate.html");
     let template = fs.readFileSync(templatePath, "utf-8");
 
-    template = template.replace("{{name1}}", data.name1);
-    template = template.replace("{{name2}}", data.name2);
-    template = template.replace("{{name3}}", data.name3);
-    template = template.replace("{{checkDate}}", data.checkDate);
-    template = template.replace("{{nextCheckDate}}", data.nextCheckDate);
+    const headersHtml = data.headers.map(h => `<th style="padding: 10px; border: 1px solid #ddd;">${h}</th>`).join("");
+    const rowsHtml = data.rows.map(row => `
+      <tr>${row.map(cell => `<td style="padding: 10px; border: 1px solid #ddd;">${cell}</td>`).join("")}</tr>
+    `).join("");
+
+    template = template.replace(/{{subject}}/g, subject);
+    template = template.replace(/{{targetDate}}/g, data.targetDate);
+    template = template.replace(/{{headers}}/g, headersHtml);
+    template = template.replace(/{{rows}}/g, rowsHtml);
 
     await transporter.sendMail({
       from: `"Panel elektropomiar.net.pl" <${process.env.NODEMAILER_EMAIL}>`,

@@ -9,24 +9,30 @@ import { sendEmail } from "./mailer.js";
 const ENTITIES = [
   {
     model: Meter,
-    templateSubject: "Zbliża się termin przeglądu miernika",
-    mapRow: ({ type, number, producer, checkDate, nextCheckDate }) => ({
-      name1: type,
-      name2: number,
-      name3: producer,
-      checkDate,
-      nextCheckDate,
+    templateSubject: "Zbliża się termin przeglądu mierników",
+    mapItems: items => ({
+      headers: ["Typ", "Nr.", "Producent", "Data sprawdz.", "Nast. sprawdz."],
+      rows: items.map(({ type, number, producer, checkDate, nextCheckDate }) => [
+        type,
+        number,
+        producer,
+        checkDate,
+        nextCheckDate
+      ])
     }),
   },
   {
     model: ProtectiveEquipment,
     templateSubject: "Zbliża się termin przeglądu sprzętu ochronnego",
-    mapRow: ({ name, factoryNumber, protocolNumber, checkDate, nextCheckDate }) => ({
-      name1: name,
-      name2: factoryNumber,
-      name3: protocolNumber,
-      checkDate,
-      nextCheckDate,
+    mapItems: items => ({
+      headers: ["Nazwa", "Nr. fabryczny", "Nr. protokołu", "Data sprawdz.", "Nast. sprawdz."],
+      rows: items.map(({ name, factoryNumber, protocolNumber, checkDate, nextCheckDate }) => [
+        name,
+        factoryNumber,
+        protocolNumber,
+        checkDate,
+        nextCheckDate
+      ])
     }),
   },
 ];
@@ -47,17 +53,23 @@ cron.schedule(
         return;
       }
       
-      for (const { model, templateSubject, mapRow } of ENTITIES) {
+      for (const { model, templateSubject, mapItems } of ENTITIES) {
         const items = await model.findAll({
           where: { nextCheckDate: targetDate },
         });
-        
+
         if (!items.length) continue;
-        
-        for (const row of items) {
-          const data = mapRow(row);
-          await sendEmail(emails, templateSubject, data);
+
+        const mapped = mapItems(items);
+        if (!mapped || !mapped.rows || !mapped.headers) {
+          console.error("mapItems did not return expected structure.");
+          continue;
         }
+
+        await sendEmail(emails, templateSubject, {
+          ...mapped,
+          targetDate
+        });
       }
     } catch (err) {
       console.error("Error in scheduled check:", err);
