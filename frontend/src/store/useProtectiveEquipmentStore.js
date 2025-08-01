@@ -12,6 +12,9 @@ export const useProtectiveEquipmentStore = create((set, get) => ({
   searchQuery: '',
   setSearchQuery: (query) => set({ searchQuery: query }),
 
+  sortConfig: { key: null, direction: 'asc' },
+  setSortConfig: (key, direction) => set({ sortConfig: { key, direction } }),
+
   getEq: async (page, pageSize, type, fullData, filterText = '', sortConfig = { key: null, direction: 'asc' }) => {
     set({ isEquipmentLoading: true });
     try {

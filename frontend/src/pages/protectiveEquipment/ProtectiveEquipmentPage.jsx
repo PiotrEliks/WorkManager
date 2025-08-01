@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 const ProtectiveEquipmentPage = () => {
   useDocumentTitle('Sprzęt ochronny | Panel Elektropomiar')
-    const { equipment, totalItems, getEq, deleteEq, isEquipmentLoading, searchQuery, setSearchQuery } = useProtectiveEquipmentStore()
+    const { equipment, totalItems, getEq, deleteEq, isEquipmentLoading, searchQuery, setSearchQuery, sortConfig, setSortConfig } = useProtectiveEquipmentStore()
   
     const navigate = useNavigate();
     const location = useLocation();
@@ -30,9 +30,9 @@ const ProtectiveEquipmentPage = () => {
 
     useEffect(() => {
       if (pageSize && page) {
-        getEq(page, pageSize, type, false, searchQuery, { key: null, direction: 'asc' });
+        getEq(page, pageSize, type, false, searchQuery, sortConfig);
       }
-    }, [page, pageSize, getEq, type, searchQuery]);
+    }, [page, pageSize, getEq, type, searchQuery, sortConfig]);
 
     useEffect(() => {
        navigate(`?page=${page}&pageSize=${pageSize}&type=${type}`, { replace: true });
@@ -107,6 +107,8 @@ const ProtectiveEquipmentPage = () => {
       type={type}
       searchQuery={searchQuery}
       setSearchQuery={setSearchQuery}
+      sortConfig={sortConfig}
+      setSortConfig={setSortConfig}
     />
   )
 }
