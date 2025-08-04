@@ -4,8 +4,8 @@ import User from './users.model.js';
 
 const Entry = sequelize.define('Entry', {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
   timestamp: {

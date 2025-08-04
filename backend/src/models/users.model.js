@@ -26,7 +26,7 @@ const User = sequelize.define('User', {
     defaultValue: 'pracownik'
   },
   cardId: {
-    type: DataTypes.STRING,
+    type: DataTypes.BIGINT,
     allowNull: true
   },
   changedDefaultPassword: {
